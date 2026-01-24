@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  --color-work-project: #CFA5A5;
+  --color-personal-project: #BDDCC4;
+  --color-experience: #CDC9DB;
+  --color-skills: #D4CABD;
+}
+
+body {
+  background-color: #FFFFE3;
+}
