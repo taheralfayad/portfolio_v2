@@ -1,7 +1,9 @@
 package data
 
 type Skill struct {
-	Name string
-	Category string
-	BlogLink string
+	ID int `json:"id"`
+	Name string `json:"name"`
+	Category string `json:"category"`
+	BlogLink string `json:"blog_link"`
+	CreatedAt string `json:created_at"`
 }

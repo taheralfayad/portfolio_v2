@@ -56,14 +56,13 @@
       blogLink = "";
       type = "";
       error = "";
-      success = "";
+      success = "Project uploaded successfully!";
       loading = "";
 
     } catch (err) {
       console.error(err)
       error =
-        err?.data?.error ||
-        err?.data?.message ||
+        err ||
         "Failed to create work experience";
     } finally {
       loading = false;

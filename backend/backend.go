@@ -95,6 +95,10 @@ func main() {
 		v1.AddProject(c, db, ctx, client)
 	})
 
+	r.POST("/skills", func(c *gin.Context) {
+		v1.AddSkill(c, db)
+	})
+
 	r.GET("/all-tables", func(c *gin.Context) {
 		v1.GetAllTables(c, db)
 	})
