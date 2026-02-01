@@ -1,10 +1,35 @@
 <script>
+  import { goto } from '$app/navigation';
   import Hero from "../components/hero.svelte"; 
   import WorkProjects from "../components/work_projects.svelte";
   import PersonalProjects from "../components/personal_projects.svelte";
   import ExperienceFlow from "../components/experience_flow.svelte";
   import SkillsTable from "../components/skills_table.svelte";
+  import NavBar from "../components/navbar.svelte";
   import { onMount } from 'svelte';
+
+  let currNavValue = $state("Home");
+
+  const navBarItems = [
+    {
+      "value": "Home",
+      "onClick": () => {
+        goto('#');
+        currNavValue = 'Home';
+      }
+    },
+    {
+      "value": "Blog",
+      "onClick": () => {
+        goto('#')
+        currNavValue = 'Blog';
+      }
+    }
+  ]
+
+  const getCurrNavValue = () => {
+    return currNavValue;
+  }
 
   const experience = [
     {
@@ -29,6 +54,7 @@
 
 
 <div class="flex flex-col">
+  <NavBar items={navBarItems} getCurrNavValue={getCurrNavValue}/>
   <section class="flex min-h-screen items-center justify-center">
     <Hero/>
   </section>

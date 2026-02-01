@@ -1,0 +1,93 @@
+package v1
+
+import (
+	data "github.com/taheralfayad/portfolio_v2/data"
+
+	"net/http"
+	"github.com/gin-gonic/gin"
+	"database/sql"
+)
+
+func AddWorkExperience(c *gin.Context, db *sql.DB) {
+		var we data.WorkExperience
+
+		if err := c.ShouldBindJSON(&we); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		query := `
+			INSERT INTO work_experiences (title, workplace, description, start_date, end_date)
+			VALUES ($1, $2, $3, $4, $5)
+			RETURNING id, created_at
+		`
+
+		err := db.QueryRow(
+			query,
+			we.Title,
+			we.Workplace,
+			we.Description,
+			we.StartDate,
+			we.EndDate,
+		).Scan(&we.ID, &we.CreatedAt)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusCreated, we)
+}
+
+func GetWorkExperiences(c *gin.Context, db *sql.DB) {
+		rows, err := db.Query(`
+			SELECT id, title, workplace, description, start_date, end_date, created_at
+			FROM work_experiences
+			ORDER BY start_date DESC NULLS LAST
+		`)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		defer rows.Close()
+
+		var experiences []data.WorkExperience
+
+		for rows.Next() {
+			var we data.WorkExperience
+			var startDate, endDate sql.NullString
+
+			err := rows.Scan(
+				&we.ID,
+				&we.Title,
+				&we.Workplace,
+				&we.Description,
+				&startDate,
+				&endDate,
+				&we.CreatedAt,
+			)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+
+			if startDate.Valid {
+				we.StartDate = &startDate.String
+			}
+			if endDate.Valid {
+				we.EndDate = &endDate.String
+			}
+
+			experiences = append(experiences, we)
+		}
+
+		c.JSON(http.StatusOK, experiences)
+}

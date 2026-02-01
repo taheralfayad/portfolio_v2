@@ -1,0 +1,58 @@
+services:
+  backend:
+    build: ./backend
+    env_file:
+        - ./backend/.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - frontend
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+
+  db:
+    image: postgres:18-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: taher
+      POSTGRES_PASSWORD: alfayad
+      POSTGRES_DB: portfolio
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  rustfs:
+    image: rustfs/rustfs
+    ports:
+      - "9000:9000"
+    volumes:
+      - rustfs_data:/data
+    environment:
+      RUSTFS_DATA_DIR: /data
+
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      - db
+    volumes:
+      - ./backend/migrations:/migrations
+    entrypoint:
+      [
+        "migrate",
+        "-path", "/migrations",
+        "-database", "postgres://taher:alfayad@db:5432/portfolio?sslmode=disable"
+      ]
+    command: ["up"]
+
+volumes:
+  postgres_data:
+  rustfs_data:
+
