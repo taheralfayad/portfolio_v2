@@ -95,6 +95,10 @@ func main() {
 		v1.AddProject(c, db, ctx, client)
 	})
 
+	r.POST("/users", func(c *gin.Context) {
+		v1.AddUser(c, db)
+	})
+
 	r.POST("/skills", func(c *gin.Context) {
 		v1.AddSkill(c, db)
 	})

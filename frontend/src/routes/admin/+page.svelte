@@ -2,6 +2,7 @@
   import WorkExperienceInput from "../../components/work_experience_input.svelte";
   import ProjectsInput from "../../components/projects_input.svelte";
   import SkillsInput from "../../components/skills_input.svelte";
+  import UsersInput from "../../components/user_input.svelte";
   import NavBar from "../../components/navbar.svelte";
   import { apiRequest } from "../../utils/api.svelte.js";
   import { onMount } from "svelte";
@@ -47,6 +48,8 @@
       <ProjectsInput/>
     {:else if currNavValue === "skills"}
       <SkillsInput/>
+    {:else if currNavValue === "users"}
+      <UsersInput/>
     {:else}
       <p>not yet implemented</p>
     {/if}

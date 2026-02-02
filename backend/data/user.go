@@ -1,6 +1,8 @@
 package data
 
 type User struct {
-	name string
-	password string
+	ID string `json:"id"`
+	Name string `json:"name"`
+	Password string `json:"password"`
+	CreatedAt string `json:"created_at"`
 }

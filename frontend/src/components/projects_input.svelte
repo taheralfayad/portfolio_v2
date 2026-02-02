@@ -57,7 +57,6 @@
       type = "";
       error = "";
       success = "Project uploaded successfully!";
-      loading = "";
 
     } catch (err) {
       console.error(err)
