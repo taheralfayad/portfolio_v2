@@ -111,5 +111,9 @@ func main() {
 		v1.GetWorkExperiences(c, db)
 	})
 
+	r.PUT("/work-experiences", func(c *gin.Context) {
+		v1.EditWorkExperience(c, db)
+	})
+
 	r.Run()
 }

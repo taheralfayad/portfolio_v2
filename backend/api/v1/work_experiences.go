@@ -91,3 +91,43 @@ func GetWorkExperiences(c *gin.Context, db *sql.DB) {
 
 		c.JSON(http.StatusOK, experiences)
 }
+
+func EditWorkExperience(c *gin.Context, db *sql.DB){
+		var we data.WorkExperience
+
+		if err := c.ShouldBindJSON(&we); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		query := `
+			UPDATE work_experiences
+			SET title = $1,
+					workplace = $2,
+					description = $3,
+					start_date = $4,
+					end_date = $5
+			WHERE id = $6
+		`
+
+		_, err := db.Exec(
+			query,
+			we.Title,
+			we.Workplace,
+			we.Description,
+			we.StartDate,
+			we.EndDate,
+			we.ID,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusCreated, we)
+}

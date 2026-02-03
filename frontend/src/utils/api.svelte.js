@@ -57,5 +57,8 @@ export const api = {
 
   post: (route, body, headers = {}) =>
     apiRequest(route, { method: 'POST', body, headers }),
+
+  put: (route, body, headers = {}) =>
+    apiRequest(route, { method: 'PUT', body, headers })
 };
 
