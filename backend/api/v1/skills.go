@@ -40,3 +40,82 @@ func AddSkill(c *gin.Context, db *sql.DB) {
 
 		c.JSON(http.StatusCreated, skill)
 }
+
+func GetSkills(c *gin.Context, db *sql.DB){
+	rows, err := db.Query(
+		`SELECT
+			id, name, category, blog_link, created_at
+		 FROM skills;
+		`)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	defer rows.Close()
+
+	
+	var skills []data.Skill
+
+	for rows.Next() {
+		var sk data.Skill
+
+		err := rows.Scan(
+			&sk.ID,
+			&sk.Name,
+			&sk.Category,
+			&sk.BlogLink,
+			&sk.CreatedAt,
+		)
+
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		skills = append(skills, sk)
+	}
+
+	c.JSON(http.StatusOK, skills)
+}
+
+func EditSkills(c *gin.Context, db *sql.DB) {
+	var sk data.Skill
+	var err error
+
+	if err = c.ShouldBindJSON(&sk); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	query := `
+		UPDATE skills
+		SET name = $1,
+			category = $2,
+			blog_link = $3
+		WHERE id = $4
+	`
+
+	_, err = db.Exec(
+		query,
+		sk.Name,
+		sk.Category,
+		sk.BlogLink,
+		sk.ID,
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, sk)
+}

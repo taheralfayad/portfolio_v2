@@ -119,6 +119,10 @@ func main() {
 		v1.GetProjects(c, db)
 	})
 
+	r.GET("/skills", func(c *gin.Context) {
+		v1.GetSkills(c, db)
+	})
+
 	r.PUT("/work-experiences", func(c *gin.Context) {
 		v1.EditWorkExperience(c, db)
 	})
@@ -129,6 +133,10 @@ func main() {
 
 	r.PUT("/users", func(c *gin.Context) {
 		v1.EditUser(c, db)
+	})
+
+	r.PUT("/skills", func(c *gin.Context) {
+		v1.EditSkills(c, db)
 	})
 
 	r.Run()
