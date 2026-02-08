@@ -1,15 +1,17 @@
 <script>
-  let { projectType } = $props();
+  import { Link } from '@lucide/svelte';
+  import { Newspaper } from '@lucide/svelte';
+
+  let { project } = $props();
 
   const projectBgClass = {
     work: 'bg-work-project',
     personal: 'bg-personal-project',
-  }[projectType] ?? 'bg-gray-200';
+  }[project.type] ?? 'bg-gray-200';
 
 </script>
-
 <div
-  class={`relative flex flex-col items-center p-8 max-w-md w-full mx-auto
+  class={`relative flex flex-col items-center p-8 w-full min-w-[280px] max-w-md mx-auto
           rounded-xl border-4 border-black
           after:content-[''] after:absolute after:inset-0
           after:rounded-xl after:bg-black
@@ -17,24 +19,21 @@
           after:-z-10
           ${projectBgClass}`}
 >
-
   <div class="w-full h-40 bg-gray-100 rounded-lg border-2 border-black"></div>
-
-  <h3 class="text-lg font-semibold mt-4 text-gray-900">
-    Project Name
+  <h3 class="text-lg font-semibold mt-4 text-gray-900 leading-tight">
+    {project.name}
   </h3>
-
-  <p class="text-center mt-2 text-sm">
-    This is the project's description lorem ipsum dolor
+  <p class="text-center mt-2 text-sm leading-relaxed">
+    {project.description}
   </p>
-
   <div class="flex w-full justify-center gap-4 mt-6">
-    <div class="p-3 rounded-full bg-gray-100 border-2 border-black">
-      Icon 1
-    </div>
-
-    <div class="p-3 rounded-full bg-gray-100 border-2 border-black">
-      Icon 2
-    </div>
+    <a href={project.githubLink} class="p-3 rounded-full bg-gray-100 border-2 border-black hover:cursor-pointer" target="_blank">
+      <Link />
+    </a>
+    {#if project.blogLink}
+      <a href={project.blogLink} class="p-3 rounded-full bg-gray-100 border-2 border-black">
+        <Newspaper />
+      </a>
+    {/if}
   </div>
 </div>

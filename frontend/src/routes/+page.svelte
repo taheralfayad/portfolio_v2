@@ -10,7 +10,8 @@
 
   import { api } from "../utils/api.svelte.js";
 
-  let workExperiences = $state("");
+  let workExperiences = $state([]);
+  let workProjects = $state([]);
 
   // let currNavValue = $state("Home");
 
@@ -45,42 +46,51 @@
     }))
   }
 
-  const experience = [
-    {
-      title: "Applications Programmer I",
-      subtitle: "University",
-      description: "Django, Canvas LMS, Docker"
-    },
-    {
-      title: "Full Stack Developer",
-      subtitle: "EdTech",
-      description: "React, Go, LTI 1.3"
-    },
-    {
-      title: "Data & Systems Engineer",
-      subtitle: "Analytics",
-      description: "AWS Athena, Canvas Data",
-      isCurrent: true
-    }
-  ];
+  const getWorkProjects = async () => {
+    const data = await api.get("/projects?limit=3&type=work")
+
+    workProjects = data.map((datum) => ({
+      name: datum.name,
+      description: datum.description,
+      githubLink: datum.github_link,
+      blogLink: datum.blog_link,
+      image: datum.image,
+      type: datum.type,
+    }))
+  }
+
+  const getPersonalProjects = async () => {
+    const data = await api.get("/projects?limit=3&type=personal")
+
+    personalProjects = data.map((datum) => ({
+      name: datum.name,
+      description: datum.description,
+      githubLink: datum.github_link,
+      blogLink: datum.blog_link,
+      image: datum.image,
+      type: datum.type,
+    }))
+  }
 
   onMount(() => {
     getWorkExperiences();
+    getWorkProjects();
+    getPersonalProjects();
   });
   
 </script>
 
 
 <div class="flex flex-col">
-  <section class="flex min-h-screen items-center justify-center">
+  <section class="flex items-center justify-center">
     <Hero/>
   </section>
-  <h2 class="flex justify-center text-xl">Here's a little something about my work experience:</h2>
+  <h2 class="flex justify-center text-xl text-center">Here's a little something about my work experience:</h2>
   <ExperienceFlow items={workExperiences}/>
-  <h2 class="flex justify-center text-xl">Here are some of the projects I've worked on at my job:</h2>
-  <WorkProjects/>
-  <h2 class="flex justify-center text-xl mt-4">Here are some of the projects I've worked on in my free time:</h2>
+  <h2 class="flex justify-center text-xl text-center">Here are some of the projects I've worked on at my job:</h2>
+  <WorkProjects projects={workProjects}/>
+  <h2 class="flex justify-center text-xl mt-4 text-center">Here are some of the projects I've worked on in my free time:</h2>
   <PersonalProjects/>
-  <h2 class="flex justify-center text-xl mt-4">Here are some technologies that I've used (and loved enough to talk about using):</h2>
+  <h2 class="flex justify-center text-xl mt-4 text-center">Here are some technologies that I've used (and loved enough to talk about using):</h2>
   <SkillsTable/>
 </div>

@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"os"
 	"fmt"
 	"context"
 
@@ -51,20 +50,12 @@ func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clie
 			VALUES ($1, $2, $3, $4, $5, $6)
 			RETURNING id, created_at
 		`
-
-		imageLink := fmt.Sprintf(
-			"%s/%s/%s",
-			os.Getenv("RUSTFS_ENDPOINT_URL"),
-			"portfolio-assets",
-			imageID,
-		)
-
 		err = db.QueryRow(
 			query,
 			payload.Name,
 			payload.Description,
 			payload.GithubLink,
-			imageLink,
+			imageID,
 			payload.BlogLink,
 			payload.Type,
 		).Scan(&response.ID, &response.CreatedAt)
@@ -87,7 +78,10 @@ func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clie
 }
 
 func GetProjects(c *gin.Context, db *sql.DB) {
-	rows, err := db.Query(`
+	limit := c.DefaultQuery("limit", "0")
+	projectType := c.DefaultQuery("type", "")
+
+	query := `
 		SELECT
 			id,
 			name,
@@ -98,8 +92,18 @@ func GetProjects(c *gin.Context, db *sql.DB) {
 			type,
 			created_at,
 			updated_at
-		FROM projects;
-	`)
+		FROM projects
+	`
+
+	if projectType != "" {
+		query += "WHERE type=" + "'" + projectType + "'" + "\n"
+	}
+
+	if limit != "0" {
+		query += "LIMIT" + " " + limit
+	}
+
+	rows, err := db.Query(query)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
