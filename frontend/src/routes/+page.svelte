@@ -8,27 +8,41 @@
   import NavBar from "../components/navbar.svelte";
   import { onMount } from 'svelte';
 
-  let currNavValue = $state("Home");
+  import { api } from "../utils/api.svelte.js";
 
-  const navBarItems = [
-    {
-      "value": "Home",
-      "onClick": () => {
-        goto('#');
-        currNavValue = 'Home';
-      }
-    },
-    {
-      "value": "Blog",
-      "onClick": () => {
-        goto('#')
-        currNavValue = 'Blog';
-      }
-    }
-  ]
+  let workExperiences = $state("");
 
-  const getCurrNavValue = () => {
-    return currNavValue;
+  // let currNavValue = $state("Home");
+
+  // const navBarItems = [
+  //   {
+  //     "value": "Home",
+  //     "onClick": () => {
+  //       goto('#');
+  //       currNavValue = 'Home';
+  //     }
+  //   },
+  //   {
+  //     "value": "Blog",
+  //     "onClick": () => {
+  //       goto('#')
+  //       currNavValue = 'Blog';
+  //     }
+  //   }
+  // ]
+
+  // const getCurrNavValue = () => {
+  //   return currNavValue;
+  // }
+
+  const getWorkExperiences = async () => {
+    const data = await api.get("/work-experiences?limit=3")
+
+    workExperiences = data.map((datum) => ({
+      title: datum.title,
+      subtitle: datum.workplace,
+      description: datum.description,
+    }))
   }
 
   const experience = [
@@ -49,17 +63,20 @@
       isCurrent: true
     }
   ];
+
+  onMount(() => {
+    getWorkExperiences();
+  });
   
 </script>
 
 
 <div class="flex flex-col">
-  <NavBar items={navBarItems} getCurrNavValue={getCurrNavValue}/>
   <section class="flex min-h-screen items-center justify-center">
     <Hero/>
   </section>
   <h2 class="flex justify-center text-xl">Here's a little something about my work experience:</h2>
-  <ExperienceFlow items={experience}/>
+  <ExperienceFlow items={workExperiences}/>
   <h2 class="flex justify-center text-xl">Here are some of the projects I've worked on at my job:</h2>
   <WorkProjects/>
   <h2 class="flex justify-center text-xl mt-4">Here are some of the projects I've worked on in my free time:</h2>

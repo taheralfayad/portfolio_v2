@@ -2,11 +2,13 @@ package main
 
 import (
 	v1 "github.com/taheralfayad/portfolio_v2/api/v1"
+	utils "github.com/taheralfayad/portfolio_v2/utils"
 
 	"os"
 	"context"
 	"log"
 	"errors"
+	"net/http"
 
 	"fmt"
 	"database/sql"
@@ -19,6 +21,29 @@ import (
 	"github.com/gin-contrib/cors"
 	_ "github.com/lib/pq"
 )
+
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token, err := c.Cookie("access_token")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "missing token",
+			})
+			return
+		}
+
+		claims, err := utils.ValidateJWT(token)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "invalid token",
+			})
+			return
+		}
+
+		c.Set("userID", claims.UserID)
+		c.Next()
+	}
+}
 
 func main() {
 	r := gin.Default()
@@ -87,20 +112,27 @@ func main() {
 		panic(err)
 	}
 
-	r.POST("/work-experiences", func(c *gin.Context) {
+	auth := r.Group("/")
+	auth.Use(AuthMiddleware())
+
+	auth.POST("/work-experiences", func(c *gin.Context) {
 		v1.AddWorkExperience(c, db)
 	})
 
-	r.POST("/projects", func(c *gin.Context) {
+	auth.POST("/projects", func(c *gin.Context) {
 		v1.AddProject(c, db, ctx, client)
 	})
 
-	r.POST("/users", func(c *gin.Context) {
+	auth.POST("/users", func(c *gin.Context) {
 		v1.AddUser(c, db)
 	})
 
-	r.POST("/skills", func(c *gin.Context) {
+	auth.POST("/skills", func(c *gin.Context) {
 		v1.AddSkill(c, db)
+	})
+
+	r.POST("/login", func(c *gin.Context) {
+		v1.Login(c, db)
 	})
 
 	r.GET("/all-tables", func(c *gin.Context) {
@@ -123,19 +155,19 @@ func main() {
 		v1.GetSkills(c, db)
 	})
 
-	r.PUT("/work-experiences", func(c *gin.Context) {
+	auth.PUT("/work-experiences", func(c *gin.Context) {
 		v1.EditWorkExperience(c, db)
 	})
 
-	r.PUT("/projects", func(c *gin.Context) {
+	auth.PUT("/projects", func(c *gin.Context) {
 		v1.EditProject(c, db, ctx, client)
 	})
 
-	r.PUT("/users", func(c *gin.Context) {
+	auth.PUT("/users", func(c *gin.Context) {
 		v1.EditUser(c, db)
 	})
 
-	r.PUT("/skills", func(c *gin.Context) {
+	auth.PUT("/skills", func(c *gin.Context) {
 		v1.EditSkills(c, db)
 	})
 

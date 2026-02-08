@@ -17,6 +17,7 @@ export async function apiRequest(
 ) {
   const config = {
     method,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...headers,

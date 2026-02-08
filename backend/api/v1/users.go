@@ -123,3 +123,68 @@ func EditUser(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusCreated, u)
 }
+
+func Login(c *gin.Context, db *sql.DB) {
+	var req data.LoginRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid request body",
+		})
+		return
+	}
+
+	var (
+		userID       int
+		passwordHash string
+	)
+
+	err := db.QueryRow(
+		`SELECT id, password FROM users WHERE name = $1`,
+		req.Name,
+	).Scan(&userID, &passwordHash)
+
+	if err == sql.ErrNoRows {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid credentials",
+		})
+		return
+	} else if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "database error",
+		})
+		return
+	}
+
+	if err := utils.CheckPasswordHash(
+		req.Password, passwordHash,
+	); err == false {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid credentials",
+		})
+		return
+	}
+
+	token, err := utils.GenerateJWT(userID, req.Name)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "could not generate token",
+		})
+		return
+	}
+
+	c.SetCookie(
+		"access_token",
+		token,
+		3600,
+		"/",
+		"",
+		true,
+		true,
+	)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "login successful",
+	})
+}

@@ -1,13 +1,19 @@
 package utils
 
 import (
+	"os"
+	"fmt"
 	"bytes"
 	"encoding/base64"
 	"strings"
 	"context"
 	"errors"
 	"regexp"
+	"time"
 
+	data "github.com/taheralfayad/portfolio_v2/data"
+
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -64,4 +70,51 @@ func ExtractUUIDFromImageURL(url string) (string, error) {
 	}
 
 	return matches[1], nil
+}
+
+func GenerateJWT(userID int, name string) (string, error) {
+	jwtSecret := os.Getenv("JWT_SECRET")
+	fmt.Println(jwtSecret)
+
+	claims := data.Claims{
+		UserID: userID,
+		Name:   name,
+		RegisteredClaims: jwt.RegisteredClaims{
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
+			Issuer:    "portfolio",
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(jwtSecret))
+}
+
+func ValidateJWT(tokenString string) (*data.Claims, error) {
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		return nil, errors.New("JWT_SECRET not set")
+	}
+
+	token, err := jwt.ParseWithClaims(
+		tokenString,
+		&data.Claims{},
+		func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, errors.New("unexpected signing method")
+			}
+			return []byte(jwtSecret), nil
+		},
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*data.Claims)
+	if !ok || !token.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return claims, nil
 }

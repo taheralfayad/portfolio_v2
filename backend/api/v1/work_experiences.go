@@ -44,11 +44,18 @@ func AddWorkExperience(c *gin.Context, db *sql.DB) {
 }
 
 func GetWorkExperiences(c *gin.Context, db *sql.DB) {
-		rows, err := db.Query(`
-			SELECT id, title, workplace, description, start_date, end_date, created_at
-			FROM work_experiences
-			ORDER BY start_date DESC NULLS LAST
-		`)
+    limit := c.DefaultQuery("limit", "0")
+    
+    query := `
+        SELECT id, title, workplace, description, start_date, end_date, created_at
+        FROM work_experiences
+        ORDER BY start_date ASC NULLS LAST`
+    
+    if limit != "0" {
+        query += " LIMIT " + limit
+    }
+    
+    rows, err := db.Query(query)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),

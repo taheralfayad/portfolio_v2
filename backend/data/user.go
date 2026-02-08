@@ -6,3 +6,8 @@ type User struct {
 	Password string `json:"password"`
 	CreatedAt string `json:"created_at"`
 }
+
+type LoginRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
