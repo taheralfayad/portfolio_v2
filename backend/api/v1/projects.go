@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"os"
 	"fmt"
 	"context"
 
@@ -29,11 +30,18 @@ func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clie
     id := uuid.New()
 		imageID := fmt.Sprintf("%s_image", id.String())
 
+		imageLink := fmt.Sprintf(
+			"%s/%s/%s",
+			os.Getenv("RUSTFS_ENDPOINT_URL"),
+			"portfolio-assets",
+			imageID,
+		)
+
 		err = utils.UploadBase64Image(
 			ctx,
 			client,
 			"portfolio-assets",
-			imageID,
+			imageLink,
 			payload.Image,
 			"image/png",
 		)

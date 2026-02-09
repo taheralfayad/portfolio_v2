@@ -12,6 +12,7 @@
 
   let workExperiences = $state([]);
   let workProjects = $state([]);
+  let skills = $state([]);
 
   // let currNavValue = $state("Home");
 
@@ -72,10 +73,21 @@
     }))
   }
 
+  const getSkills = async () => {
+    const data = await api.get("/skills")
+
+    skills = data.map((datum) => ({
+      name: datum.name,
+      category: datum.category,
+      blogLink: datum.blog_link,
+    }))
+  }
+
   onMount(() => {
     getWorkExperiences();
     getWorkProjects();
     getPersonalProjects();
+    getSkills();
   });
   
 </script>
@@ -92,5 +104,5 @@
   <h2 class="flex justify-center text-xl mt-4 text-center">Here are some of the projects I've worked on in my free time:</h2>
   <PersonalProjects/>
   <h2 class="flex justify-center text-xl mt-4 text-center">Here are some technologies that I've used (and loved enough to talk about using):</h2>
-  <SkillsTable/>
+  <SkillsTable skills={skills}/>
 </div>
