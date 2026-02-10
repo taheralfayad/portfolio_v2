@@ -131,6 +131,10 @@ func main() {
 		v1.AddSkill(c, db)
 	})
 
+	auth.POST("/images", func(c *gin.Context) {
+		v1.AddImage(c, db, ctx, client)
+	})
+
 	r.POST("/login", func(c *gin.Context) {
 		v1.Login(c, db)
 	})
@@ -155,6 +159,10 @@ func main() {
 		v1.GetSkills(c, db)
 	})
 
+	r.GET("/images", func(c *gin.Context) {
+		v1.GetImages(c, db)
+	})
+
 	auth.PUT("/work-experiences", func(c *gin.Context) {
 		v1.EditWorkExperience(c, db)
 	})
@@ -169,6 +177,10 @@ func main() {
 
 	auth.PUT("/skills", func(c *gin.Context) {
 		v1.EditSkills(c, db)
+	})
+
+	auth.PUT("/images", func(c *gin.Context) {
+		v1.EditImage(c, db, ctx, client)
 	})
 
 	r.Run()

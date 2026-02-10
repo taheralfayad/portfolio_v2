@@ -3,6 +3,7 @@
   import ProjectsInput from "../../components/projects_input.svelte";
   import SkillsInput from "../../components/skills_input.svelte";
   import UsersInput from "../../components/user_input.svelte";
+  import ImagesInput from "../../components/images_input.svelte"
   import NavBar from "../../components/navbar.svelte";
   import Input from "../../design-system/input.svelte";
   import FormButton from "../../design-system/form_button.svelte";
@@ -80,6 +81,8 @@
         <SkillsInput />
       {:else if currNavValue === "users"}
         <UsersInput />
+      {:else if currNavValue === "images"}
+        <ImagesInput />
       {:else}
         <p>not yet implemented</p>
       {/if}

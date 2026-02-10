@@ -1,0 +1,13 @@
+CREATE TABLE images (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  caption VARCHAR(255) NOT NULL,
+  image_link VARCHAR(255) NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+CREATE TRIGGER images_updated_at
+BEFORE UPDATE ON images
+FOR EACH ROW
+EXECUTE FUNCTION set_updated_at();
