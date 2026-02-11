@@ -32,12 +32,10 @@ func AddImage(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Client
 
 	imageLink := fmt.Sprintf(
 		"%s/%s/%s",
-		os.Getenv("RUSTFS_ENDPOINT_URL"),
+		os.Getenv("RUSTFS_PUBLIC_URL"),
 		"portfolio-assets",
 		imageID,
 	)
-
-	fmt.Println(imageLink)
 
 	err = utils.UploadBase64Image(
 		ctx,

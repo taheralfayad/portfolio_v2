@@ -12,7 +12,9 @@
 
   let workExperiences = $state([]);
   let workProjects = $state([]);
+  let personalProjects = $state([]);
   let skills = $state([]);
+  let images = $state([]);
 
   // let currNavValue = $state("Home");
 
@@ -83,11 +85,25 @@
     }))
   }
 
+  const getImages = async () => {
+    const data = await api.get("/images")
+
+    images = data.map(datum => {
+      return {
+        title: datum.title,
+        caption: datum.caption,
+        imageLink: datum.image
+      }
+    })
+
+  }
+
   onMount(() => {
     getWorkExperiences();
     getWorkProjects();
     getPersonalProjects();
     getSkills();
+    getImages();
   });
   
 </script>
@@ -95,14 +111,14 @@
 
 <div class="flex flex-col">
   <section class="flex items-center justify-center">
-    <Hero/>
+    <Hero carouselImages={images}/>
   </section>
   <h2 class="flex justify-center text-xl text-center">Here's a little something about my work experience:</h2>
   <ExperienceFlow items={workExperiences}/>
   <h2 class="flex justify-center text-xl text-center">Here are some of the projects I've worked on at my job:</h2>
   <WorkProjects projects={workProjects}/>
   <h2 class="flex justify-center text-xl mt-4 text-center">Here are some of the projects I've worked on in my free time:</h2>
-  <PersonalProjects/>
+  <PersonalProjects projects={personalProjects}/>
   <h2 class="flex justify-center text-xl mt-4 text-center">Here are some technologies that I've used (and loved enough to talk about using):</h2>
   <SkillsTable skills={skills}/>
 </div>

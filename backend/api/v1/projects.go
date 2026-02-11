@@ -32,7 +32,7 @@ func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clie
 
 		imageLink := fmt.Sprintf(
 			"%s/%s/%s",
-			os.Getenv("RUSTFS_ENDPOINT_URL"),
+			os.Getenv("RUSTFS_PUBLIC_URL"),
 			"portfolio-assets",
 			imageID,
 		)
@@ -41,7 +41,7 @@ func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clie
 			ctx,
 			client,
 			"portfolio-assets",
-			imageLink,
+			imageID,
 			payload.Image,
 			"image/png",
 		)
@@ -63,7 +63,7 @@ func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clie
 			payload.Name,
 			payload.Description,
 			payload.GithubLink,
-			imageID,
+			imageLink,
 			payload.BlogLink,
 			payload.Type,
 		).Scan(&response.ID, &response.CreatedAt)

@@ -1,35 +1,18 @@
 <script>
   let index = $state(0);
 
-  // Will retrieve the slides from the backend when I make it.
-
-  const slides = [
-    {
-      src: "https://picsum.photos/id/1015/900/600",
-      title: "Thoughtful Interfaces",
-      subtitle: "Design with intention"
-    },
-    {
-      src: "https://picsum.photos/id/1016/900/600",
-      title: "Calm Interactions",
-      subtitle: "Less, but better"
-    },
-    {
-      src: "https://picsum.photos/id/1018/900/600",
-      title: "Purposeful Motion",
-      subtitle: "Subtle, human transitions"
-    }
-  ];
+  let { images = [] } = $props();
 
   function next() {
-    index = (index + 1) % slides.length;
+    index = (index + 1) % images.length;
   }
 
   function prev() {
-    index = (index - 1 + slides.length) % slides.length;
+    index = (index - 1 + images.length) % images.length;
   }
 </script>
 
+{#if images.length > 0}
 <section class="w-full max-w-2xl mx-auto px-4 pt-4 pb-12">
   <div class="relative group">
     <div class="relative overflow-hidden rounded-2xl shadow-lg aspect-[5/3] bg-neutral-100">
@@ -37,32 +20,29 @@
         class="flex h-full transition-transform duration-1000 ease-in-out"
         style="transform: translateX(-{index * 100}%);"
       >
-        {#each slides as slide, i}
+        {#each images as image, i}
           <img
-            src={slide.src}
-            alt={slide.title}
+            src={image.imageLink}
+            alt={image.title}
             class="w-full h-full flex-shrink-0 object-cover"
             loading={i === 0 ? 'eager' : 'lazy'}
           />
         {/each}
       </div>
 
-      <!-- Soft gradient overlay -->
       <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0" />
 
-      <!-- Text overlay -->
       <div class="absolute bottom-0 left-0 right-0 p-6">
         <div class="inline-block rounded-xl bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
           <h1 class="text-lg font-semibold text-gray-900">
-            {slides[index].title}
+            {images[index].title}
           </h1>
           <p class="text-sm text-gray-600">
-            {slides[index].subtitle}
+            {images[index].caption}
           </p>
         </div>
       </div>
 
-      <!-- Navigation -->
       <button
         onclick={prev}
         aria-label="Previous slide"
@@ -100,3 +80,4 @@
 
   </div>
 </section>
+{/if}

@@ -5,7 +5,11 @@
     return [...new Set(skills.map(skill => skill.category))];
   });
 
-  let selectedCategory = $state(categories[0]);
+  let selectedCategory = $derived.by(() => {
+    if (categories.length > 0) {
+      return categories[0]
+    }
+  })
 
   let filteredSkills = $derived.by(() => {
     return skills.filter(skill => skill.category === selectedCategory);
@@ -39,13 +43,6 @@
           <td class="border border-black px-4 py-2">{skill.name}</td>
         </tr>
       {/each}
-      <!-- <tr> -->
-      <!--   <td class="border border-black px-4 py-2">Alfreds Futterkiste</td> -->
-      <!--   <td class="border border-black px-4 py-2">Alfreds Futterkiste</td> -->
-      <!-- </tr> -->
-      <!-- <tr> -->
-      <!--   <td class="border border-black px-4 py-2">Alfreds Futterkiste</td> -->
-      <!-- </tr> -->
     </tbody>
   </table>
 </section>
