@@ -14,6 +14,7 @@ services:
       dockerfile: Dockerfile.prod
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - backend
 
@@ -26,15 +27,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  rustfs:
-    image: rustfs/rustfs
-    ports:
-      - "9000:9000"
-    volumes:
-      - rustfs_data:/data
-    environment:
-      RUSTFS_DATA_DIR: /data
 
   migrate:
     image: migrate/migrate
