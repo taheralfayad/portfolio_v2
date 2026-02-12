@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const BASE_URL = '/api'
 
 /**
  * @param {string} route - API route (e.g. "/users", "/login")
