@@ -41,9 +41,11 @@ services:
       [
         "migrate",
         "-path", "/migrations",
-        "-database", "postgres://taher:alfayad@db:5432/portfolio?sslmode=disable"
+        "-database", "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable"
       ]
     command: ["up"]
+    env_file:
+      - .env
 
 volumes:
   postgres_data:
