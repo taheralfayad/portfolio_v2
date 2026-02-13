@@ -50,7 +50,7 @@
   }
 
   const getWorkProjects = async () => {
-    const data = await api.get("/projects?limit=3&type=work")
+    const data = await api.get("/projects?limit=5&type=work")
 
     workProjects = data.map((datum) => ({
       name: datum.name,
@@ -63,7 +63,7 @@
   }
 
   const getPersonalProjects = async () => {
-    const data = await api.get("/projects?limit=3&type=personal")
+    const data = await api.get("/projects?limit=5&type=personal")
 
     personalProjects = data.map((datum) => ({
       name: datum.name,

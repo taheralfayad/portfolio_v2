@@ -3,7 +3,6 @@ package v1
 import (
 	"os"
 	"fmt"
-	"context"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
@@ -11,11 +10,10 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"database/sql"
 )
 
-func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Client) {
+func AddProject(c *gin.Context, db *sql.DB) {
 		var payload data.ProjectPayload
 		var response data.ProjectResponse
 		var err error
@@ -29,21 +27,11 @@ func AddProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clie
 
     id := uuid.New()
 		imageID := fmt.Sprintf("%s_image", id.String())
+		imageLink := "/project_images/" + imageID
 
-		imageLink := fmt.Sprintf(
-			"%s/%s/%s",
-			os.Getenv("RUSTFS_PUBLIC_URL"),
-			"portfolio-assets",
-			imageID,
-		)
-
-		err = utils.UploadBase64Image(
-			ctx,
-			client,
-			"portfolio-assets",
-			imageID,
+		err = utils.SaveBase64ImageToDisk(
 			payload.Image,
-			"image/png",
+			os.Getenv("STATIC_DIR") + imageLink,
 		)
 
 		if err != nil {
@@ -138,6 +126,8 @@ func GetProjects(c *gin.Context, db *sql.DB) {
 			&p.UpdatedAt,
 		)
 
+		p.ImageLink = os.Getenv("ASSETS_URL") + p.ImageLink
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
@@ -151,7 +141,7 @@ func GetProjects(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, projects)
 }
 
-func EditProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Client) {
+func EditProject(c *gin.Context, db *sql.DB) {
 	var p data.ProjectPayload
 	var err error
 
@@ -162,10 +152,8 @@ func EditProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Cli
 		return
 	}
 
-	var imageS3Key string
-
 	if p.Image != "" {
-		var previousImageLink string
+		var imageLink string
 
 		query := (`
 			SELECT
@@ -177,7 +165,7 @@ func EditProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Cli
 		err := db.QueryRow(
 			query,
 			p.ID,
-		).Scan(&previousImageLink)
+		).Scan(&imageLink)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -186,22 +174,9 @@ func EditProject(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Cli
 			return
 		}
 
-		imageS3Key, err = utils.ExtractUUIDFromImageURL(previousImageLink)
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		err = utils.UploadBase64Image(
-			ctx,
-			client,
-			"portfolio-assets",
-			imageS3Key,
+		err = utils.SaveBase64ImageToDisk(
 			p.Image,
-			"image/png",
+			os.Getenv("STATIC_DIR") + imageLink,
 		)
 
 		if err != nil {

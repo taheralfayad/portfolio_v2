@@ -1,12 +1,25 @@
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/nginx.local.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./backend/static:/var/www/portfolio/static
+    depends_on:
+      - backend
+      - frontend
+
   backend:
     build: ./backend
     env_file:
-        - ./backend/.env
+        - .env
     ports:
       - "8080:8080"
     volumes:
       - ./backend:/app
+      - ./backend/static:/app/backend/static
     depends_on:
       - frontend
 
@@ -16,6 +29,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
+      - /app/node_modules
 
   db:
     image: postgres:18-alpine
@@ -45,5 +59,4 @@ services:
 
 volumes:
   postgres_data:
-  rustfs_data:
 

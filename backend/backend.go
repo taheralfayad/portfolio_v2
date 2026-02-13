@@ -5,18 +5,11 @@ import (
 	utils "github.com/taheralfayad/portfolio_v2/utils"
 
 	"os"
-	"context"
-	"log"
-	"errors"
 	"net/http"
 
 	"fmt"
 	"database/sql"
 	
-	"github.com/aws/smithy-go"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
 	_ "github.com/lib/pq"
@@ -60,9 +53,6 @@ func main() {
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
-	access_key_id := os.Getenv("RUSTFS_ACCESS_KEY_ID")
-	secret_access_key := os.Getenv("RUSTFS_SECRET_ACCESS_KEY")
-	endpoint := os.Getenv("RUSTFS_ENDPOINT_URL")
 
 	connStr := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
@@ -72,35 +62,6 @@ func main() {
 		port,
 		dbName,
 	)
-
-	cfg := aws.Config{
-			EndpointResolver: aws.EndpointResolverFunc(func(service, region string) (aws.Endpoint, error) {
-					return aws.Endpoint{
-							URL: endpoint,
-					}, nil
-			}),
-			Credentials: aws.NewCredentialsCache(credentials.NewStaticCredentialsProvider(access_key_id, secret_access_key, "")),
-	}
-
-
-	ctx := context.Background()
-
-	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
-			o.UsePathStyle = true
-	})
-
-	_, err := client.CreateBucket(ctx, &s3.CreateBucketInput{
-			Bucket: aws.String("portfolio-assets"),
-	})
-
-	if err != nil {
-			var apiErr smithy.APIError
-			if errors.As(err, &apiErr) {
-					if apiErr.ErrorCode() != "BucketAlreadyOwnedByYou" {
-						log.Fatalf("create bucket failed: %v", err)
-					}
-			}
-	}
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -120,7 +81,7 @@ func main() {
 	})
 
 	auth.POST("/projects", func(c *gin.Context) {
-		v1.AddProject(c, db, ctx, client)
+		v1.AddProject(c, db)
 	})
 
 	auth.POST("/users", func(c *gin.Context) {
@@ -132,7 +93,7 @@ func main() {
 	})
 
 	auth.POST("/images", func(c *gin.Context) {
-		v1.AddImage(c, db, ctx, client)
+		v1.AddImage(c, db)
 	})
 
 	r.POST("/login", func(c *gin.Context) {
@@ -168,7 +129,7 @@ func main() {
 	})
 
 	auth.PUT("/projects", func(c *gin.Context) {
-		v1.EditProject(c, db, ctx, client)
+		v1.EditProject(c, db)
 	})
 
 	auth.PUT("/users", func(c *gin.Context) {
@@ -180,7 +141,7 @@ func main() {
 	})
 
 	auth.PUT("/images", func(c *gin.Context) {
-		v1.EditImage(c, db, ctx, client)
+		v1.EditImage(c, db)
 	})
 
 	r.Run()

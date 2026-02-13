@@ -3,18 +3,15 @@ package utils
 import (
 	"os"
 	"fmt"
-	"bytes"
+	"path/filepath"
 	"encoding/base64"
 	"strings"
-	"context"
 	"errors"
-	"regexp"
 	"time"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -28,6 +25,23 @@ func CheckPasswordHash(password, hash string) bool {
 	return err == nil
 }
 
+func SaveBase64ImageToDisk(
+	b64 string,
+	path string,
+) error {
+	data, err := DecodeBase64Image(b64)
+	if err != nil {
+		return err
+	}
+	
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return err
+	}
+	
+	return os.WriteFile(path, data, 0644)
+}
+
 func DecodeBase64Image(b64 string) ([]byte, error) {
 	if strings.Contains(b64, ",") {
 		parts := strings.SplitN(b64, ",", 2)
@@ -35,41 +49,6 @@ func DecodeBase64Image(b64 string) ([]byte, error) {
 	}
 
 	return base64.StdEncoding.DecodeString(b64)
-}
-
-func UploadBase64Image(
-	ctx context.Context,
-	client *s3.Client,
-	bucket string,
-	key string,
-	b64 string,
-	contentType string,
-) error {
-
-	data, err := DecodeBase64Image(b64)
-	if err != nil {
-		return err
-	}
-
-	_, err = client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:      &bucket,
-		Key:         &key,
-		Body:        bytes.NewReader(data),
-		ContentType: &contentType,
-	})
-
-	return err
-}
-
-func ExtractUUIDFromImageURL(url string) (string, error) {
-	re := regexp.MustCompile(`([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}_image)`)
-	matches := re.FindStringSubmatch(url)
-
-	if len(matches) < 2 {
-		return "", errors.New("uuid not found in image URL")
-	}
-
-	return matches[1], nil
 }
 
 func GenerateJWT(userID int, name string) (string, error) {

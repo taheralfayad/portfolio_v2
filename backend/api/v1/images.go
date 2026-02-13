@@ -3,7 +3,6 @@ package v1
 import (
 	"os"
 	"fmt"
-	"context"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
@@ -11,11 +10,10 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"database/sql"
 )
 
-func AddImage(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Client) {
+func AddImage(c *gin.Context, db *sql.DB) {
 	var payload data.ImagePayload
 	var response data.ImageResponse
 	var err error
@@ -29,21 +27,11 @@ func AddImage(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Client
 
 	id := uuid.New()
 	imageID := fmt.Sprintf("%s_image", id.String())
+	imageLink := "/hero_images/" + imageID
 
-	imageLink := fmt.Sprintf(
-		"%s/%s/%s",
-		os.Getenv("RUSTFS_PUBLIC_URL"),
-		"portfolio-assets",
-		imageID,
-	)
-
-	err = utils.UploadBase64Image(
-		ctx,
-		client,
-		"portfolio-assets",
-		imageID,
+	err = utils.SaveBase64ImageToDisk(
 		payload.Image,
-		"image/png",
+		os.Getenv("STATIC_DIR") + imageLink,
 	)
 
 	if err != nil {
@@ -117,6 +105,8 @@ func GetImages(c *gin.Context, db *sql.DB) {
 			&i.ImageLink,
 		)
 
+		i.ImageLink = os.Getenv("ASSETS_URL") + i.ImageLink
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
@@ -130,7 +120,7 @@ func GetImages(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, images)
 }
 
-func EditImage(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Client) {
+func EditImage(c *gin.Context, db *sql.DB) {
 	var i data.ImagePayload
 	var err error
 
@@ -141,10 +131,8 @@ func EditImage(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clien
 		return
 	}
 
-	var imageS3Key string
-
 	if i.Image != "" {
-		var previousImageLink string
+		var imageLink string
 
 		query := (`
 			SELECT
@@ -156,7 +144,7 @@ func EditImage(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clien
 		err := db.QueryRow(
 			query,
 			i.ID,
-		).Scan(&previousImageLink)
+		).Scan(&imageLink)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -165,22 +153,9 @@ func EditImage(c *gin.Context, db *sql.DB, ctx context.Context, client *s3.Clien
 			return
 		}
 
-		imageS3Key, err = utils.ExtractUUIDFromImageURL(previousImageLink)
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		err = utils.UploadBase64Image(
-			ctx,
-			client,
-			"portfolio-assets",
-			imageS3Key,
+		err = utils.SaveBase64ImageToDisk(
 			i.Image,
-			"image/png",
+			os.Getenv("STATIC_DIR") + imageLink,
 		)
 
 		if err != nil {

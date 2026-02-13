@@ -3,6 +3,8 @@ services:
     build: ./backend
     env_file:
         - .env
+    volumes:
+      - ./backend/static:/var/www/portfolio/static
     ports:
       - "8080:8080"
     volumes:
@@ -12,6 +14,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
+    volumes:
+      - ./backend/static:/var/www/portfolio/static
     ports:
       - "80:80"
       - "443:443"
