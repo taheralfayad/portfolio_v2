@@ -7,7 +7,7 @@ services:
       - "8080:8080"
     volumes:
       - ./backend:/app
-      - ./backend/static:/var/www/portfolio/static
+      - ./backend/static:/app/backend/static
 
   frontend:
     build:
