@@ -21,9 +21,10 @@
     <thead class="bg-gray-100 text-center">
       <tr>
         <th class="border border-black px-4 py-2 text-center">
-          <label for="fruits">Category of skills:</label>
+          <p>Skills:</p>
         </th>
         <th class="border border-black px-4 py-2 text-center">
+          <label for="categories">Category:</label>
           <select
             name="categories"
             id="categories"
