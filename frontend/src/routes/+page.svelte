@@ -6,6 +6,10 @@
   import ExperienceFlow from "../components/experience_flow.svelte";
   import SkillsTable from "../components/skills_table.svelte";
   import NavBar from "../components/navbar.svelte";
+  import DropdownTextfield from "../components/dropdown_textfield.svelte";
+  import Gauge from "../design-system/gauge.svelte";
+  import Carousel from "../design-system/carousel.svelte";
+  import CoffeeTable from "../components/coffee_table.svelte";
   import { onMount } from "svelte";
 
   import { api } from "../utils/api.svelte.js";
@@ -16,6 +20,7 @@
   let personalProjects = $state([]);
   let skills = $state([]);
   let images = $state([]);
+  let searchValue = $state("");
 
   const navItems = [
     {
@@ -104,6 +109,10 @@
     });
   };
 
+  const handleSearchInput = async () => {
+    console.log("hello?");
+  };
+
   onMount(() => {
     getWorkExperiences();
     getWorkProjects();
@@ -117,11 +126,9 @@
 <div class="flex flex-col min-h-screen pt-20">
   {#if currNavValue.value === "Home"}
     <section class="flex items-center justify-center">
-      <Hero
-        carouselImages={images}
-        header={currNavValue.header}
-        subtitle={currNavValue.subtitle}
-      />
+      <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
+        <Carousel {images} />
+      </Hero>
     </section>
     <h2 class="flex justify-center text-xl text-center">
       Here's a little something about my work experience:
@@ -141,11 +148,27 @@
     </h2>
     <SkillsTable {skills} />
   {:else if currNavValue.value === "Coffee"}
-    <section class="flex items-center justify-center">
-      <Hero
-        carouselImages={images}
-        header={currNavValue.header}
-        subtitle={currNavValue.subtitle}
+    <section class="flex flex-col items-center justify-center">
+      <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
+        <DropdownTextfield
+          suggestionsHidden={true}
+          suggestions={["Ethiopian", "Arabica", "Brazilian"]}
+          handleInput={handleSearchInput}
+          selectSuggestion={handleSearchInput}
+          {searchValue}
+        />
+        <div
+          class="flex flex-col md:flex-row items-center justify-center gap-12 w-full max-w-6xl"
+        >
+          <Carousel {images} />
+          <Gauge level={4} />
+        </div>
+      </Hero>
+      <CoffeeTable
+        data={[
+          { hello: "world", taher: "alfayad" },
+          { hello: "hello", alfayad: "taher" },
+        ]}
       />
     </section>
   {/if}
