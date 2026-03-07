@@ -1,17 +1,16 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
+	"net/http"
+	"os"
+
 	v1 "github.com/taheralfayad/portfolio_v2/api/v1"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
 
-	"os"
-	"net/http"
-
-	"fmt"
-	"database/sql"
-	
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
@@ -96,6 +95,10 @@ func main() {
 		v1.AddImage(c, db)
 	})
 
+	auth.POST("/coffees", func(c *gin.Context) {
+		v1.AddCoffee(c, db)
+	})
+
 	r.POST("/login", func(c *gin.Context) {
 		v1.Login(c, db)
 	})
@@ -122,6 +125,10 @@ func main() {
 
 	r.GET("/images", func(c *gin.Context) {
 		v1.GetImages(c, db)
+	})
+
+	r.GET("/coffees", func(c *gin.Context) {
+		v1.GetCoffees(c, db)
 	})
 
 	auth.PUT("/work-experiences", func(c *gin.Context) {

@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
   import Input from "../design-system/input.svelte";
   import BigInput from "../design-system/big_input.svelte";
@@ -10,6 +10,7 @@
   import DataPreview from "../components/data_preview.svelte";
 
   import { api } from "../utils/api.svelte.js";
+  import { handleImageChange } from "../utils/utils.svelte";
 
   let id = $state(0);
   let title = $state("");
@@ -29,32 +30,20 @@
       caption = "";
       image = "";
       editMode = false;
-      return
+      return;
     }
 
     editMode = true;
-    id = data.id
+    id = data.id;
     title = data.title;
     caption = data.caption;
-  }
-
-  const handleImageChange = async (file) => {
-    if (!file) return;
-    
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-      image = e.target.result;
-    };
-    
-    reader.readAsDataURL(file);
   };
 
   const getImages = async () => {
     const data = await api.get("/images");
 
     images = data;
-  }
+  };
 
   const submitForm = async () => {
     error = "";
@@ -64,21 +53,21 @@
     const payload = {
       title,
       caption,
-      image
-    }
+      image,
+    };
 
     if (editMode) {
-      payload.id = id
-      
+      payload.id = id;
+
       try {
-        await api.put("/images", payload)
+        await api.put("/images", payload);
         id = 0;
         title = "";
         caption = "";
         image = "";
         editMode = false;
 
-        success = "Image been updated!"
+        success = "Image been updated!";
       } catch (err) {
         error =
           err?.data?.error ||
@@ -92,39 +81,35 @@
     }
 
     try {
-      await api.post("/images", payload)
-      
+      await api.post("/images", payload);
+
       title = "";
       caption = "";
       image = "";
-      success = "Image created."
+      success = "Image created.";
     } catch (err) {
-      console.error(err)
-      error =
-        err ||
-        "Failed to create work experience";
+      console.error(err);
+      error = err || "Failed to create work experience";
     } finally {
       loading = false;
     }
-
-  }
+  };
 
   onMount(() => {
     getImages();
-  })
+  });
 </script>
 
-
 <div class="flex flex-row">
-  <Form submitForm={submitForm} editMode={editMode} editHook={editHook} title="Add Image">
-    <Input label="Title" bind:value={title} required={true}/>
-    <BigInput label="Caption" bind:value={caption} required={true}/>
-    <ImageInput label="Image" onchange={(e) => handleImageChange(e.target.files[0])}/>
-    <FormButton loading={loading} />
-    <Notif
-      error={error}
-      success={success}
+  <Form {submitForm} {editMode} {editHook} title="Add Image">
+    <Input label="Title" bind:value={title} required={true} />
+    <BigInput label="Caption" bind:value={caption} required={true} />
+    <ImageInput
+      label="Image"
+      onchange={(e) => (image = handleImageChange(e.target.files[0]))}
     />
+    <FormButton {loading} />
+    <Notif {error} {success} />
   </Form>
-  <DataPreview data={images} editHook={editHook}/>
+  <DataPreview data={images} {editHook} />
 </div>
