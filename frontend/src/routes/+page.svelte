@@ -8,12 +8,16 @@
   import NavBar from "../components/navbar.svelte";
   import DropdownTextfield from "../components/dropdown_textfield.svelte";
   import Gauge from "../design-system/gauge.svelte";
+  import CoffeeDetails from "../components/coffee_details.svelte";
   import Carousel from "../design-system/carousel.svelte";
   import CoffeeTable from "../components/coffee_table.svelte";
   import { onMount } from "svelte";
 
   import { api } from "../utils/api.svelte.js";
+  import { formatDate } from "../utils/utils.svelte";
   import Navbar from "../components/navbar.svelte";
+
+  import coffeesNotFound from "$lib/assets/coffees_not_found.png";
 
   let workExperiences = $state([]);
   let workProjects = $state([]);
@@ -21,6 +25,7 @@
   let skills = $state([]);
   let images = $state([]);
   let coffees = $state([]);
+  let coffeeCups = $state([]);
   let selectedCoffee = $state("");
   let searchValue = $state("");
   let isFocused = $state(false);
@@ -127,9 +132,9 @@
   };
 
   const getCoffees = async () => {
-    const data = await api.get("/coffees");
+    const coffeesData = await api.get("/coffees");
 
-    coffees = data.map((datum) => {
+    coffees = coffeesData.map((datum) => {
       return {
         id: datum.id,
         name: datum.name,
@@ -143,12 +148,46 @@
         description: datum.description,
       };
     });
+
+    selectedCoffee = coffees[0];
+
+    const coffeeCupData = await api.get(
+      `/coffee-cups?coffee_id=${selectedCoffee.id}`,
+    );
+
+    coffeeCups = cleanCoffeeCupData(coffeeCupData);
   };
 
   const selectSuggestion = async (suggestion) => {
-    selectedCoffee = suggestion;
+    selectedCoffee = coffees.find((item) => item.name === suggestion);
     isFocused = false;
-    console.log(selectedCoffee);
+
+    const coffeeCupData = await api.get(
+      `/coffee-cups?coffee_id=${selectedCoffee.id}`,
+    );
+
+    if (coffeeCupData != null && coffeeCupData.length > 0) {
+      coffeeCups = cleanCoffeeCupData(coffeeCupData);
+    } else {
+      coffeeCups = {};
+    }
+  };
+
+  const cleanCoffeeCupData = (coffeeCupData) => {
+    return coffeeCupData.map((datum) => {
+      return {
+        "Date Drank": formatDate(datum.date_drank),
+        Temperature: datum.temperature,
+        "Days After Roast": datum.days_after_roast,
+        Acidity: datum.acidity,
+        Body: datum.body,
+        Sweetness: datum.sweetness,
+        "Water Type": datum.water_type,
+        "Grind Size": datum.grind_size,
+        Method: datum.method,
+        Rating: datum.rating,
+      };
+    });
   };
 
   onMount(() => {
@@ -190,28 +229,33 @@
     <SkillsTable {skills} />
   {:else if currNavValue.value === "Coffee"}
     <section class="flex flex-col items-center justify-center">
-      <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
-        <DropdownTextfield
-          {suggestionsHidden}
-          {suggestions}
-          {selectSuggestion}
-          currentSuggestion={selectedCoffee}
-          bind:searchValue
-          onFocus={() => (isFocused = true)}
-        />
-        <div
-          class="flex flex-col md:flex-row items-center justify-center gap-12 w-full max-w-6xl"
-        >
-          <Carousel {images} />
-          <Gauge level={4} />
-        </div>
-      </Hero>
-      <CoffeeTable
-        data={[
-          { hello: "world", taher: "alfayad" },
-          { hello: "hello", alfayad: "taher" },
-        ]}
-      />
+      {#if coffees && coffees.length > 0}
+        <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
+          <DropdownTextfield
+            {suggestionsHidden}
+            {suggestions}
+            {selectSuggestion}
+            currentSuggestion={selectedCoffee}
+            bind:searchValue
+            onFocus={() => (isFocused = true)}
+          />
+          <div
+            class="flex flex-col md:flex-row items-center justify-center gap-12 w-full max-w-6xl mt-4"
+          >
+            <CoffeeDetails coffee={selectedCoffee} />
+            <img
+              src={selectedCoffee.imageLink}
+              class="w-64 h-64 object-cover rounded-lg shadow-lg"
+              alt={selectedCoffee.name}
+            />
+            <Gauge level={selectedCoffee.roastLevel} />
+          </div>
+        </Hero>
+        <CoffeeTable data={coffeeCups} />
+      {:else}
+        <img src={coffeesNotFound} />
+        <p>Sorry, I haven't added any coffees yet.</p>
+      {/if}
     </section>
   {/if}
 </div>

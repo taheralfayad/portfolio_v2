@@ -39,7 +39,7 @@
       coffeeCups = [];
       return;
     }
-    const data = await api.get(`/coffee_cups?coffee_id=${coffeeId}`);
+    const data = await api.get(`/coffee-cups?coffee_id=${coffeeId}`);
     coffeeCups = data;
   };
 
@@ -62,7 +62,7 @@
     };
 
     try {
-      await api.post("/coffee_cups", payload);
+      await api.post("/coffee-cups", payload);
       temperature = 0;
       dateDrank = "";
       acidity = 0;

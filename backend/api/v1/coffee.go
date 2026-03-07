@@ -212,6 +212,7 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 		FROM coffee_cup cc
 		JOIN coffee c ON cc.coffee_id = c.id
 		WHERE cc.coffee_id = $1
+		ORDER BY date_drank DESC
 	`
 
 	rows, err := db.Query(query, coffeeID)
@@ -248,6 +249,8 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 		}
 
 		cup.DaysAfterRoast = int16(dateDrank.Sub(brewDate).Hours() / 24)
+
+		cup.DateDrank = dateDrank.String()
 
 		cups = append(cups, cup)
 	}

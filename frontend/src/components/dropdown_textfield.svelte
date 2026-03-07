@@ -5,7 +5,6 @@
     suggestionsHidden,
     suggestions,
     selectSuggestion,
-    currentSuggestion,
     searchValue = $bindable(),
     onFocus,
   } = $props();
@@ -37,7 +36,6 @@
             px-4 py-2 text-sm text-gray-700
             cursor-pointer transition
             hover:bg-button/80 hover:font-black
-            {currentSuggestion === suggestion ? 'bg-button/80 font-black' : ''}
           "
           role="option"
           tabindex="0"

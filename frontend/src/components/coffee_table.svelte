@@ -19,7 +19,7 @@
   });
 
   let plainObjectHeaders = $derived.by(() => {
-    if (!Array.isArray(data)) return ["Key", "Value"];
+    if (!Array.isArray(data)) return ["No", "Cups", "Found"];
     return headers;
   });
 </script>

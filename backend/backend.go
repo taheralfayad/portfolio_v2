@@ -99,7 +99,7 @@ func main() {
 		v1.AddCoffee(c, db)
 	})
 
-	auth.POST("/coffee_cups", func(c *gin.Context) {
+	auth.POST("/coffee-cups", func(c *gin.Context) {
 		v1.AddCoffeeCup(c, db)
 	})
 
@@ -135,7 +135,7 @@ func main() {
 		v1.GetCoffees(c, db)
 	})
 
-	r.GET("/coffee_cups", func(c *gin.Context) {
+	r.GET("/coffee-cups", func(c *gin.Context) {
 		v1.GetCoffeeCups(c, db)
 	})
 
