@@ -27,8 +27,10 @@ type CoffeeResponse struct {
 }
 
 type CoffeeCup struct {
-	ID             string `json:"id"`
+	ID             int    `json:"id"`
+	CoffeeId       int    `json:"coffee_id"`
 	Temperature    int16  `json:"temperature"`
+	DateDrank      string `json:"date_drank"`
 	DaysAfterRoast int16  `json:"days_after_roast"`
 	Acidity        int16  `json:"acidity"`
 	Body           int16  `json:"body"`

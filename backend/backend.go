@@ -99,6 +99,10 @@ func main() {
 		v1.AddCoffee(c, db)
 	})
 
+	auth.POST("/coffee_cups", func(c *gin.Context) {
+		v1.AddCoffeeCup(c, db)
+	})
+
 	r.POST("/login", func(c *gin.Context) {
 		v1.Login(c, db)
 	})
@@ -129,6 +133,10 @@ func main() {
 
 	r.GET("/coffees", func(c *gin.Context) {
 		v1.GetCoffees(c, db)
+	})
+
+	r.GET("/coffee_cups", func(c *gin.Context) {
+		v1.GetCoffeeCups(c, db)
 	})
 
 	auth.PUT("/work-experiences", func(c *gin.Context) {
