@@ -20,7 +20,24 @@
   let personalProjects = $state([]);
   let skills = $state([]);
   let images = $state([]);
+  let coffees = $state([]);
+  let selectedCoffee = $state("");
   let searchValue = $state("");
+  let isFocused = $state(false);
+
+  let searchBarValues = $derived.by(() => {
+    return coffees.map((x) => x.name);
+  });
+
+  let suggestions = $derived.by(() => {
+    if (!searchValue) return searchBarValues;
+
+    return searchBarValues.filter((item) =>
+      item.toLowerCase().includes(searchValue.toLowerCase()),
+    );
+  });
+
+  let suggestionsHidden = $derived(!isFocused);
 
   const navItems = [
     {
@@ -109,8 +126,29 @@
     });
   };
 
-  const handleSearchInput = async () => {
-    console.log("hello?");
+  const getCoffees = async () => {
+    const data = await api.get("/coffees");
+
+    coffees = data.map((datum) => {
+      return {
+        id: datum.id,
+        name: datum.name,
+        roastLevel: datum.roast_level,
+        roasterName: datum.roaster_name,
+        originCountry: datum.origin_country,
+        processing: datum.processing,
+        varietal: datum.varietal,
+        imageLink: datum.image,
+        date: datum.date,
+        description: datum.description,
+      };
+    });
+  };
+
+  const selectSuggestion = async (suggestion) => {
+    selectedCoffee = suggestion;
+    isFocused = false;
+    console.log(selectedCoffee);
   };
 
   onMount(() => {
@@ -119,7 +157,10 @@
     getPersonalProjects();
     getSkills();
     getImages();
+    getCoffees();
   });
+
+  $inspect(isFocused);
 </script>
 
 <Navbar items={navItems} {getCurrNavValue} />
@@ -151,11 +192,12 @@
     <section class="flex flex-col items-center justify-center">
       <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
         <DropdownTextfield
-          suggestionsHidden={true}
-          suggestions={["Ethiopian", "Arabica", "Brazilian"]}
-          handleInput={handleSearchInput}
-          selectSuggestion={handleSearchInput}
-          {searchValue}
+          {suggestionsHidden}
+          {suggestions}
+          {selectSuggestion}
+          currentSuggestion={selectedCoffee}
+          bind:searchValue
+          onFocus={() => (isFocused = true)}
         />
         <div
           class="flex flex-col md:flex-row items-center justify-center gap-12 w-full max-w-6xl"
