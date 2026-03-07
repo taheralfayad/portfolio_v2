@@ -5,6 +5,7 @@
   import UsersInput from "../../components/user_input.svelte";
   import ImagesInput from "../../components/images_input.svelte";
   import CoffeeInput from "../../components/coffee_input.svelte";
+  import CoffeeCupInput from "../../components/coffee_cup_input.svelte";
   import NavBar from "../../components/navbar.svelte";
   import Input from "../../design-system/input.svelte";
   import FormButton from "../../design-system/form_button.svelte";
@@ -84,6 +85,8 @@
         <ImagesInput />
       {:else if currNavValue === "coffee"}
         <CoffeeInput />
+      {:else if currNavValue === "coffee_cup"}
+        <CoffeeCupInput />
       {:else}
         <p>not yet implemented</p>
       {/if}
