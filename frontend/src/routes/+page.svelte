@@ -5,11 +5,12 @@
   import PersonalProjects from "$lib/components/home/home/personal_projects.svelte";
   import ExperienceFlow from "$lib/components/home/home/experience_flow.svelte";
   import SkillsTable from "$lib/components/home/home/skills_table.svelte";
-  import NavBar from "$lib/components/home/navbar.svelte";
+  import Navbar from "$lib/components/navbar.svelte";
   import DropdownTextfield from "$lib/components/home/coffee/dropdown_textfield.svelte";
   import Gauge from "$lib/components/home/coffee/gauge.svelte";
   import CoffeeDetails from "$lib/components/home/coffee/coffee_details.svelte";
   import CoffeeTable from "$lib/components/home/coffee/coffee_table.svelte";
+  import Carousel from "$lib/design-system/carousel.svelte";
   import { onMount } from "svelte";
 
   import { api } from "$lib/utils/api.svelte.js";

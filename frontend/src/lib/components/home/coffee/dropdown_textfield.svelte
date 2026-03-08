@@ -1,5 +1,5 @@
 <script>
-  import Input from "../design-system/input.svelte";
+  import Input from "$lib/design-system/input.svelte";
 
   let {
     suggestionsHidden,

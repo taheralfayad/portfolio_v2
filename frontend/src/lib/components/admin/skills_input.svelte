@@ -1,12 +1,12 @@
 <script>
-  import { onMount } from 'svelte';
-  import Input from "../design-system/input.svelte";
-  import FormButton from "../design-system/form_button.svelte";
-  import Notif from "../design-system/notif.svelte";
-  import Form from "../design-system/form.svelte";
-  import DataPreview from "../components/data_preview.svelte";
+  import { onMount } from "svelte";
+  import Input from "$lib/design-system/input.svelte";
+  import FormButton from "$lib/design-system/form_button.svelte";
+  import Notif from "$lib/design-system/notif.svelte";
+  import Form from "$lib/design-system/form.svelte";
+  import DataPreview from "$lib/components/admin/data_preview.svelte";
 
-  import { api } from "../utils/api.svelte.js";
+  import { api } from "$lib/utils/api.svelte.js";
 
   let id = $state(0);
   let name = $state("");
@@ -33,32 +33,32 @@
     category = data.category;
     blogLink = data.blog_link;
     editMode = true;
-  }
+  };
 
   let getSkills = async () => {
     const data = await api.get("/skills");
 
     skills = data;
-  }
+  };
 
   let submitForm = async () => {
     const payload = {
       name,
       category,
-      blog_link: blogLink
-    }
+      blog_link: blogLink,
+    };
 
     if (editMode) {
-      payload.id = id
-      
-      try {
-        await api.put("/skills", payload)
-        name = ""
-        category = ""
-        blogLink = ""
-        editMode = false
+      payload.id = id;
 
-        success = "Skill been updated!"
+      try {
+        await api.put("/skills", payload);
+        name = "";
+        category = "";
+        blogLink = "";
+        editMode = false;
+
+        success = "Skill been updated!";
       } catch (err) {
         error =
           err?.data?.error ||
@@ -72,31 +72,28 @@
     }
 
     try {
-      await api.post("/skills", payload)
-      success = "Skill uploaded successfully!"
+      await api.post("/skills", payload);
+      success = "Skill uploaded successfully!";
     } catch (err) {
-      console.error(err)
-      error = 
-        err || 
-        "Failed to create skill";
+      console.error(err);
+      error = err || "Failed to create skill";
     } finally {
-      loading = false
+      loading = false;
     }
-  }
+  };
 
   onMount(() => {
     getSkills();
-  })
+  });
 </script>
 
 <div class="flex flex-row">
-  <Form submitForm={submitForm} title="Add Skill" editMode={editMode} editHook={editHook}>
-    <Input label="Name" bind:value={name} required={true}/>
-    <Input label="Category" bind:value={category} required={true}/>
-    <Input label="Blog Link" bind:value={blogLink}/>
-    <FormButton loading={loading}/>
-    <Notif error={error} success={success}/>
+  <Form {submitForm} title="Add Skill" {editMode} {editHook}>
+    <Input label="Name" bind:value={name} required={true} />
+    <Input label="Category" bind:value={category} required={true} />
+    <Input label="Blog Link" bind:value={blogLink} />
+    <FormButton {loading} />
+    <Notif {error} {success} />
   </Form>
-  <DataPreview data={skills} editHook={editHook}/>
+  <DataPreview data={skills} {editHook} />
 </div>
-

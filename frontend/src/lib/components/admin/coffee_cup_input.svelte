@@ -1,15 +1,15 @@
 <script>
   import { onMount } from "svelte";
 
-  import Input from "../design-system/input.svelte";
-  import Select from "../design-system/select.svelte";
-  import DataPreview from "./data_preview.svelte";
-  import Notif from "../design-system/notif.svelte";
-  import FormButton from "../design-system/form_button.svelte";
-  import Form from "../design-system/form.svelte";
-  import DateInput from "../design-system/date_input.svelte";
+  import Input from "$lib/design-system/input.svelte";
+  import Select from "$lib/design-system/select.svelte";
+  import DataPreview from "$lib/components/admin/data_preview.svelte";
+  import Notif from "$lib/design-system/notif.svelte";
+  import FormButton from "$lib/design-system/form_button.svelte";
+  import Form from "$lib/design-system/form.svelte";
+  import DateInput from "$lib/design-system/date_input.svelte";
 
-  import { api } from "../utils/api.svelte.js";
+  import { api } from "$lib/utils/api.svelte.js";
 
   let coffees = $state([]);
   let coffeeCups = $state([]);

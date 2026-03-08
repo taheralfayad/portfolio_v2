@@ -1,17 +1,17 @@
 <script>
   import { onMount } from "svelte";
 
-  import Input from "../design-system/input.svelte";
-  import BigInput from "../design-system/big_input.svelte";
-  import DateInput from "../design-system/date_input.svelte";
-  import ImageInput from "../design-system/image_input.svelte";
-  import FormButton from "../design-system/form_button.svelte";
-  import Notif from "../design-system/notif.svelte";
-  import Form from "../design-system/form.svelte";
-  import DataPreview from "../components/data_preview.svelte";
+  import Input from "$lib/design-system/input.svelte";
+  import BigInput from "$lib/design-system/big_input.svelte";
+  import DateInput from "$lib/design-system/date_input.svelte";
+  import ImageInput from "$lib/design-system/image_input.svelte";
+  import FormButton from "$lib/design-system/form_button.svelte";
+  import Notif from "$lib/design-system/notif.svelte";
+  import Form from "$lib/design-system/form.svelte";
+  import DataPreview from "$lib/components/admin/data_preview.svelte";
 
-  import { api } from "../utils/api.svelte.js";
-  import { handleImageChange } from "../utils/utils.svelte";
+  import { api } from "$lib/utils/api.svelte.js";
+  import { handleImageChange } from "$lib/utils/utils.svelte";
 
   let id = $state(0);
   let name = $state("");
