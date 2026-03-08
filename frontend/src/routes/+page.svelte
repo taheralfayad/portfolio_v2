@@ -1,21 +1,19 @@
 <script>
   import { goto } from "$app/navigation";
-  import Hero from "../components/hero.svelte";
-  import WorkProjects from "../components/work_projects.svelte";
-  import PersonalProjects from "../components/personal_projects.svelte";
-  import ExperienceFlow from "../components/experience_flow.svelte";
-  import SkillsTable from "../components/skills_table.svelte";
-  import NavBar from "../components/navbar.svelte";
-  import DropdownTextfield from "../components/dropdown_textfield.svelte";
-  import Gauge from "../design-system/gauge.svelte";
-  import CoffeeDetails from "../components/coffee_details.svelte";
-  import Carousel from "../design-system/carousel.svelte";
-  import CoffeeTable from "../components/coffee_table.svelte";
+  import Hero from "$lib/components/home/hero.svelte";
+  import WorkProjects from "$lib/components/home/home/work_projects.svelte";
+  import PersonalProjects from "$lib/components/home/home/personal_projects.svelte";
+  import ExperienceFlow from "$lib/components/home/home/experience_flow.svelte";
+  import SkillsTable from "$lib/components/home/home/skills_table.svelte";
+  import NavBar from "$lib/components/home/navbar.svelte";
+  import DropdownTextfield from "$lib/components/home/coffee/dropdown_textfield.svelte";
+  import Gauge from "$lib/components/home/coffee/gauge.svelte";
+  import CoffeeDetails from "$lib/components/home/coffee/coffee_details.svelte";
+  import CoffeeTable from "$lib/components/home/coffee/coffee_table.svelte";
   import { onMount } from "svelte";
 
-  import { api } from "../utils/api.svelte.js";
-  import { formatDate } from "../utils/utils.svelte";
-  import Navbar from "../components/navbar.svelte";
+  import { api } from "$lib/utils/api.svelte.js";
+  import { formatDate } from "$lib/utils/utils.svelte";
 
   import coffeesNotFound from "$lib/assets/coffees_not_found.png";
 
