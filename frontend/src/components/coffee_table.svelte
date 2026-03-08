@@ -24,9 +24,9 @@
   });
 </script>
 
-<section class="flex flex-wrap justify-center py-8">
+<section class="py-8 w-full overflow-x-auto">
   <table
-    class="border-collapse border border-black max-w-7xl min-w-[500px] bg-skills"
+    class="border-collapse border border-black w-full max-w-7xl bg-skills mx-auto"
   >
     <thead class="bg-gray-100 text-center">
       <tr>
