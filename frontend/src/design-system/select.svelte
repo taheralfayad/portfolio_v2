@@ -1,5 +1,5 @@
 <script>
-  let { label, required, value = $bindable(), onFocus } = $props();
+  let { label, required, value = $bindable(), options = [], onchange } = $props();
 </script>
 
 <div class="flex items-center gap-3 pt-2">
@@ -9,12 +9,14 @@
       <span class="text-red-500">*</span>
     {/if}
   </label>
-
-  <input
-    type="text"
+  <select
     bind:value
     {required}
-    onfocus={onFocus}
+    {onchange}
     class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-  />
+  >
+    {#each options as option}
+      <option value={option.value}>{option.label}</option>
+    {/each}
+  </select>
 </div>

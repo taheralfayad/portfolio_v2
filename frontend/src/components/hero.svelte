@@ -1,11 +1,17 @@
 <script>
-  import Carousel from '../design-system/carousel.svelte';
+  import Carousel from "../design-system/carousel.svelte";
 
-  let { carouselImages } = $props();
+  let { header, subtitle, carouselImages, children } = $props();
 </script>
 
-<div class="flex flex-col p-2 mt-12 items-center text-center">
-  <h1 class="text-xl">Hello! My name is Taher Alfayad.</h1>
-  <p>I'm a husband, older brother, dog dad, Arsenal fan, and software developer.</p>
-  <Carousel images={carouselImages}/>
+<div class="flex flex-col p-2 items-center text-center">
+  <div class="pb-5">
+    <h1 class="text-xl">{header}</h1>
+    <p>
+      {subtitle}
+    </p>
+  </div>
+
+  {@render children()}
+
 </div>
