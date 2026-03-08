@@ -250,7 +250,7 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 
 		cup.DaysAfterRoast = int16(dateDrank.Sub(brewDate).Hours() / 24)
 
-		cup.DateDrank = dateDrank.String()
+		cup.DateDrank = dateDrank.Format(time.RFC3339)
 
 		cups = append(cups, cup)
 	}
