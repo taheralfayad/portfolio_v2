@@ -1,7 +1,7 @@
 <script>
   let { coffee } = $props();
 
-  import { formatDate } from "../utils/utils.svelte";
+  import { formatDate } from "$lib/utils/utils.svelte";
 </script>
 
 <div

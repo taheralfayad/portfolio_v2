@@ -1,5 +1,5 @@
 <script>
-  import Carousel from "../design-system/carousel.svelte";
+  import Carousel from "$lib/design-system/carousel.svelte";
 
   let { header, subtitle, carouselImages, children } = $props();
 </script>

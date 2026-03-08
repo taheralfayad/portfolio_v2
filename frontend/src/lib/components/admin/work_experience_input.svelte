@@ -1,16 +1,16 @@
 <script>
-	import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
-  import Input from "../design-system/input.svelte";
-  import BigInput from "../design-system/big_input.svelte";
-  import DateInput from "../design-system/date_input.svelte";
-  import FormButton from "../design-system/form_button.svelte";
-  import Notif from "../design-system/notif.svelte";
-  import Form from "../design-system/form.svelte";
-  import DataPreview from "../components/data_preview.svelte";
+  import Input from "$lib/design-system/input.svelte";
+  import BigInput from "$lib/design-system/big_input.svelte";
+  import DateInput from "$lib/design-system/date_input.svelte";
+  import FormButton from "$lib/design-system/form_button.svelte";
+  import Notif from "$lib/design-system/notif.svelte";
+  import Form from "$lib/design-system/form.svelte";
+  import DataPreview from "$lib/components/admin/data_preview.svelte";
 
-  import { api } from "../utils/api.svelte.js";
-  import { normalizeDate } from "../utils/utils.svelte.js";
+  import { api } from "$lib/utils/api.svelte.js";
+  import { normalizeDate } from "$lib/utils/utils.svelte.js";
 
   let id = $state(0);
   let title = $state("");
@@ -19,7 +19,7 @@
   let startDate = $state("");
   let endDate = $state("");
   let workExperiences = $state([]);
-  let editMode = $state(false)
+  let editMode = $state(false);
 
   let loading = $state(false);
   let error = $state("");
@@ -34,7 +34,7 @@
       description = "";
       startDate = "";
       endDate = "";
-      return
+      return;
     }
     editMode = true;
     id = data.id;
@@ -43,7 +43,7 @@
     description = data.description;
     startDate = normalizeDate(data.start_date);
     endDate = normalizeDate(data.end_date);
-  }
+  };
 
   async function submitForm(event) {
     event.preventDefault();
@@ -106,59 +106,30 @@
     const data = await api.get("/work-experiences");
 
     workExperiences = data;
-  }
+  };
 
   onMount(() => {
     getWorkExperiences();
-  })
+  });
 </script>
 
 <div class="flex flex-row">
-  <Form
-    submitForm={submitForm}
-    title={"Add Work Experience"}
-    editMode={editMode}
-    editHook={editHook}
-  >
-    <Input
-      label={"Title"}
-      bind:value={title}
-      required={true}
-    />
+  <Form {submitForm} title={"Add Work Experience"} {editMode} {editHook}>
+    <Input label={"Title"} bind:value={title} required={true} />
 
-    <Input
-      label={"Workplace"}
-      bind:value={workplace}
-      required={true}
-    />
+    <Input label={"Workplace"} bind:value={workplace} required={true} />
 
-    <BigInput
-      label={"Description"}
-      bind:value={description}
-      required={true}
-    />
+    <BigInput label={"Description"} bind:value={description} required={true} />
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      <DateInput
-        label={"Start Date"}
-        bind:value={startDate}
-      />
+      <DateInput label={"Start Date"} bind:value={startDate} />
 
-      <DateInput
-        label={"End Date"}
-        bind:value={endDate}
-      />
+      <DateInput label={"End Date"} bind:value={endDate} />
     </div>
 
-    <FormButton
-      loading={loading}
-    />
+    <FormButton {loading} />
 
-    <Notif
-      error={error}
-      success={success}
-    />
+    <Notif {error} {success} />
   </Form>
-  <DataPreview data={workExperiences} editHook={editHook}/>
+  <DataPreview data={workExperiences} {editHook} />
 </div>
-

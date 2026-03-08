@@ -1,16 +1,16 @@
 <script>
-  import WorkExperienceInput from "../../components/work_experience_input.svelte";
-  import ProjectsInput from "../../components/projects_input.svelte";
-  import SkillsInput from "../../components/skills_input.svelte";
-  import UsersInput from "../../components/user_input.svelte";
-  import ImagesInput from "../../components/images_input.svelte";
-  import CoffeeInput from "../../components/coffee_input.svelte";
-  import CoffeeCupInput from "../../components/coffee_cup_input.svelte";
-  import NavBar from "../../components/navbar.svelte";
-  import Input from "../../design-system/input.svelte";
-  import FormButton from "../../design-system/form_button.svelte";
+  import WorkExperienceInput from "$lib/components/admin/work_experience_input.svelte";
+  import ProjectsInput from "$lib/components/admin/projects_input.svelte";
+  import SkillsInput from "$lib/components/admin/skills_input.svelte";
+  import UsersInput from "$lib/components/admin/user_input.svelte";
+  import ImagesInput from "$lib/components/admin/images_input.svelte";
+  import CoffeeInput from "$lib/components/admin/coffee_input.svelte";
+  import CoffeeCupInput from "$lib/components/admin/coffee_cup_input.svelte";
+  import NavBar from "$lib/components/navbar.svelte";
+  import Input from "$lib/design-system/input.svelte";
+  import FormButton from "$lib/design-system/form_button.svelte";
 
-  import { api } from "../../utils/api.svelte.js";
+  import { api } from "$lib/utils/api.svelte.js";
 
   let currNavValue = $state("");
   let navItems = $state([]);
