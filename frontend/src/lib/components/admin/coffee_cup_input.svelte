@@ -11,10 +11,10 @@
 
   import { api } from "$lib/utils/api.svelte.js";
 
-  let coffees = $state([]);
+  let roasts = $state([]);
   let coffeeCups = $state([]);
 
-  let coffeeId = $state(0);
+  let roastId = $state(0);
   let temperature = $state(0);
   let dateDrank = $state("");
   let acidity = $state(0);
@@ -30,16 +30,24 @@
   let success = $state("");
 
   const getCoffees = async () => {
-    const data = await api.get("/coffees");
-    coffees = data.map((c) => ({ value: c.id, label: c.name }));
+    const data = await api.get("/coffees?include_roasts=true");
+
+    console.log(data);
+
+    roasts = data.flatMap((c) =>
+      c.roasts.map((r) => ({
+        value: r.id,
+        label: `${c.name} - ${r.roast_date}`,
+      })),
+    );
   };
 
   const getCoffeeCups = async () => {
-    if (!coffeeId) {
+    if (!roastId) {
       coffeeCups = [];
       return;
     }
-    const data = await api.get(`/coffee-cups?coffee_id=${coffeeId}`);
+    const data = await api.get(`/coffee-cups?roast_id=${roastId}`);
     coffeeCups = data;
   };
 
@@ -49,7 +57,7 @@
     loading = true;
 
     const payload = {
-      coffee_id: +coffeeId,
+      roast_id: +roastId,
       temperature: +temperature,
       date_drank: new Date(dateDrank).toISOString(),
       acidity: +acidity,
@@ -96,9 +104,9 @@
   <Form {submitForm} title="Add Coffee Cup">
     <Select
       label="Coffee"
-      bind:value={coffeeId}
+      bind:value={roastId}
       required={true}
-      options={coffees}
+      options={roasts}
       onchange={handleCoffeeChange}
     />
     <Input label="Temperature" bind:value={temperature} required={true} />

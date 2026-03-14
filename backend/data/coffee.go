@@ -1,34 +1,27 @@
 package data
 
-type CoffeeRequest struct {
-	ID            string `json:"id"`
-	Name          string `json:"name"`
-	RoastLevel    int16  `json:"roast_level"`
-	RoasterName   string `json:"roaster_name`
-	OriginCountry string `json:"origin_country"`
-	Processing    string `json:"processing"`
-	Varietal      string `json:"varietal"`
-	Image         string `json:"image"`
-	Date          string `json:"date"`
-	Description   string `json:"description"`
+type Coffee struct {
+	ID            string  `json:"id"`
+	Name          string  `json:"name"`
+	OriginCountry string  `json:"origin_country"`
+	Processing    string  `json:"processing"`
+	Varietal      string  `json:"varietal"`
+	Description   string  `json:"description"`
+	Roasts        []Roast `json:"roasts"`
 }
 
-type CoffeeResponse struct {
-	ID            string `json:"id"`
-	Name          string `json:"name"`
-	RoastLevel    int16  `json:"roast_level"`
-	RoasterName   string `json:"roaster_name`
-	OriginCountry string `json:"origin_country"`
-	Processing    string `json:"processing"`
-	Varietal      string `json:"varietal"`
-	Image         string `json:"image"`
-	Date          string `json:"date"`
-	Description   string `json:"description"`
+type Roast struct {
+	ID          int16  `json:"id"`
+	RoastLevel  int16  `json:"roast_level"`
+	RoasterName string `json:"roaster_name"`
+	RoastDate   string `json:"roast_date"`
+	Image       string `json:"image"`
+	CoffeeID    int16  `json:"coffee_id"`
 }
 
 type CoffeeCup struct {
 	ID             int    `json:"id"`
-	CoffeeId       int    `json:"coffee_id"`
+	RoastID        int    `json:"roast_id"`
 	Temperature    int16  `json:"temperature"`
 	DateDrank      string `json:"date_drank"`
 	DaysAfterRoast int16  `json:"days_after_roast"`

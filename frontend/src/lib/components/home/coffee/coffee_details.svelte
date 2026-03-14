@@ -1,5 +1,6 @@
 <script>
-  let { coffee } = $props();
+  let { name, originCountry, processing, varietal, date, description } =
+    $props();
 
   import { formatDate } from "$lib/utils/utils.svelte";
 </script>
@@ -12,45 +13,45 @@
         after:translate-x-3 after:translate-y-3
         after:-z-10 bg-skills"
 >
-  {#if coffee.originCountry}
+  {#if name}
     <div class="w-full">
       <span class="font-bold">Name:</span>
-      <span>{coffee.name}</span>
+      <span>{name}</span>
     </div>
   {/if}
 
-  {#if coffee.originCountry}
+  {#if originCountry}
     <div class="w-full mt-3">
       <span class="font-bold">Origin:</span>
-      <span>{coffee.originCountry}</span>
+      <span>{originCountry}</span>
     </div>
   {/if}
 
-  {#if coffee.processing}
+  {#if processing}
     <div class="w-full mt-3">
       <span class="font-bold">Processing:</span>
-      <span>{coffee.processing}</span>
+      <span>{processing}</span>
     </div>
   {/if}
 
-  {#if coffee.varietal}
+  {#if varietal}
     <div class="w-full mt-3">
       <span class="font-bold">Varietal:</span>
-      <span>{coffee.varietal}</span>
+      <span>{varietal}</span>
     </div>
   {/if}
 
-  {#if coffee.date}
+  {#if date}
     <div class="w-full mt-3">
       <span class="font-bold">Roast Date:</span>
-      <span>{formatDate(coffee.date)}</span>
+      <span>{formatDate(date)}</span>
     </div>
   {/if}
 
-  {#if coffee.description}
+  {#if description}
     <div class="w-full mt-3">
       <span class="font-bold">Notes:</span>
-      <p class="mt-1">{coffee.description}</p>
+      <p class="mt-1">{description}</p>
     </div>
   {/if}
 </div>
