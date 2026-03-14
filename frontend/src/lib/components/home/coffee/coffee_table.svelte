@@ -8,19 +8,13 @@
     return [];
   });
 
-  let rows = $derived.by(() => {
-    if (Array.isArray(data)) {
-      return data.map((item) => Object.values(item));
-    }
-    return Object.entries(data).map(([k, v]) => [
-      k,
-      typeof v === "object" ? JSON.stringify(v) : v,
-    ]);
-  });
-
   let plainObjectHeaders = $derived.by(() => {
     if (!Array.isArray(data)) return ["No", "Cups", "Found"];
     return headers;
+  });
+
+  let rows = $derived.by(() => {
+    return data ? data.map((item) => Object.values(item)) : [];
   });
 </script>
 

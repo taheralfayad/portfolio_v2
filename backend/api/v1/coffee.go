@@ -11,11 +11,11 @@ import (
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 	messages "github.com/taheralfayad/portfolio_v2/messages"
-	"github.com/taheralfayad/portfolio_v2/utils"
+	utils "github.com/taheralfayad/portfolio_v2/utils"
 )
 
-func AddCoffee(c *gin.Context, db *sql.DB) {
-	var payload data.CoffeeRequest
+func AddCoffeeRoast(c *gin.Context, db *sql.DB) {
+	var payload data.Roast
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		messages.BadRequest(c, err)
@@ -36,20 +36,61 @@ func AddCoffee(c *gin.Context, db *sql.DB) {
 	}
 
 	query := `
-		INSERT INTO coffee (name, roast_level, roaster_name, origin_country, processing, varietal, image, brew_date, description)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		INSERT INTO
+		roast
+		(
+			roast_level,
+			roaster_name,
+			roast_date,
+			image,
+			coffee_id
+		)
+		VALUES ($1, $2, $3, $4, $5)
 	`
 
 	_, err = db.Exec(
 		query,
-		payload.Name,
 		payload.RoastLevel,
 		payload.RoasterName,
+		payload.RoastDate,
+		imageLink,
+		payload.CoffeeID,
+	)
+	if err != nil {
+		messages.BadRequest(c, err)
+		return
+	}
+
+	messages.StatusCreated(c, "Roast successfully submitted. Good job!")
+}
+
+func AddCoffee(c *gin.Context, db *sql.DB) {
+	var payload data.Coffee
+
+	if err := c.ShouldBindJSON(&payload); err != nil {
+		messages.BadRequest(c, err)
+		return
+	}
+
+	query := `
+		INSERT INTO
+			coffee
+		(
+			name,
+			origin_country,
+			processing,
+			varietal,
+			description
+		)
+		VALUES ($1, $2, $3, $4, $5)
+	`
+
+	_, err := db.Exec(
+		query,
+		payload.Name,
 		payload.OriginCountry,
 		payload.Processing,
 		payload.Varietal,
-		imageLink,
-		payload.Date,
 		payload.Description,
 	)
 	if err != nil {
@@ -62,18 +103,15 @@ func AddCoffee(c *gin.Context, db *sql.DB) {
 
 func GetCoffees(c *gin.Context, db *sql.DB) {
 	limit := c.DefaultQuery("limit", "0")
+	includeRoasts := c.DefaultQuery("include_roasts", "false")
 
 	query := `
 		SELECT
 			id,
 			name,
-			roast_level,
-			roaster_name,
 			origin_country,
 			processing,
-			image,
 			varietal,
-			brew_date,
 			description
 		FROM coffee
 	`
@@ -88,31 +126,76 @@ func GetCoffees(c *gin.Context, db *sql.DB) {
 	}
 	defer rows.Close()
 
-	var coffees []data.CoffeeResponse
+	var coffees []data.Coffee
 
 	for rows.Next() {
-		var co data.CoffeeResponse
+		var co data.Coffee
 
 		err := rows.Scan(
 			&co.ID,
 			&co.Name,
-			&co.RoastLevel,
-			&co.RoasterName,
 			&co.OriginCountry,
 			&co.Processing,
-			&co.Image,
 			&co.Varietal,
-			&co.Date,
 			&co.Description,
 		)
-
-		co.Image = os.Getenv("ASSETS_URL") + co.Image
-
 		if err != nil {
 			messages.BadRequest(c, err)
 		}
 
 		coffees = append(coffees, co)
+	}
+
+	if includeRoasts == "true" {
+		fmt.Println("sheeeshhh he not playin fair")
+		for i := range coffees {
+			coffeeID := coffees[i].ID
+			var roasts []data.Roast
+
+			query := `
+				SELECT
+					id,
+					roast_level,
+					roaster_name,
+					roast_date,
+					image,
+					coffee_id
+				FROM roast
+				WHERE coffee_id = $1
+			`
+
+			rows, err := db.Query(query, coffeeID)
+			if err != nil {
+				messages.InternalError(c, err)
+			}
+
+			for rows.Next() {
+				var roast data.Roast
+				var imageID string
+
+				err := rows.Scan(
+					&roast.ID,
+					&roast.RoastLevel,
+					&roast.RoasterName,
+					&roast.RoastDate,
+					&imageID,
+					&roast.CoffeeID,
+				)
+				if err != nil {
+					messages.InternalError(c, err)
+				}
+
+				fmt.Println(roast)
+
+				imageLink := os.Getenv("ASSETS_URL") + imageID
+
+				roast.Image = imageLink
+
+				roasts = append(roasts, roast)
+			}
+
+			coffees[i].Roasts = roasts
+		}
 	}
 
 	messages.StatusCreated(c, coffees)
@@ -126,8 +209,19 @@ func AddCoffeeCup(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	var brewDate time.Time
-	err := db.QueryRow("SELECT brew_date FROM coffee WHERE id = $1", payload.CoffeeId).Scan(&brewDate)
+	var roastDate time.Time
+
+	query := `
+		SELECT 
+			roast_date
+		FROM roast
+		WHERE id = $1
+	`
+
+	err := db.QueryRow(
+		query,
+		payload.RoastID,
+	).Scan(&roastDate)
 	if err != nil {
 		messages.BadRequest(c, err)
 		return
@@ -139,16 +233,29 @@ func AddCoffeeCup(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	daysAfterRoast := int16(dateDrank.Sub(brewDate).Hours() / 24)
+	daysAfterRoast := int16(dateDrank.Sub(roastDate).Hours() / 24)
 
-	query := `
-		INSERT INTO coffee_cup (coffee_id, temperature, date_drank, acidity, body, sweetness, water_type, grind_size, method, rating)
+	query = `
+		INSERT INTO
+			coffee_cup
+		(
+			roast_id,
+			temperature,
+			date_drank,
+			acidity,
+			body,
+			sweetness,
+			water_type,
+			grind_size,
+			method,
+			rating
+		)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 	`
 
 	_, err = db.Exec(
 		query,
-		payload.CoffeeId,
+		payload.RoastID,
 		payload.Temperature,
 		payload.DateDrank,
 		payload.Acidity,
@@ -173,7 +280,7 @@ func AddCoffeeCup(c *gin.Context, db *sql.DB) {
 
 	response := data.CoffeeCup{
 		ID:             id,
-		CoffeeId:       payload.CoffeeId,
+		RoastID:        payload.RoastID,
 		Temperature:    payload.Temperature,
 		DaysAfterRoast: daysAfterRoast,
 		Acidity:        payload.Acidity,
@@ -189,16 +296,16 @@ func AddCoffeeCup(c *gin.Context, db *sql.DB) {
 }
 
 func GetCoffeeCups(c *gin.Context, db *sql.DB) {
-	coffeeID := c.Query("coffee_id")
-	if coffeeID == "" {
-		messages.BadRequest(c, fmt.Errorf("coffee_id is required"))
+	roastID := c.Query("roast_id")
+	if roastID == "" {
+		messages.BadRequest(c, fmt.Errorf("roast_id is required"))
 		return
 	}
 
 	query := `
 		SELECT 
 			cc.id,
-			cc.coffee_id,
+			cc.roast_id,
 			cc.temperature,
 			cc.acidity,
 			cc.body,
@@ -207,15 +314,15 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 			cc.grind_size,
 			cc.method,
 			cc.rating,
-			c.brew_date,
+			r.roast_date,
 			cc.date_drank
 		FROM coffee_cup cc
-		JOIN coffee c ON cc.coffee_id = c.id
-		WHERE cc.coffee_id = $1
+		JOIN roast r ON cc.roast_id = r.id
+		WHERE cc.roast_id = $1
 		ORDER BY date_drank DESC
 	`
 
-	rows, err := db.Query(query, coffeeID)
+	rows, err := db.Query(query, roastID)
 	if err != nil {
 		messages.BadRequest(c, err)
 		return
@@ -226,12 +333,12 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 
 	for rows.Next() {
 		var cup data.CoffeeCup
-		var brewDate time.Time
+		var roastDate time.Time
 		var dateDrank time.Time
 
 		err := rows.Scan(
 			&cup.ID,
-			&cup.CoffeeId,
+			&cup.RoastID,
 			&cup.Temperature,
 			&cup.Acidity,
 			&cup.Body,
@@ -240,7 +347,7 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 			&cup.GrindSize,
 			&cup.Method,
 			&cup.Rating,
-			&brewDate,
+			&roastDate,
 			&dateDrank,
 		)
 		if err != nil {
@@ -248,7 +355,7 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 			return
 		}
 
-		cup.DaysAfterRoast = int16(dateDrank.Sub(brewDate).Hours() / 24)
+		cup.DaysAfterRoast = int16(dateDrank.Sub(roastDate).Hours() / 24)
 
 		cup.DateDrank = dateDrank.Format(time.RFC3339)
 

@@ -103,6 +103,10 @@ func main() {
 		v1.AddCoffeeCup(c, db)
 	})
 
+	auth.POST("/roasts", func(c *gin.Context) {
+		v1.AddCoffeeRoast(c, db)
+	})
+
 	r.POST("/login", func(c *gin.Context) {
 		v1.Login(c, db)
 	})
