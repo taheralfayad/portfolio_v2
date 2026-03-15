@@ -8,7 +8,12 @@ const config = {
 			assets: 'dist',
 			fallback: 'index.html'
 		})
-	}
+	},
+  vite: {
+      ssr:{
+          noExternal: ['chart.js/**']
+      }
+  }
 };
 
 export default config;
