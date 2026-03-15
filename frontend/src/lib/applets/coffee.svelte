@@ -264,64 +264,68 @@
       </div>
     </Hero>
     {#if roasts && roasts.length > 0}
-      <div class="flex flex-row mt-4 gap-4">
-        <CoffeeKpiCard title={`Average ${selectedMetric}`} metric={average} />
-        <CoffeeKpiCard title={`Minimum ${selectedMetric}`} metric={min} />
-        <CoffeeKpiCard title={`Maximum ${selectedMetric}`} metric={max} />
-      </div>
-      {#if coffeeCups && coffeeCups.length > 0}
-        <div
-          class="flex flex-col md:flex-row gap-4 w-full h-64 justify-center items-center"
-        >
-          <div class="flex flex-col">
-            <Select
-              label="Labels"
-              bind:value={selectedLabel}
-              options={LABELS.map((l) => {
-                return { value: l, label: l };
-              })}
-            />
-            <Select
-              label="Metric"
-              bind:value={selectedMetric}
-              options={METRICS.map((m) => {
-                return { value: m, label: m };
-              })}
-            />
-            <Select
-              label="Filter"
-              bind:value={selectedFilter}
-              options={FILTERS.map((f) => {
-                return { value: f, label: f };
-              })}
-            />
-            {#if selectedFilter}
+      <div class="flex flex-col gap-12">
+        <div class="flex flex-col sm:flex-row gap-4 my-12">
+          <CoffeeKpiCard title={`Average ${selectedMetric}`} metric={average} />
+          <CoffeeKpiCard title={`Minimum ${selectedMetric}`} metric={min} />
+          <CoffeeKpiCard title={`Maximum ${selectedMetric}`} metric={max} />
+        </div>
+        {#if coffeeCups && coffeeCups.length > 0}
+          <div
+            class="flex flex-col md:flex-row gap-4 w-full h-64 justify-center items-center"
+          >
+            <div class="flex flex-col mb-8">
               <Select
-                label="Filter Value"
-                bind:value={selectedFilterValue}
-                options={selectedFilterValues.map((v) => {
-                  return { value: v, label: v };
+                label="Labels"
+                bind:value={selectedLabel}
+                options={LABELS.map((l) => {
+                  return { value: l, label: l };
                 })}
               />
-            {/if}
+              <Select
+                label="Metric"
+                bind:value={selectedMetric}
+                options={METRICS.map((m) => {
+                  return { value: m, label: m };
+                })}
+              />
+              <Select
+                label="Filter"
+                bind:value={selectedFilter}
+                options={FILTERS.map((f) => {
+                  return { value: f, label: f };
+                })}
+              />
+              {#if selectedFilter}
+                <Select
+                  label="Filter Value"
+                  bind:value={selectedFilterValue}
+                  options={selectedFilterValues.map((v) => {
+                    return { value: v, label: v };
+                  })}
+                />
+              {/if}
+            </div>
+            <div class="w-full md:w-3/5 h-64 md:h-80 relative">
+              <canvas
+                use:chartRender={coffeeData}
+                style="position:absolute;inset:0;"
+              ></canvas>
+            </div>
           </div>
-          <div class="w-2/5 h-44">
-            <canvas use:chartRender={coffeeData} style="width:100%;height:100%;"
-            ></canvas>
+          <CoffeeTable
+            data={coffeeCups.map((c) =>
+              Object.fromEntries(
+                Object.entries(c).filter(([k]) => k !== "Date Drank Raw"),
+              ),
+            )}
+          />
+        {:else}
+          <div>
+            <ErrorCard message="No Coffee Cups Found" />
           </div>
-        </div>
-        <CoffeeTable
-          data={coffeeCups.map((c) =>
-            Object.fromEntries(
-              Object.entries(c).filter(([k]) => k !== "Date Drank Raw"),
-            ),
-          )}
-        />
-      {:else}
-        <div class="mt-8">
-          <ErrorCard message="No Coffee Cups Found" />
-        </div>
-      {/if}
+        {/if}
+      </div>
     {/if}
   {:else}
     <img src={coffeesNotFound} />
