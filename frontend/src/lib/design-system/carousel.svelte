@@ -36,7 +36,7 @@
           class="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0"
         />
 
-        <div class="absolute bottom-0 left-0 right-0 p-6">
+        <div class="hidden md:block absolute bottom-0 left-0 right-0 p-6">
           <div
             class="inline-block rounded-xl bg-white/80 backdrop-blur px-4 py-3 shadow-sm"
           >
@@ -104,6 +104,17 @@
             <path d="m9 18 6-6-6-6" />
           </svg>
         </button>
+      </div>
+
+      <div class="md:hidden mt-3">
+        <div class="rounded-xl bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
+          <h1 class="text-lg font-semibold text-gray-900">
+            {images[index].title}
+          </h1>
+          <p class="text-sm text-gray-600">
+            {images[index].caption}
+          </p>
+        </div>
       </div>
     </div>
   </section>
