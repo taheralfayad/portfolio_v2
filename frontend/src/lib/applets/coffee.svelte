@@ -218,7 +218,7 @@
 <section class="flex flex-col items-center justify-center">
   {#if coffees && coffees.length > 0}
     <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
-      <div class="flex flex-col sm:flex-row gap-6">
+      <div class="flex flex-col sm:flex-row gap-6 overflow-x-scroll">
         <DropdownTextfield
           {suggestionsHidden}
           {suggestions}
@@ -264,68 +264,65 @@
       </div>
     </Hero>
     {#if roasts && roasts.length > 0}
-      <div class="flex flex-col gap-12">
-        <div class="flex flex-col sm:flex-row gap-4 my-12">
-          <CoffeeKpiCard title={`Average ${selectedMetric}`} metric={average} />
-          <CoffeeKpiCard title={`Minimum ${selectedMetric}`} metric={min} />
-          <CoffeeKpiCard title={`Maximum ${selectedMetric}`} metric={max} />
-        </div>
-        {#if coffeeCups && coffeeCups.length > 0}
-          <div
-            class="flex flex-col md:flex-row gap-4 w-full h-64 justify-center items-center"
-          >
-            <div class="flex flex-col mb-8">
-              <Select
-                label="Labels"
-                bind:value={selectedLabel}
-                options={LABELS.map((l) => {
-                  return { value: l, label: l };
-                })}
-              />
-              <Select
-                label="Metric"
-                bind:value={selectedMetric}
-                options={METRICS.map((m) => {
-                  return { value: m, label: m };
-                })}
-              />
-              <Select
-                label="Filter"
-                bind:value={selectedFilter}
-                options={FILTERS.map((f) => {
-                  return { value: f, label: f };
-                })}
-              />
-              {#if selectedFilter}
-                <Select
-                  label="Filter Value"
-                  bind:value={selectedFilterValue}
-                  options={selectedFilterValues.map((v) => {
-                    return { value: v, label: v };
-                  })}
-                />
-              {/if}
-            </div>
-            <div class="w-full md:w-3/5 h-64 md:h-80 relative">
-              <canvas
-                use:chartRender={coffeeData}
-                style="position:absolute;inset:0;"
-              ></canvas>
-            </div>
-          </div>
-          <CoffeeTable
-            data={coffeeCups.map((c) =>
-              Object.fromEntries(
-                Object.entries(c).filter(([k]) => k !== "Date Drank Raw"),
-              ),
-            )}
-          />
-        {:else}
-          <div>
-            <ErrorCard message="No Coffee Cups Found" />
-          </div>
-        {/if}
+      <div class="flex flex-col sm:flex-row gap-4 my-12">
+        <CoffeeKpiCard title={`Average ${selectedMetric}`} metric={average} />
+        <CoffeeKpiCard title={`Minimum ${selectedMetric}`} metric={min} />
+        <CoffeeKpiCard title={`Maximum ${selectedMetric}`} metric={max} />
       </div>
+      {#if coffeeCups && coffeeCups.length > 0}
+        <div
+          class="flex flex-col gap-4 w-full items-center overflow-scroll mx-auto"
+        >
+          <div
+            class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 sm:justify-center"
+          >
+            <Select
+              label="Labels"
+              bind:value={selectedLabel}
+              options={LABELS.map((l) => {
+                return { value: l, label: l };
+              })}
+            />
+            <Select
+              label="Metric"
+              bind:value={selectedMetric}
+              options={METRICS.map((m) => {
+                return { value: m, label: m };
+              })}
+            />
+            <Select
+              label="Filter"
+              bind:value={selectedFilter}
+              options={FILTERS.map((f) => {
+                return { value: f, label: f };
+              })}
+            />
+            {#if selectedFilter}
+              <Select
+                label="Filter Value"
+                bind:value={selectedFilterValue}
+                options={selectedFilterValues.map((v) => {
+                  return { value: v, label: v };
+                })}
+              />
+            {/if}
+          </div>
+        </div>
+        <div class="h-64">
+          <canvas use:chartRender={coffeeData} class="md:w-200"></canvas>
+        </div>
+        <CoffeeTable
+          data={coffeeCups.map((c) =>
+            Object.fromEntries(
+              Object.entries(c).filter(([k]) => k !== "Date Drank Raw"),
+            ),
+          )}
+        />
+      {:else}
+        <div>
+          <ErrorCard message="No Coffee Cups Found" />
+        </div>
+      {/if}
     {/if}
   {:else}
     <img src={coffeesNotFound} />

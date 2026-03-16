@@ -7,7 +7,6 @@ export const chartRender = (node, options) => {
       ...options.options,
       responsive: true,
       maintainAspectRatio: false,
-      devicePixelRatio: window.devicePixelRatio || 1,
     }
   });
 

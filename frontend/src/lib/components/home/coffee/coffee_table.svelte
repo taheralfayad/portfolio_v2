@@ -18,9 +18,9 @@
   });
 </script>
 
-<section class="py-8 w-full overflow-x-auto">
+<section class="py-8 w-full">
   <table
-    class="border-collapse border border-black w-full max-w-7xl bg-skills mx-auto"
+    class="border-collapse border border-black w-full max-w-5xl bg-skills mx-auto"
   >
     <thead class="bg-gray-100 text-center">
       <tr>
