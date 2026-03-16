@@ -18,10 +18,8 @@
   });
 </script>
 
-<section class="py-8 w-full">
-  <table
-    class="border-collapse border border-black w-full max-w-5xl bg-skills mx-auto"
-  >
+<section class="py-8 w-full px-4 overflow-x-auto">
+  <table class="border-collapse border border-black w-full bg-skills">
     <thead class="bg-gray-100 text-center">
       <tr>
         {#each plainObjectHeaders as header}
