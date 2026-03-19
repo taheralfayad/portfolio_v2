@@ -1,5 +1,6 @@
 <script>
   import Input from "$lib/design-system/input.svelte";
+  import { clickOutside } from "$lib/actions/clickOutside.svelte";
 
   let {
     suggestionsHidden,
@@ -7,10 +8,11 @@
     selectSuggestion,
     searchValue = $bindable(),
     onFocus,
+    onClickOutside,
   } = $props();
 </script>
 
-<div class="relative w-full max-w-md">
+<div class="relative w-full max-w-md" use:clickOutside={onClickOutside}>
   <Input
     bind:value={searchValue}
     label="Look for a coffee..."
