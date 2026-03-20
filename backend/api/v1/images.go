@@ -1,16 +1,17 @@
 package v1
 
 import (
-	"os"
+	"database/sql"
 	"fmt"
+	"net/http"
+	"os"
+	"strconv"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
 
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"database/sql"
 )
 
 func AddImage(c *gin.Context, db *sql.DB) {
@@ -31,9 +32,8 @@ func AddImage(c *gin.Context, db *sql.DB) {
 
 	err = utils.SaveBase64ImageToDisk(
 		payload.Image,
-		os.Getenv("STATIC_DIR") + imageLink,
+		os.Getenv("STATIC_DIR")+imageLink,
 	)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -52,7 +52,6 @@ func AddImage(c *gin.Context, db *sql.DB) {
 		payload.Caption,
 		imageLink,
 	)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -70,50 +69,45 @@ func AddImage(c *gin.Context, db *sql.DB) {
 func GetImages(c *gin.Context, db *sql.DB) {
 	limit := c.DefaultQuery("limit", "0")
 
-	query := `
-		SELECT 
-			id,
-			title,
-			caption,
-			image_link
-		FROM images
-	`
+	var (
+		rows *sql.Rows
+		err  error
+	)
 
 	if limit != "0" {
-		query += "LIMIT" + " " + limit
+		limitInt, err := strconv.Atoi(limit)
+		if err != nil || limitInt <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
+			return
+		}
+		rows, err = db.Query(`
+			SELECT id, title, caption, image_link
+			FROM images
+			ORDER BY RANDOM()
+			LIMIT $1
+		`, limitInt)
+	} else {
+		rows, err = db.Query(`
+			SELECT id, title, caption, image_link
+			FROM images
+			ORDER BY RANDOM()
+		`)
 	}
-	
-	rows, err := db.Query(query)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	defer rows.Close()
 
 	var images []data.ImageResponse
-
-	for rows.Next(){
+	for rows.Next() {
 		var i data.ImageResponse
-
-		err := rows.Scan(
-			&i.ID,
-			&i.Title,
-			&i.Caption,
-			&i.ImageLink,
-		)
-
-		i.ImageLink = os.Getenv("ASSETS_URL") + i.ImageLink
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
+		if err := rows.Scan(&i.ID, &i.Title, &i.Caption, &i.ImageLink); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
+		i.ImageLink = os.Getenv("ASSETS_URL") + i.ImageLink
 		images = append(images, i)
 	}
 
@@ -145,7 +139,6 @@ func EditImage(c *gin.Context, db *sql.DB) {
 			query,
 			i.ID,
 		).Scan(&imageLink)
-
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
@@ -155,9 +148,8 @@ func EditImage(c *gin.Context, db *sql.DB) {
 
 		err = utils.SaveBase64ImageToDisk(
 			i.Image,
-			os.Getenv("STATIC_DIR") + imageLink,
+			os.Getenv("STATIC_DIR")+imageLink,
 		)
-
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
@@ -179,7 +171,6 @@ func EditImage(c *gin.Context, db *sql.DB) {
 		i.Caption,
 		i.ID,
 	)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

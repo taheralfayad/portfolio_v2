@@ -1,120 +1,132 @@
 package v1
 
 import (
-	"os"
+	"database/sql"
 	"fmt"
+	"net/http"
+	"os"
+	"strconv"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
 
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"database/sql"
 )
 
 func AddProject(c *gin.Context, db *sql.DB) {
-		var payload data.ProjectPayload
-		var response data.ProjectResponse
-		var err error
+	var payload data.ProjectPayload
+	var response data.ProjectResponse
+	var err error
 
-		if err = c.ShouldBindJSON(&payload); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
+	if err = c.ShouldBindJSON(&payload); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-    id := uuid.New()
-		imageID := fmt.Sprintf("%s_image", id.String())
-		imageLink := "/project_images/" + imageID
+	id := uuid.New()
+	imageID := fmt.Sprintf("%s_image", id.String())
+	imageLink := "/project_images/" + imageID
 
-		err = utils.SaveBase64ImageToDisk(
-			payload.Image,
-			os.Getenv("STATIC_DIR") + imageLink,
-		)
+	err = utils.SaveBase64ImageToDisk(
+		payload.Image,
+		os.Getenv("STATIC_DIR")+imageLink,
+	)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		query := `
+	query := `
 			INSERT INTO projects (name, description, github_link, image_link, blog_link, type)
 			VALUES ($1, $2, $3, $4, $5, $6)
 			RETURNING id, created_at
 		`
-		err = db.QueryRow(
-			query,
-			payload.Name,
-			payload.Description,
-			payload.GithubLink,
-			imageLink,
-			payload.BlogLink,
-			payload.Type,
-		).Scan(&response.ID, &response.CreatedAt)
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		response.Name = payload.Name
-		response.Description = payload.Description
-		response.GithubLink = payload.GithubLink
-		response.BlogLink = payload.BlogLink
-		response.Type = payload.Type
-
-		c.JSON(http.StatusCreated, response)
-
-}
-
-func GetProjects(c *gin.Context, db *sql.DB) {
-	limit := c.DefaultQuery("limit", "0")
-	projectType := c.DefaultQuery("type", "")
-
-	query := `
-		SELECT
-			id,
-			name,
-			description,
-			github_link,
-			image_link,
-			blog_link,
-			type,
-			created_at,
-			updated_at
-		FROM projects
-	`
-
-	if projectType != "" {
-		query += "WHERE type=" + "'" + projectType + "'" + "\n"
-	}
-
-	if limit != "0" {
-		query += "LIMIT" + " " + limit
-	}
-
-	rows, err := db.Query(query)
-
+	err = db.QueryRow(
+		query,
+		payload.Name,
+		payload.Description,
+		payload.GithubLink,
+		imageLink,
+		payload.BlogLink,
+		payload.Type,
+	).Scan(&response.ID, &response.CreatedAt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
+
+	response.Name = payload.Name
+	response.Description = payload.Description
+	response.GithubLink = payload.GithubLink
+	response.BlogLink = payload.BlogLink
+	response.Type = payload.Type
+
+	c.JSON(http.StatusCreated, response)
+}
+
+func GetProjects(c *gin.Context, db *sql.DB) {
+	limit := c.DefaultQuery("limit", "0")
+	projectType := c.DefaultQuery("type", "")
+
+	var (
+		rows *sql.Rows
+		err  error
+	)
+
+	switch {
+	case projectType != "" && limit != "0":
+		limitInt, err := strconv.Atoi(limit)
+		if err != nil || limitInt <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
+			return
+		}
+		rows, err = db.Query(`
+			SELECT id, name, description, github_link, image_link, blog_link, type, created_at, updated_at
+			FROM projects
+			WHERE type = $1
+			LIMIT $2
+		`, projectType, limitInt)
+	case projectType != "":
+		rows, err = db.Query(`
+			SELECT id, name, description, github_link, image_link, blog_link, type, created_at, updated_at
+			FROM projects
+			WHERE type = $1
+		`, projectType)
+	case limit != "0":
+		limitInt, err := strconv.Atoi(limit)
+		if err != nil || limitInt <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid limit"})
+			return
+		}
+		rows, err = db.Query(`
+			SELECT id, name, description, github_link, image_link, blog_link, type, created_at, updated_at
+			FROM projects
+			LIMIT $1
+		`, limitInt)
+	default:
+		rows, err = db.Query(`
+			SELECT id, name, description, github_link, image_link, blog_link, type, created_at, updated_at
+			FROM projects
+		`)
+	}
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	defer rows.Close()
 
 	var projects []data.ProjectResponse
-
-	for rows.Next(){
+	for rows.Next() {
 		var p data.ProjectResponse
-
-		err := rows.Scan(
+		if err := rows.Scan(
 			&p.ID,
 			&p.Name,
 			&p.Description,
@@ -124,17 +136,11 @@ func GetProjects(c *gin.Context, db *sql.DB) {
 			&p.Type,
 			&p.CreatedAt,
 			&p.UpdatedAt,
-		)
-
-		p.ImageLink = os.Getenv("ASSETS_URL") + p.ImageLink
-
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": err.Error(),
-			})
+		); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-
+		p.ImageLink = os.Getenv("ASSETS_URL") + p.ImageLink
 		projects = append(projects, p)
 	}
 
@@ -166,7 +172,6 @@ func EditProject(c *gin.Context, db *sql.DB) {
 			query,
 			p.ID,
 		).Scan(&imageLink)
-
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
@@ -176,9 +181,8 @@ func EditProject(c *gin.Context, db *sql.DB) {
 
 		err = utils.SaveBase64ImageToDisk(
 			p.Image,
-			os.Getenv("STATIC_DIR") + imageLink,
+			os.Getenv("STATIC_DIR")+imageLink,
 		)
-
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
@@ -206,7 +210,6 @@ func EditProject(c *gin.Context, db *sql.DB) {
 		p.Type,
 		p.ID,
 	)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),

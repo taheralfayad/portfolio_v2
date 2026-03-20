@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -105,24 +106,46 @@ func GetCoffees(c *gin.Context, db *sql.DB) {
 	limit := c.DefaultQuery("limit", "0")
 	includeRoasts := c.DefaultQuery("include_roasts", "false")
 
+	var (
+		limitInt int
+		err      error
+		limitVal interface{}
+	)
+
 	query := `
-		SELECT
-			id,
-			name,
-			origin_country,
-			processing,
-			varietal,
-			description
-		FROM coffee
+		SELECT id, name, origin_country, processing, varietal, description
+		FROM (
+				SELECT DISTINCT ON (c.id)
+						c.id,
+						c.name,
+						c.origin_country,
+						c.processing,
+						c.varietal,
+						c.description,
+						r.roast_date
+				FROM coffee AS c
+				JOIN roast AS r ON r.coffee_id = c.id
+				ORDER BY c.id, r.roast_date DESC
+		) AS latest
+		ORDER BY roast_date DESC
+		LIMIT $1
 	`
 
 	if limit != "0" {
-		query += "LIMIT" + " " + limit
+		limitInt, err = strconv.Atoi(limit)
+		if err != nil {
+			messages.BadRequest(c, err)
+			return
+		}
+		limitVal = limitInt
+	} else {
+		limitVal = nil
 	}
 
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, limitVal)
 	if err != nil {
 		messages.BadRequest(c, err)
+		return
 	}
 	defer rows.Close()
 
@@ -147,7 +170,6 @@ func GetCoffees(c *gin.Context, db *sql.DB) {
 	}
 
 	if includeRoasts == "true" {
-		fmt.Println("sheeeshhh he not playin fair")
 		for i := range coffees {
 			coffeeID := coffees[i].ID
 			var roasts []data.Roast
