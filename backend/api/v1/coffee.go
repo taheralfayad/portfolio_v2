@@ -124,7 +124,7 @@ func GetCoffees(c *gin.Context, db *sql.DB) {
 						c.description,
 						r.roast_date
 				FROM coffee AS c
-				JOIN roast AS r ON r.coffee_id = c.id
+				LEFT JOIN roast AS r ON r.coffee_id = c.id
 				ORDER BY c.id, r.roast_date DESC
 		) AS latest
 		ORDER BY roast_date DESC
