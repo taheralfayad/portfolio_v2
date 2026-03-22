@@ -6,6 +6,8 @@ services:
     environment:
       - GIN_ENV=production
       - GIN_MODE=release
+    volumes:
+      - ./backend/static:/app/backend/static
     env_file:
         - .env
     ports:
