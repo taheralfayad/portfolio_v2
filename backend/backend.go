@@ -163,5 +163,13 @@ func main() {
 		v1.EditImage(c, db)
 	})
 
+	if os.Getenv("GIN_ENV") == "production" {
+		r.Static("/assets", "/app/assets")
+		r.Static("/admin", "/app/assets")
+		gin.DefaultWriter = os.Stderr
+		gin.DefaultErrorWriter = os.Stderr
+		r.Use(gin.Logger())
+		r.Use(gin.Recovery())
+	}
 	r.Run()
 }
