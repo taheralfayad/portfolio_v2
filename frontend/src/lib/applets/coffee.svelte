@@ -31,7 +31,13 @@
 
   let { currNavValue } = $props();
 
-  let roasts = $derived(selectedCoffee.roasts);
+  let roasts = $derived(
+    selectedCoffee.roasts
+      ? [...selectedCoffee.roasts].sort(
+          (a, b) => new Date(b.roast_date) - new Date(a.roast_date),
+        )
+      : [],
+  );
 
   let average = $derived.by(() => {
     if (
@@ -155,10 +161,7 @@
     });
 
     selectedCoffee = coffees[0];
-    selectedRoast =
-      selectedCoffee.roasts && selectedCoffee.roasts.length > 0
-        ? selectedCoffee.roasts[0]
-        : {};
+    selectedRoast = roasts.length > 0 ? roasts[0] : {};
   };
 
   const getCoffeeCups = async (roast) => {
@@ -170,10 +173,7 @@
 
   const selectSuggestion = async (suggestion) => {
     selectedCoffee = coffees.find((item) => item.name === suggestion);
-    selectedRoast =
-      selectedCoffee.roasts && selectedCoffee.roasts.length > 0
-        ? selectedCoffee.roasts[0]
-        : {};
+    selectedRoast = roasts.length > 0 ? roasts[0] : {};
     isFocused = false;
   };
 
