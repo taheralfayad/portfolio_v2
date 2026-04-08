@@ -106,7 +106,8 @@
     <BigInput label="Caption" bind:value={caption} required={true} />
     <ImageInput
       label="Image"
-      onchange={(e) => (image = handleImageChange(e.target.files[0]))}
+      onchange={async (e) =>
+        (image = await handleImageChange(e.target.files[0]))}
     />
     <FormButton {loading} />
     <Notif {error} {success} />
