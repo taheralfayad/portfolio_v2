@@ -1,18 +1,21 @@
 package utils
 
 import (
-	"os"
-	"fmt"
-	"path/filepath"
+	"archive/zip"
 	"encoding/base64"
-	"strings"
 	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+
+	goparquet "github.com/parquet-go/parquet-go"
 )
 
 func HashPassword(password string) (string, error) {
@@ -33,13 +36,13 @@ func SaveBase64ImageToDisk(
 	if err != nil {
 		return err
 	}
-	
+
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
-	
-	return os.WriteFile(path, data, 0644)
+
+	return os.WriteFile(path, data, 0o644)
 }
 
 func DecodeBase64Image(b64 string) ([]byte, error) {
@@ -85,7 +88,6 @@ func ValidateJWT(tokenString string) (*data.Claims, error) {
 			return []byte(jwtSecret), nil
 		},
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -96,4 +98,16 @@ func ValidateJWT(tokenString string) (*data.Claims, error) {
 	}
 
 	return claims, nil
+}
+
+func WriteParquet[T any](zw *zip.Writer, filename string, rows []T) error {
+	fw, err := zw.Create(filename)
+	if err != nil {
+		return err
+	}
+	pw := goparquet.NewGenericWriter[T](fw)
+	if _, err := pw.Write(rows); err != nil {
+		return err
+	}
+	return pw.Close()
 }
