@@ -16,7 +16,7 @@
   <section class="flex-1 max-w-2xl px-4 pt-4 pb-12">
     <div class="relative group">
       <div
-        class="relative overflow-hidden rounded-2xl shadow-lg aspect-[5/3] bg-neutral-100"
+        class="relative overflow-hidden shadow-lg aspect-[5/3] bg-neutral-100"
       >
         <div
           class="flex h-full transition-transform duration-1000 ease-in-out"
@@ -40,8 +40,7 @@
           onclick={prev}
           aria-label="Previous slide"
           class="absolute left-3 top-1/2 -translate-y-1/2
-               w-8 h-8 rounded-full
-               bg-white/70 backdrop-blur
+               w-8 h-8 bg-white/70 backdrop-blur
                text-gray-700
                shadow-sm
                opacity-0 group-hover:opacity-100
@@ -68,8 +67,7 @@
           onclick={next}
           aria-label="Next slide"
           class="absolute right-3 top-1/2 -translate-y-1/2
-               w-8 h-8 rounded-full
-               bg-white/70 backdrop-blur
+               w-8 h-8 bg-white/70 backdrop-blur
                text-gray-700
                shadow-sm
                opacity-0 group-hover:opacity-100
@@ -94,7 +92,7 @@
       </div>
 
       <div class="mt-3">
-        <div class="rounded-xl bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
+        <div class="bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
           <h1 class="text-lg font-semibold text-gray-900">
             {images[index].title}
           </h1>

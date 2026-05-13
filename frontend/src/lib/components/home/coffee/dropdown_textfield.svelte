@@ -25,8 +25,7 @@
       class="
         absolute left-0 right-0 mt-1
         bg-white
-        rounded-xl
-        border border-gray-200
+        border border-black
         shadow-lg
         max-h-56 overflow-y-auto
         z-50

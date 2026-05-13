@@ -15,6 +15,6 @@
     bind:value
     {required}
     onfocus={onFocus}
-    class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+    class="w-full border border-black px-3 py-2 text-sm shadow-sm focus:border-experience focus:outline-none focus:ring-1 focus:ring-experience"
   />
 </div>
