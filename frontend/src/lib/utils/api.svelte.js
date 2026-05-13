@@ -13,6 +13,7 @@ export async function apiRequest(
     method = 'GET',
     body = null,
     headers = {},
+    blob = false,
   } = {}
 ) {
   const config = {
@@ -23,32 +24,27 @@ export async function apiRequest(
       ...headers,
     },
   };
-
   if (body && method !== 'GET') {
     config.body = JSON.stringify(body);
   }
-
   const response = await fetch(`${BASE_URL}${route}`, config);
-
   let data;
   const contentType = response.headers.get('content-type');
-
-  if (contentType && contentType.includes('application/json')) {
+  if (blob || contentType?.includes('application/octet-stream')) {
+    data = await response.blob();
+  } else if (contentType?.includes('application/json')) {
     data = await response.json();
   } else {
     data = await response.text();
   }
-
   if (!response.ok) {
     throw {
       status: response.status,
       data,
     };
   }
-
   return data;
 }
-
 /**
  * Convenience helpers
  */
@@ -60,6 +56,9 @@ export const api = {
     apiRequest(route, { method: 'POST', body, headers }),
 
   put: (route, body, headers = {}) =>
-    apiRequest(route, { method: 'PUT', body, headers })
+    apiRequest(route, { method: 'PUT', body, headers }),
+
+  download: (route, headers = {}) =>
+    apiRequest(route, { method: 'GET', headers, blob: true }),
 };
 
