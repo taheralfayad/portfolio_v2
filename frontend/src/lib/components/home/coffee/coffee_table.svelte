@@ -23,9 +23,7 @@
     <thead class="bg-gray-100 text-center">
       <tr>
         {#each plainObjectHeaders as header}
-          <th class="border border-black px-4 py-2 text-center capitalize"
-            >{header}</th
-          >
+          <th class="border border-black px-4 py-2 text-center">{header}</th>
         {/each}
       </tr>
     </thead>
