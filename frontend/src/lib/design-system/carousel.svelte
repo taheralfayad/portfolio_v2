@@ -35,7 +35,7 @@
           aria-label="Previous slide"
           class="absolute left-3 top-1/2 -translate-y-1/2
                w-8 h-8
-               transition hover:bg-white
+               bg-white
                hover:cursor-pointer border"
         >
           <svg
@@ -59,7 +59,7 @@
           aria-label="Next slide"
           class="absolute right-3 top-1/2 -translate-y-1/2
                w-8 h-8
-               transition hover:bg-white
+               bg-white
                hover:cursor-pointer border"
         >
           <svg
