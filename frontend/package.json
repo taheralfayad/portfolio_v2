@@ -21,7 +21,9 @@
 		"vite": "^7.2.6"
 	},
 	"dependencies": {
+		"@duckdb/duckdb-wasm": "^1.33.1-dev45.0",
 		"@lucide/svelte": "^0.563.1",
+		"@zip.js/zip.js": "^2.8.26",
 		"chart.js": "^4.5.1",
 		"three": "^0.182.0"
 	}

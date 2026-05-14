@@ -143,6 +143,10 @@ func main() {
 		v1.GetCoffeeCups(c, db)
 	})
 
+	r.GET("/duckdbify", func(c *gin.Context) {
+		v1.DuckDBify(c, db)
+	})
+
 	auth.PUT("/work-experiences", func(c *gin.Context) {
 		v1.EditWorkExperience(c, db)
 	})

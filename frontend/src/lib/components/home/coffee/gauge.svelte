@@ -1,7 +1,5 @@
 <script>
   let { level } = $props();
-
-  let cityFilled = "bg-[#F5DEB3]";
 </script>
 
 <div class="flex flex-row items-center gap-4">

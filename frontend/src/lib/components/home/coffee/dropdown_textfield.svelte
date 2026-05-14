@@ -25,8 +25,7 @@
       class="
         absolute left-0 right-0 mt-1
         bg-white
-        rounded-xl
-        border border-gray-200
+        border border-black
         shadow-lg
         max-h-56 overflow-y-auto
         z-50
@@ -35,7 +34,7 @@
       {#each suggestions as suggestion}
         <li
           class="
-            px-4 py-2 text-sm text-gray-700
+            px-4 py-2 text-sm
             cursor-pointer transition
             hover:bg-button/80 hover:font-black
           "

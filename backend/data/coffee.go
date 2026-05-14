@@ -33,3 +33,32 @@ type CoffeeCup struct {
 	Method         string `json:"method"`
 	Rating         int16  `json:"rating"`
 }
+
+type CoffeeParquet struct {
+	Name          string `parquet:"name"`
+	OriginCountry string `parquet:"origin_country"`
+	Processing    string `parquet:"processing"`
+	Varietal      string `parquet:"varietal"`
+	Description   string `parquet:"description"`
+}
+
+type RoastParquet struct {
+	RoastLevel  int16  `parquet:"roast_level"`
+	RoasterName string `parquet:"roaster_name"`
+	RoastDate   string `parquet:"roast_date"`
+	CoffeeName  string `parquet:"coffee_name"`
+}
+
+type CoffeeCupParquet struct {
+	Temperature    int16  `parquet:"temperature"`
+	DateDrank      string `parquet:"date_drank"`
+	DaysAfterRoast int16  `parquet:"days_after_roast"`
+	Acidity        int16  `parquet:"acidity"`
+	Body           int16  `parquet:"body"`
+	Sweetness      int16  `parquet:"sweetness"`
+	WaterType      string `parquet:"water_type"`
+	GrindSize      int16  `parquet:"grind_size"`
+	Method         string `parquet:"method"`
+	Rating         int16  `parquet:"rating"`
+	RoastName      string `parquet:"roast_name"`
+}

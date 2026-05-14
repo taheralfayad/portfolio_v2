@@ -1,8 +1,13 @@
 package v1
 
 import (
+	"archive/zip"
+	"bytes"
 	"database/sql"
+	"errors"
 	"fmt"
+	"log/slog"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -385,4 +390,143 @@ func GetCoffeeCups(c *gin.Context, db *sql.DB) {
 	}
 
 	messages.StatusCreated(c, cups)
+}
+
+func DuckDBify(c *gin.Context, db *sql.DB) {
+	coffeeRows, err := db.Query(`
+		SELECT
+			name,
+			origin_country,
+			processing,
+			varietal,
+			description
+		FROM coffee
+	`)
+	if err != nil {
+		slog.Error(err.Error(), "error", err)
+		messages.InternalError(c, errors.New("Something went wrong"))
+		return
+	}
+	defer coffeeRows.Close()
+
+	var coffees []data.CoffeeParquet
+	for coffeeRows.Next() {
+		var coffee data.CoffeeParquet
+		if err := coffeeRows.Scan(
+			&coffee.Name,
+			&coffee.OriginCountry,
+			&coffee.Processing,
+			&coffee.Varietal,
+			&coffee.Description,
+		); err != nil {
+			slog.Error(err.Error(), "error", err)
+			messages.InternalError(c, errors.New("Something went wrong"))
+			return
+		}
+		coffees = append(coffees, coffee)
+	}
+
+	roastRows, err := db.Query(`
+		SELECT
+			roast_level,
+			roaster_name,
+			roast_date,
+			(SELECT name FROM coffee c WHERE c.id = coffee_id) AS coffee_name
+		FROM roast
+	`)
+	if err != nil {
+		slog.Error(err.Error(), "error", err)
+		messages.InternalError(c, errors.New("Something went wrong"))
+		return
+	}
+	defer roastRows.Close()
+
+	var roasts []data.RoastParquet
+	for roastRows.Next() {
+		var roast data.RoastParquet
+		if err := roastRows.Scan(
+			&roast.RoastLevel,
+			&roast.RoasterName,
+			&roast.RoastDate,
+			&roast.CoffeeName,
+		); err != nil {
+			slog.Error(err.Error(), "error", err)
+			messages.InternalError(c, errors.New("Something went wrong"))
+			return
+		}
+		roasts = append(roasts, roast)
+	}
+
+	coffeeCupRows, err := db.Query(`
+		SELECT
+			temperature,
+			date_drank,
+    	EXTRACT(DAY FROM (date_drank - (SELECT roast_date FROM roast r WHERE r.id = roast_id)))::int AS days_after_roast,
+			acidity,
+			body,
+			sweetness,
+			water_type,
+			grind_size,
+			method,
+			rating,
+			(SELECT roast_date FROM roast r WHERE r.id = roast_id) AS roast_name
+		FROM coffee_cup
+	`)
+	if err != nil {
+		slog.Error(err.Error(), "error", err)
+		messages.InternalError(c, errors.New("Something went wrong"))
+		return
+	}
+	defer coffeeCupRows.Close()
+
+	var coffeeCups []data.CoffeeCupParquet
+	for coffeeCupRows.Next() {
+		var coffeeCup data.CoffeeCupParquet
+		if err := coffeeCupRows.Scan(
+			&coffeeCup.Temperature,
+			&coffeeCup.DateDrank,
+			&coffeeCup.DaysAfterRoast,
+			&coffeeCup.Acidity,
+			&coffeeCup.Body,
+			&coffeeCup.Sweetness,
+			&coffeeCup.WaterType,
+			&coffeeCup.GrindSize,
+			&coffeeCup.Method,
+			&coffeeCup.Rating,
+			&coffeeCup.RoastName,
+		); err != nil {
+			slog.Error(err.Error(), "error", err)
+			messages.InternalError(c, errors.New("Something went wrong"))
+			return
+		}
+		coffeeCups = append(coffeeCups, coffeeCup)
+	}
+
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+
+	if err := utils.WriteParquet(zw, "coffee.parquet", coffees); err != nil {
+		slog.Error(err.Error(), "error", err)
+		messages.InternalError(c, errors.New("Something went wrong"))
+		return
+	}
+	if err := utils.WriteParquet(zw, "roast.parquet", roasts); err != nil {
+		slog.Error(err.Error(), "error", err)
+		messages.InternalError(c, errors.New("Something went wrong"))
+		return
+	}
+	if err := utils.WriteParquet(zw, "coffee_cup.parquet", coffeeCups); err != nil {
+		slog.Error(err.Error(), "error", err)
+		messages.InternalError(c, errors.New("Something went wrong"))
+		return
+	}
+
+	if err := zw.Close(); err != nil {
+		slog.Error(err.Error(), "error", err)
+		messages.InternalError(c, errors.New("Something went wrong"))
+		return
+	}
+
+	c.Header("Content-Disposition", `attachment; filename="export.zip"`)
+	c.Data(http.StatusOK, "application/zip", buf.Bytes())
 }

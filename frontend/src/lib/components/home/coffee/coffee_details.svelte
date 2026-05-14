@@ -6,10 +6,10 @@
 </script>
 
 <div
-  class="relative flex flex-col items-center p-6 w-full min-w-[280px] max-w-sm mx-auto
-        rounded-xl border-4 border-black
+  class="relative flex flex-col items-center p-6 w-full min-w-[280px] max-w-sm
+        border-4 border-black
         after:content-[''] after:absolute after:inset-0
-        after:rounded-xl after:bg-black
+        after:bg-black
         after:translate-x-3 after:translate-y-3
         after:-z-10 bg-skills"
 >

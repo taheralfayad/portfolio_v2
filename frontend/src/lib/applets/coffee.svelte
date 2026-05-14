@@ -4,30 +4,28 @@
   import DropdownTextfield from "$lib/components/home/coffee/dropdown_textfield.svelte";
   import Gauge from "$lib/components/home/coffee/gauge.svelte";
   import CoffeeDetails from "$lib/components/home/coffee/coffee_details.svelte";
-  import CoffeeKpiCard from "$lib/components/home/coffee/coffee_kpi_card.svelte";
-  import CoffeeTable from "$lib/components/home/coffee/coffee_table.svelte";
   import ErrorCard from "$lib/components/home/coffee/error_card.svelte";
+  import CoffeeSql from "$lib/components/home/coffee/coffee_sql.svelte";
+  import CoffeeCharts from "$lib/components/home/coffee/coffee_charts.svelte";
   import Hero from "$lib/components/home/hero.svelte";
-  import Carousel from "$lib/design-system/carousel.svelte";
   import Select from "$lib/design-system/select.svelte";
-  import { chartRender } from "$lib/actions/chartRender.svelte";
 
   import { api } from "$lib/utils/api.svelte.js";
   import { formatDate } from "$lib/utils/utils.svelte";
 
   import coffeesNotFound from "$lib/assets/coffees_not_found.png";
 
+  import { ZipReader, BlobReader, BlobWriter } from "@zip.js/zip.js";
+
   let coffees = $state([]);
   let coffeeCups = $state([]);
   let selectedCoffee = $state({});
   let selectedRoast = $state({});
   let graphData = $state({});
-  let selectedLabel = $state("Date Drank");
-  let selectedMetric = $state("Rating");
-  let selectedFilter = $state("");
-  let selectedFilterValue = $state("");
   let searchValue = $state("");
   let isFocused = $state(false);
+  let parquetBuffers = $state();
+  let selectedView = $state("CoffeeCharts");
 
   let { currNavValue } = $props();
 
@@ -37,40 +35,6 @@
           (a, b) => new Date(b.roast_date) - new Date(a.roast_date),
         )
       : [],
-  );
-
-  let average = $derived.by(() => {
-    if (
-      !selectedMetric ||
-      !filteredCoffeeCups ||
-      filteredCoffeeCups.length === 0
-    ) {
-      return;
-    }
-    const values = filteredCoffeeCups.map((c) => {
-      return c[selectedMetric];
-    });
-
-    const sum = values.reduce(
-      (accumulator, currentValue) => accumulator + currentValue,
-      0,
-    );
-
-    const avg = sum / values.length;
-
-    return avg.toFixed(1);
-  });
-
-  let min = $derived(
-    filteredCoffeeCups && filteredCoffeeCups.length > 0
-      ? Math.min(...filteredCoffeeCups.map((c) => c[selectedMetric]))
-      : undefined,
-  );
-
-  let max = $derived(
-    filteredCoffeeCups && filteredCoffeeCups.length > 0
-      ? Math.max(...filteredCoffeeCups.map((c) => c[selectedMetric]))
-      : undefined,
   );
 
   let searchBarValues = $derived.by(() => {
@@ -86,64 +50,6 @@
   });
 
   let suggestionsHidden = $derived(!isFocused);
-
-  let selectedFilterValues = $derived.by(() => {
-    return [...new Set(coffeeCups.map((c) => c[selectedFilter]))];
-  });
-
-  let filteredCoffeeCups = $derived.by(() => {
-    let filtered = [...coffeeCups];
-
-    if (selectedFilter && selectedFilterValue) {
-      filtered = filtered.filter(
-        (c) => c[selectedFilter] === selectedFilterValue,
-      );
-    }
-
-    return filtered;
-  });
-
-  let coffeeData = $derived.by(() => {
-    let filtered = [...coffeeCups];
-
-    if (selectedFilter && selectedFilterValue) {
-      filtered = filtered.filter(
-        (c) => c[selectedFilter] === selectedFilterValue,
-      );
-    }
-
-    const sorted = filtered.sort((a, b) => {
-      const sortKey =
-        selectedLabel === "Date Drank" ? "Date Drank Raw" : selectedLabel;
-      const labelA = a[sortKey];
-      const labelB = b[sortKey];
-
-      if (labelA instanceof Date) return labelA.getTime() - labelB.getTime();
-      if (typeof labelA === "string") return labelA.localeCompare(labelB);
-
-      return labelA - labelB;
-    });
-
-    return {
-      type: "line",
-      data: {
-        labels: sorted.map((c) => c[selectedLabel]),
-        datasets: [
-          {
-            label: selectedMetric,
-            data: sorted.map((c) => c[selectedMetric]),
-            backgroundColor: ["rgba(212, 202, 189)"],
-          },
-        ],
-      },
-    };
-  });
-
-  const LABELS = ["Date Drank", "Temperature"];
-
-  const METRICS = ["Rating", "Acidity", "Sweetness", "Body"];
-
-  const FILTERS = ["", "Method", "Water Type"];
 
   const getCoffees = async () => {
     const coffeesData = await api.get("/coffees?include_roasts=true");
@@ -162,6 +68,23 @@
 
     selectedCoffee = coffees[0];
     selectedRoast = roasts.length > 0 ? roasts[0] : {};
+  };
+
+  const getDuckDBFile = async () => {
+    const response = await api.download("/duckdbify");
+
+    const zipReader = new ZipReader(new BlobReader(response));
+    const entries = await zipReader.getEntries();
+
+    const buffers = {};
+    for (const entry of entries) {
+      const blob = await entry.getData(new BlobWriter());
+      const buffer = await blob.arrayBuffer();
+      buffers[entry.filename] = new Uint8Array(buffer);
+    }
+    await zipReader.close();
+
+    parquetBuffers = buffers;
   };
 
   const getCoffeeCups = async (roast) => {
@@ -212,118 +135,114 @@
 
   onMount(() => {
     getCoffees();
+    getDuckDBFile();
   });
 </script>
 
 <section class="flex flex-col items-center justify-center">
   {#if coffees && coffees.length > 0}
-    <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
-      <div class="flex flex-col sm:flex-row gap-6">
-        <DropdownTextfield
-          {suggestionsHidden}
-          {suggestions}
-          {selectSuggestion}
-          currentSuggestion={selectedCoffee}
-          bind:searchValue
-          onFocus={() => (isFocused = true)}
-          onClickOutside={() => (isFocused = false)}
-        />
-        {#if roasts}
-          <Select
-            label="Then, get the roast:"
-            bind:value={selectedRoast}
-            options={roasts
-              ? roasts.map((r) => {
-                  return { value: r, label: formatDate(r.roast_date) };
-                })
-              : { value: null, label: "No Roasts Found" }}
-          />
-        {/if}
-      </div>
-      <div
-        class="flex flex-col md:flex-row items-center justify-center gap-12 w-full max-w-6xl mt-4"
-      >
-        <CoffeeDetails
-          name={selectedCoffee.name}
-          originCountry={selectedCoffee.originCountry}
-          processing={selectedCoffee.processing}
-          varietal={selectedCoffee.varietal}
-          date={selectedRoast.roast_date}
-          description={selectedCoffee.description}
-        />
-        {#if roasts && roasts.length > 0}
-          <img
-            src={selectedRoast.image}
-            class="w-64 h-64 object-cover rounded-lg shadow-lg"
-            alt={selectedCoffee.name + "-" + selectedRoast.roast_date}
-          />
-          <Gauge level={selectedRoast.roast_level} />
-        {:else if roasts && roasts.length === 0}
-          <ErrorCard message="No Roasts Found" />
-        {/if}
-      </div>
-    </Hero>
-    {#if roasts && roasts.length > 0}
-      {#if coffeeCups && coffeeCups.length > 0}
-        <div
-          class="flex flex-col gap-4 w-full items-center overflow-auto mx-auto my-12"
-        >
-          <div
-            class="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4 sm:justify-center"
+    <div class="mt-6 w-full">
+      <ul class="hidden sm:flex flex-row mb-0 justify-center gap-52 px-6">
+        <li>
+          <button
+            class="
+            py-2 px-16 cursor-pointer
+            relative
+            border-4 {selectedView === 'CoffeeCharts'
+              ? 'bg-skills font-bold'
+              : ''}
+            hover:bg-skills/50
+            "
+            onclick={() => {
+              selectedView = "CoffeeCharts";
+            }}>CoffeeCharts</button
           >
-            <Select
-              label="Labels"
-              bind:value={selectedLabel}
-              options={LABELS.map((l) => {
-                return { value: l, label: l };
-              })}
+        </li>
+        <li>
+          <button
+            class="
+            py-2 px-16 cursor-pointer
+            relative
+            border-4 {selectedView === 'CoffeeSQL' ? 'bg-skills font-bold' : ''}
+            hover:bg-skills/50
+            "
+            onclick={() => {
+              selectedView = "CoffeeSQL";
+            }}>CoffeeSQL</button
+          >
+        </li>
+      </ul>
+      <div class="sm:p-6 flex flex-col">
+        {#if selectedView === "CoffeeCharts" && roasts && roasts.length > 0}
+          {#if coffeeCups && coffeeCups.length > 0}
+            <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
+              <div class="flex flex-col sm:flex-row gap-6">
+                <DropdownTextfield
+                  {suggestionsHidden}
+                  {suggestions}
+                  {selectSuggestion}
+                  currentSuggestion={selectedCoffee}
+                  bind:searchValue
+                  onFocus={() => (isFocused = true)}
+                  onClickOutside={() => (isFocused = false)}
+                />
+                {#if roasts}
+                  <Select
+                    label="Then, get the roast:"
+                    bind:value={selectedRoast}
+                    options={roasts
+                      ? roasts.map((r) => {
+                          return { value: r, label: formatDate(r.roast_date) };
+                        })
+                      : { value: null, label: "No Roasts Found" }}
+                  />
+                {/if}
+              </div>
+              <div
+                class="flex flex-col md:flex-row items-center justify-center gap-24 w-full max-w-6xl mt-8"
+              >
+                <CoffeeDetails
+                  name={selectedCoffee.name}
+                  originCountry={selectedCoffee.originCountry}
+                  processing={selectedCoffee.processing}
+                  varietal={selectedCoffee.varietal}
+                  date={selectedRoast.roast_date}
+                  description={selectedCoffee.description}
+                />
+                {#if roasts && roasts.length > 0}
+                  <img
+                    src={selectedRoast.image}
+                    class="max-w-96 max-h-80 object-cover rounded-lg shadow-lg"
+                    alt={selectedCoffee.name + "-" + selectedRoast.roast_date}
+                  />
+                  <Gauge level={selectedRoast.roast_level} />
+                {:else if roasts && roasts.length === 0}
+                  <ErrorCard message="No Roasts Found" />
+                {/if}
+              </div>
+            </Hero>
+            <CoffeeCharts {coffeeCups} />
+          {:else}
+            <div>
+              <ErrorCard message="No Coffee Cups Found" />
+            </div>
+          {/if}
+        {:else if selectedView === "CoffeeSQL"}
+          <div class="flex flex-col items-center justify-center">
+            <CoffeeSql
+              parquetBuffers={parquetBuffers
+                ? Object.fromEntries(
+                    Object.entries(parquetBuffers).map(([k, v]) => [
+                      k,
+                      v.slice(0),
+                    ]),
+                  )
+                : undefined}
             />
-            <Select
-              label="Metric"
-              bind:value={selectedMetric}
-              options={METRICS.map((m) => {
-                return { value: m, label: m };
-              })}
-            />
-            <Select
-              label="Filter"
-              bind:value={selectedFilter}
-              options={FILTERS.map((f) => {
-                return { value: f, label: f };
-              })}
-            />
-            {#if selectedFilter}
-              <Select
-                label="Filter Value"
-                bind:value={selectedFilterValue}
-                options={selectedFilterValues.map((v) => {
-                  return { value: v, label: v };
-                })}
-              />
-            {/if}
           </div>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-4 mb-6">
-          <CoffeeKpiCard title={`Average ${selectedMetric}`} metric={average} />
-          <CoffeeKpiCard title={`Minimum ${selectedMetric}`} metric={min} />
-          <CoffeeKpiCard title={`Maximum ${selectedMetric}`} metric={max} />
-        </div>
-        <div class="h-64 w-full max-w-5xl">
-          <canvas use:chartRender={coffeeData}></canvas>
-        </div>
-        <CoffeeTable
-          data={coffeeCups.map((c) =>
-            Object.fromEntries(
-              Object.entries(c).filter(([k]) => k !== "Date Drank Raw"),
-            ),
-          )}
-        />
-      {:else}
-        <div>
-          <ErrorCard message="No Coffee Cups Found" />
-        </div>
-      {/if}
-    {/if}
+        {/if}
+      </div>
+    </div>
   {:else}
     <img src={coffeesNotFound} />
     <p>Sorry, I haven't added any coffees yet.</p>
