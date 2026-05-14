@@ -15,9 +15,7 @@
 {#if images.length > 0}
   <section class="flex-1 max-w-2xl px-4 pt-4 pb-12">
     <div class="relative group">
-      <div
-        class="relative overflow-hidden shadow-lg aspect-[5/3] bg-neutral-100"
-      >
+      <div class="relative overflow-hidden aspect-[5/3] bg-neutral-100">
         <div
           class="flex h-full transition-transform duration-1000 ease-in-out"
           style="transform: translateX(-{index * 100}%);"
@@ -26,26 +24,20 @@
             <img
               src={image.imageLink}
               alt={image.title}
-              class="w-full h-full flex-shrink-0 object-cover"
+              class="w-full h-full flex-shrink-0 object-cover border"
               loading={i === 0 ? "eager" : "lazy"}
             />
           {/each}
         </div>
 
-        <div
-          class="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-black/0"
-        />
-
         <button
           onclick={prev}
           aria-label="Previous slide"
           class="absolute left-3 top-1/2 -translate-y-1/2
-               w-8 h-8 bg-white/70 backdrop-blur
-               text-gray-700
-               shadow-sm
+               w-8 h-8
                opacity-0 group-hover:opacity-100
                transition hover:bg-white
-               hover:cursor-pointer"
+               hover:cursor-pointer border"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -67,12 +59,10 @@
           onclick={next}
           aria-label="Next slide"
           class="absolute right-3 top-1/2 -translate-y-1/2
-               w-8 h-8 bg-white/70 backdrop-blur
-               text-gray-700
-               shadow-sm
+               w-8 h-8
                opacity-0 group-hover:opacity-100
                transition hover:bg-white
-               hover:cursor-pointer"
+               hover:cursor-pointer border"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -91,12 +81,12 @@
         </button>
       </div>
 
-      <div class="mt-3">
-        <div class="bg-white/80 backdrop-blur px-4 py-3 shadow-sm">
-          <h1 class="text-lg font-semibold text-gray-900">
+      <div class="mt-3 border">
+        <div class="bg-white/80 px-4 py-3">
+          <h1 class="text-lg font-semibold">
             {images[index].title}
           </h1>
-          <p class="text-sm text-gray-600">
+          <p class="text-sm">
             {images[index].caption}
           </p>
         </div>

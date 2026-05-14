@@ -8,7 +8,6 @@
   import CoffeeSql from "$lib/components/home/coffee/coffee_sql.svelte";
   import CoffeeCharts from "$lib/components/home/coffee/coffee_charts.svelte";
   import Hero from "$lib/components/home/hero.svelte";
-  import Carousel from "$lib/design-system/carousel.svelte";
   import Select from "$lib/design-system/select.svelte";
 
   import { api } from "$lib/utils/api.svelte.js";
