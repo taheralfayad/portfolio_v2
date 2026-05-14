@@ -142,10 +142,8 @@
 
 <section class="flex flex-col items-center justify-center">
   {#if coffees && coffees.length > 0}
-    <div class="mt-12 w-full">
-      <ul
-        class="hidden sm:flex flex-row mb-0 justify-center gap-52 px-6 relative z-10"
-      >
+    <div class="mt-6 w-full">
+      <ul class="hidden sm:flex flex-row mb-0 justify-center gap-52 px-6">
         <li>
           <button
             class="
@@ -175,7 +173,7 @@
           >
         </li>
       </ul>
-      <div class="sm:p-6 relative z-0">
+      <div class="sm:p-6 flex flex-col">
         {#if selectedView === "CoffeeCharts" && roasts && roasts.length > 0}
           {#if coffeeCups && coffeeCups.length > 0}
             <Hero header={currNavValue.header} subtitle={currNavValue.subtitle}>
@@ -202,7 +200,7 @@
                 {/if}
               </div>
               <div
-                class="flex flex-col md:flex-row items-center justify-center gap-12 w-full max-w-6xl mt-4"
+                class="flex flex-col md:flex-row items-center justify-center gap-24 w-full max-w-6xl mt-8"
               >
                 <CoffeeDetails
                   name={selectedCoffee.name}
@@ -215,7 +213,7 @@
                 {#if roasts && roasts.length > 0}
                   <img
                     src={selectedRoast.image}
-                    class="w-64 h-64 object-cover rounded-lg shadow-lg"
+                    class="max-w-96 max-h-80 object-cover rounded-lg shadow-lg"
                     alt={selectedCoffee.name + "-" + selectedRoast.roast_date}
                   />
                   <Gauge level={selectedRoast.roast_level} />

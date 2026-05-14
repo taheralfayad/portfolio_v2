@@ -13,5 +13,4 @@
   </div>
 
   {@render children()}
-
 </div>

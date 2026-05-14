@@ -3,7 +3,7 @@
 </script>
 
 <div
-  class="relative flex flex-col items-center justify-center p-6 w-full min-w-[280px] max-w-sm mx-auto
+  class="relative flex flex-col items-center justify-center p-6 w-full min-w-[280px] max-w-sm
         border-4 border-black
         after:content-[''] after:absolute after:inset-0
         after:bg-black

@@ -34,7 +34,7 @@
       {#each suggestions as suggestion}
         <li
           class="
-            px-4 py-2 text-sm text-gray-700
+            px-4 py-2 text-sm
             cursor-pointer transition
             hover:bg-button/80 hover:font-black
           "

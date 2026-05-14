@@ -143,12 +143,12 @@
     {/if}
   </div>
 </div>
-<div class="flex flex-col sm:flex-row gap-4 mb-6">
+<div class="flex flex-col sm:flex-row mb-12 justify-center gap-10">
   <CoffeeKpiCard title={`Average ${selectedMetric}`} metric={average} />
   <CoffeeKpiCard title={`Minimum ${selectedMetric}`} metric={min} />
   <CoffeeKpiCard title={`Maximum ${selectedMetric}`} metric={max} />
 </div>
-<div class="h-64 w-full max-w-5xl items-center justify-center mx-auto">
+<div class="h-64 w-full max-w-5xl items-center justify-center mx-auto mb-6">
   <canvas
     class="border border-black text-black text-md"
     use:chartRender={coffeeData}
