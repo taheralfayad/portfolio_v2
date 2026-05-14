@@ -5,21 +5,66 @@
 
   import { chartRender } from "$lib/actions/chartRender.svelte";
 
-  let {
-    average,
-    min,
-    max,
-    selectedFilterValues,
-    coffeeCups,
-    selectedLabel = $bindable(),
-    selectedMetric = $bindable(),
-    selectedFilter = $bindable(),
-    selectedFilterValue = $bindable(),
-  } = $props();
+  let { coffeeCups } = $props();
 
   const LABELS = ["Date Drank", "Temperature"];
   const METRICS = ["Rating", "Acidity", "Sweetness", "Body"];
   const FILTERS = ["", "Method", "Water Type"];
+
+  let selectedLabel = $state("Date Drank");
+  let selectedMetric = $state("Rating");
+  let selectedFilter = $state("");
+  let selectedFilterValue = $state("");
+
+  let average = $derived.by(() => {
+    if (
+      !selectedMetric ||
+      !filteredCoffeeCups ||
+      filteredCoffeeCups.length === 0
+    ) {
+      return;
+    }
+    const values = filteredCoffeeCups.map((c) => {
+      return c[selectedMetric];
+    });
+
+    const sum = values.reduce(
+      (accumulator, currentValue) => accumulator + currentValue,
+      0,
+    );
+
+    const avg = sum / values.length;
+
+    return avg.toFixed(1);
+  });
+
+  let min = $derived(
+    filteredCoffeeCups && filteredCoffeeCups.length > 0
+      ? Math.min(...filteredCoffeeCups.map((c) => c[selectedMetric]))
+      : undefined,
+  );
+
+  let max = $derived(
+    filteredCoffeeCups && filteredCoffeeCups.length > 0
+      ? Math.max(...filteredCoffeeCups.map((c) => c[selectedMetric]))
+      : undefined,
+  );
+
+  let selectedFilterValues = $derived.by(() => {
+    return [...new Set(coffeeCups.map((c) => c[selectedFilter]))];
+  });
+
+  let filteredCoffeeCups = $derived.by(() => {
+    let filtered = [...coffeeCups];
+
+    if (selectedFilter && selectedFilterValue) {
+      filtered = filtered.filter(
+        (c) => c[selectedFilter] === selectedFilterValue,
+      );
+    }
+
+    return filtered;
+  });
 
   let coffeeData = $derived.by(() => {
     let filtered = [...coffeeCups];
