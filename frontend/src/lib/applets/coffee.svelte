@@ -212,7 +212,7 @@
                 {#if roasts && roasts.length > 0}
                   <img
                     src={selectedRoast.image}
-                    class="max-w-96 max-h-80 object-cover"
+                    class="max-w-96 max-h-80 object-cover border-4 border-black"
                     alt={selectedCoffee.name + "-" + selectedRoast.roast_date}
                   />
                   <Gauge level={selectedRoast.roast_level} />
