@@ -12,7 +12,7 @@
   <ul>
     {#each schema as scheme}
       <li class="my-2">
-        {scheme.column_name} - {scheme.column_type}
+        <b>{scheme.column_name}</b> - {scheme.column_type}
       </li>
     {/each}
   </ul>

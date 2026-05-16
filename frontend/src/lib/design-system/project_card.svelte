@@ -12,7 +12,7 @@
 </script>
 
 <div
-  class={`relative flex flex-col items-center p-8 w-full min-w-[280px] max-w-md mx-auto
+  class={`relative flex flex-col items-center p-8 w-full min-w-[280px] max-w-md
           border-4 border-black
           after:content-[''] after:absolute after:inset-0
           after:bg-black

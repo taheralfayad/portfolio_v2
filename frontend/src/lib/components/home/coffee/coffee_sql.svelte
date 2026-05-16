@@ -5,7 +5,7 @@
   import duckdb_wasm_eh from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url";
   import eh_worker from "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url";
   import CoffeeTable from "$lib/components/home/coffee/coffee_table.svelte";
-  import SqlSchema from "$lib/components/home/coffee/sql_schema.svelte";
+  import SchemaContainer from "$lib/components/home/coffee//schema_container.svelte";
   import { onMount, onDestroy, tick } from "svelte";
 
   const SQL_KEYWORDS = [
@@ -202,21 +202,22 @@
   };
 </script>
 
-<div class="flex flex-col w-full mt-14">
+<div class="flex flex-col w-full mt-14 gap-12 h-full">
   {#if !ready}
     <p>Loading...</p>
   {:else}
-    <div class="flex flex-row gap-12">
-      <div class="flex flex-col min-w-56 gap-6">
-        <h3 class="text-lg">Schema</h3>
-        <SqlSchema table="coffee" schema={coffeeSchema}></SqlSchema>
-        <SqlSchema table="roast" schema={roastSchema}></SqlSchema>
-        <SqlSchema table="coffee_cup" schema={coffeeCupSchema}></SqlSchema>
-      </div>
-      <div class="w-full">
-        <pre class="w-full border bg-white min-h-64 overflow-auto">
+    <div class="flex flex-row gap-12 h-full">
+      <SchemaContainer
+        schemas={[
+          { table: "coffee", schema: coffeeSchema },
+          { table: "roast", schema: roastSchema },
+          { table: "coffee_cup", schema: coffeeCupSchema },
+        ]}
+      />
+      <div class="w-full h-full flex flex-col">
+        <pre class="w-full border bg-white h-64 overflow-auto">
           <code
-            class="block py-3 px-4 min-h-64 font-mono text-lg leading-relaxed whitespace-pre break-normal outline-none caret-current [tab-size:4]"
+            class="block py-3 px-4 font-mono text-lg leading-relaxed whitespace-pre break-normal outline-none caret-current [tab-size:4]"
             bind:this={queryEl}
             contenteditable="true"
             spellcheck="false"
@@ -233,24 +234,23 @@
               after:rounded-xl
               after:translate-x-3 after:translate-y-3
               after:-z-10 bg-skills
-              cursor-pointer"
+              cursor-pointer mt-2"
             onclick={submitQuery}
             >Submit
           </button>
         </div>
+        {#if results && results.length > 0}
+          <CoffeeTable data={results} />
+        {:else if results}
+          <p class="mt-2 text-gray-500">No results.</p>
+        {/if}
+        {#if error}
+          <p class="text-red-500 mt-2">{error}</p>
+        {/if}
       </div>
     </div>
   {/if}
-  {#if error}
-    <p class="text-red-500 mt-2">{error}</p>
-  {/if}
 </div>
-
-{#if results && results.length > 0}
-  <CoffeeTable data={results} />
-{:else if results}
-  <p class="mt-2 text-gray-500">No results.</p>
-{/if}
 
 <style>
   code {

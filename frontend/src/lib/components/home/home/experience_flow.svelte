@@ -8,7 +8,7 @@
   {#each items as item, index}
     <div class="relative flex-shrink-0">
       <div
-        class="w-64 min-h-[280px] border-3 border-black bg-experience p-6 text-center flex flex-col items-center justify-center
+        class="w-64 min-h-[280px] border-4 border-black bg-experience p-6 text-center flex flex-col items-center justify-center
           after:content-[''] after:absolute after:inset-0
           after:bg-black
           after:translate-x-2 after:translate-y-2

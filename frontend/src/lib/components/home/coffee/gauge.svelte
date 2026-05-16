@@ -4,7 +4,7 @@
 
 <div class="flex flex-row items-center gap-4">
   <div class="flex flex-col">
-    <div class="flex flex-col border-4 border-black rounded-md overflow-hidden">
+    <div class="flex flex-col border-4 border-black overflow-hidden">
       <div
         class="w-12 h-12 border-t-4 border-black flex items-center justify-center
               {level >= 5 ? 'bg-[#1C0A05]' : 'bg-white'}"
