@@ -7,6 +7,7 @@
   import CoffeeTable from "$lib/components/home/coffee/coffee_table.svelte";
   import SchemaContainer from "$lib/components/home/coffee//schema_container.svelte";
   import { onMount, onDestroy, tick } from "svelte";
+  import LoadingSpinner from "$lib/components/home/coffee/loading_spinner.svelte";
 
   const SQL_KEYWORDS = [
     "SELECT",
@@ -204,7 +205,7 @@
 
 <div class="flex flex-col w-full mt-14 gap-12 h-full">
   {#if !ready}
-    <p>Loading...</p>
+    <p>loading...</p>
   {:else}
     <div class="flex flex-row gap-12 h-full">
       <SchemaContainer

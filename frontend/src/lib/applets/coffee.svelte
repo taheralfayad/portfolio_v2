@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
 
+  import LoadingSpinner from "$lib/components/home/coffee/loading_spinner.svelte";
   import DropdownTextfield from "$lib/components/home/coffee/dropdown_textfield.svelte";
   import Gauge from "$lib/components/home/coffee/gauge.svelte";
   import CoffeeDetails from "$lib/components/home/coffee/coffee_details.svelte";
@@ -26,6 +27,7 @@
   let isFocused = $state(false);
   let parquetBuffers = $state();
   let selectedView = $state("CoffeeCharts");
+  let isLoading = $state(true);
 
   let { currNavValue } = $props();
 
@@ -87,11 +89,13 @@
     parquetBuffers = buffers;
   };
 
-  const getCoffeeCups = async (roast) => {
-    const roastId = roast?.id ?? selectedRoast.id;
+  const getCoffeeCups = async () => {
+    const roastId = selectedRoast.id;
     const coffeeCupData = await api.get(`/coffee-cups?roast_id=${roastId}`);
 
     coffeeCups = cleanCoffeeCupData(coffeeCupData);
+
+    isLoading = false;
   };
 
   const selectSuggestion = async (suggestion) => {
@@ -100,16 +104,9 @@
     isFocused = false;
   };
 
-  let initialLoad = true;
-
   $effect(() => {
     if (selectedRoast?.id) {
-      if (initialLoad) {
-        initialLoad = false;
-        getCoffeeCups();
-      } else {
-        getCoffeeCups(selectedRoast);
-      }
+      getCoffeeCups();
     }
   });
 
@@ -139,8 +136,10 @@
   });
 </script>
 
-<section class="flex flex-col items-center justify-center">
-  {#if coffees && coffees.length > 0}
+<section class="flex flex-col items-center justify-center w-full">
+  {#if isLoading}
+    <LoadingSpinner />
+  {:else if coffees && coffees.length > 0}
     <div class="mt-6 w-full">
       <ul class="hidden sm:flex flex-row mb-0 justify-center gap-52 px-6">
         <li>
