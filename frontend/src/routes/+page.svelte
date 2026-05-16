@@ -1,9 +1,10 @@
 <script>
   import Navbar from "$lib/components/navbar.svelte";
   import { onMount } from "svelte";
-
   import Home from "$lib/applets/home.svelte";
   import Coffee from "$lib/applets/coffee.svelte";
+  import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
 
   const navItems = [
     {
@@ -13,6 +14,7 @@
         "I'm a husband, older brother, dog dad, Arsenal fan, and software developer.",
       onClick: () => {
         currNavValue = navItems.find((item) => item.value === "Home");
+        goto("?tab=Home", { replaceState: true });
       },
     },
     {
@@ -22,17 +24,22 @@
         "I love drinking coffee. I've recently started roasting my own, and this is where I document it.",
       onClick: () => {
         currNavValue = navItems.find((item) => item.value === "Coffee");
+        goto("?tab=Coffee", { replaceState: true });
       },
     },
   ];
 
-  let currNavValue = $derived.by(() => {
-    return navItems.find((item) => item.value === "Home");
+  let currNavValue = $state(navItems.find((item) => item.value === "Home"));
+
+  onMount(() => {
+    const tab = $page.url.searchParams.get("tab");
+    const match = navItems.find(
+      (item) => item.value.toLowerCase() === tab.toLowerCase(),
+    );
+    if (match) currNavValue = match;
   });
 
-  const getCurrNavValue = () => {
-    return currNavValue.value;
-  };
+  const getCurrNavValue = () => currNavValue.value;
 </script>
 
 <Navbar items={navItems} {getCurrNavValue} />
