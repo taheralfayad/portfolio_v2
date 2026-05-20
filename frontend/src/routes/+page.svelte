@@ -9,7 +9,7 @@
   const navItems = [
     {
       value: "Home",
-      header: "Hello! My name is Taher Alfayad.",
+      header: "Hello! My name is Ahmad Altaher Alfayad.",
       subtitle:
         "I'm a husband, older brother, dog dad, Arsenal fan, and software developer.",
       onClick: () => {
