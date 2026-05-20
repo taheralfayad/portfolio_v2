@@ -33,6 +33,11 @@
 
   onMount(() => {
     const tab = $page.url.searchParams.get("tab");
+
+    if (tab === null) {
+      return;
+    }
+
     const match = navItems.find(
       (item) => item.value.toLowerCase() === tab.toLowerCase(),
     );
