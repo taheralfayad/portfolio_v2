@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import Home from "$lib/applets/home.svelte";
   import Coffee from "$lib/applets/coffee.svelte";
+  import Journal from "$lib/applets/journal.svelte";
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
 
@@ -25,6 +26,13 @@
       onClick: () => {
         currNavValue = navItems.find((item) => item.value === "Coffee");
         goto("?tab=Coffee", { replaceState: true });
+      },
+    },
+    {
+      value: "Journal",
+      onClick: () => {
+        currNavValue = navItems.find((item) => item.value === "Journal");
+        goto("?tab=Journal", { replaceState: true });
       },
     },
   ];
@@ -53,5 +61,7 @@
     <Home {currNavValue} />
   {:else if currNavValue.value === "Coffee"}
     <Coffee {currNavValue} />
+  {:else if currNavValue.value === "Journal"}
+    <Journal />
   {/if}
 </div>
