@@ -35,7 +35,7 @@
 	const getCurrNavValue = () => currNavValue.value;
 </script>
 
-<Navbar items={navItems} {getCurrNavValue} />
 <main class="bg-background text-font font-semibold">
+	<Navbar items={navItems} {getCurrNavValue} />
 	{@render children()}
 </main>
