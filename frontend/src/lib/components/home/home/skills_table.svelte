@@ -21,7 +21,7 @@
 		<thead class="text-center">
 			<tr>
 				<th
-					class="flex px-4 py-2 text-center gap-2 justify-center items-center border-b border-t"
+					class="flex px-4 py-2 text-center gap-2 justify-center items-center border-b"
 				>
 					<label for="categories">Filter by Category:</label>
 					<select
