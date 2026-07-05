@@ -1,13 +1,12 @@
 <script>
-  let { value, onClick, getCurrNavValue } = $props();
+	let { value, onClick, getCurrNavValue } = $props();
 </script>
 
-<li
-  class="hover:bg-button/80 transition p-3 px-6 cursor-pointer"
-  onclick={onClick}
->
-  <span
-    class="text-sm {getCurrNavValue() === value ? 'font-black' : 'font-mono'}"
-    >{value}</span
-  >
+<li class="flex w-full h-full">
+	<button
+		class="flex items-center text-sm cursor-pointer w-full h-full px-12 border-r hover:bg-secondary hover:text-font transition"
+		onclick={onClick}
+	>
+		{value}
+	</button>
 </li>
