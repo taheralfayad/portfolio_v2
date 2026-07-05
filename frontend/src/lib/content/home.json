@@ -1,0 +1,12 @@
+{
+	"hero": {
+		"header": "Hello, my name is Ahmad Altaher Alfayad.",
+		"subtitle": "I am a Data Engineer at the University of Central Florida, amongst other things."
+	},
+	"sections": {
+		"workExperience": "Here's how my career has progressed thus far:",
+		"workProjects": "Here are some of the projects I've worked on at work:",
+		"personalProjects": "Here are some of the projects I've worked on in my own free time",
+		"skills": "Here are some technologies that I've used (and loved enough to talk about using):"
+	}
+}
