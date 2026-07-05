@@ -26,16 +26,14 @@ services:
   db:
     image: postgres:18-alpine
     restart: always
-    environment:
-      POSTGRES_USER: taher
-      POSTGRES_PASSWORD: alfayad
-      POSTGRES_DB: portfolio
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/18/docker
     networks:
       - taher
+    env_file:
+      - .env
 
   migrate:
     image: migrate/migrate
