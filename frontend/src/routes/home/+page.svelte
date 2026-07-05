@@ -7,8 +7,6 @@
 	import SkillsTable from "$lib/components/home/home/skills_table.svelte";
 	import Content from "$lib/content/home.json";
 
-	let { currNavValue } = $props();
-
 	import { api } from "$lib/utils/api.svelte.js";
 
 	let workExperiences = $state([]);

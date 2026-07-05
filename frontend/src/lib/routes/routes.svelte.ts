@@ -1,5 +1,4 @@
 export const routes = {
-	home: () => '/home',
-	coffee: () => '/coffee',
-	admin: () => '/admin',
+	Home: () => '/home',
+	Coffee: () => '/coffee',
 } as const satisfies Record<string, (...args: any[]) => string>;
