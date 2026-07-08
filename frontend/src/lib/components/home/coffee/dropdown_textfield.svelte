@@ -1,50 +1,55 @@
 <script>
-  import Input from "$lib/design-system/input.svelte";
-  import { clickOutside } from "$lib/actions/clickOutside.svelte";
+	import Input from "$lib/design-system/input.svelte";
+	import { clickOutside } from "$lib/actions/clickOutside.svelte";
 
-  let {
-    suggestionsHidden,
-    suggestions,
-    selectSuggestion,
-    searchValue = $bindable(),
-    onFocus,
-    onClickOutside,
-  } = $props();
+	let {
+		suggestionsHidden,
+		suggestions,
+		selectSuggestion,
+		searchValue = $bindable(),
+		onFocus,
+		onClickOutside,
+	} = $props();
 </script>
 
 <div class="relative w-full max-w-md" use:clickOutside={onClickOutside}>
-  <Input
-    bind:value={searchValue}
-    label="Look for a coffee..."
-    required={false}
-    {onFocus}
-  />
+	<Input
+		bind:value={searchValue}
+		label="Look for a coffee..."
+		required={false}
+		{onFocus}
+	/>
 
-  {#if !suggestionsHidden && suggestions.length}
-    <ul
-      class="
-        absolute left-0 right-0 mt-1
-        bg-white
-        border border-black
-        shadow-lg
-        max-h-56 overflow-y-auto
-        z-50
-      "
-    >
-      {#each suggestions as suggestion}
-        <li
-          class="
-            px-4 py-2 text-sm
-            cursor-pointer transition
-            hover:bg-button/80 hover:font-black
-          "
-          role="option"
-          tabindex="0"
-          onclick={() => selectSuggestion(suggestion)}
-        >
-          {suggestion}
-        </li>
-      {/each}
-    </ul>
-  {/if}
+	{#if !suggestionsHidden && suggestions.length}
+		<ul
+			class="
+				absolute left-0 right-0 mt-1
+				bg-background
+				max-h-56 overflow-y-auto
+				z-50
+		    "
+		>
+			{#each suggestions as suggestion}
+				<li
+					class="
+					px-4 py-2
+					cursor-pointer transition
+					hover:bg-secondary
+				  "
+					role="option"
+					tabindex="0"
+					aria-selected={suggestion === searchValue}
+					onclick={() => selectSuggestion(suggestion)}
+					onkeydown={(e) => {
+						if (e.key === "Enter" || e.key === " ") {
+							e.preventDefault();
+							selectSuggestion(suggestion);
+						}
+					}}
+				>
+					{suggestion}
+				</li>
+			{/each}
+		</ul>
+	{/if}
 </div>

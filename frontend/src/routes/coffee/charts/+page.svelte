@@ -24,7 +24,6 @@
 	let graphData = $state({});
 	let searchValue = $state("");
 	let isFocused = $state(false);
-	let parquetBuffers = $state();
 	let selectedView = $state("CoffeeCharts");
 	let isLoading = $state(true);
 
@@ -67,23 +66,6 @@
 
 		selectedCoffee = coffees[0];
 		selectedRoast = roasts.length > 0 ? roasts[0] : {};
-	};
-
-	const getDuckDBFile = async () => {
-		const response = await api.download("/duckdbify");
-
-		const zipReader = new ZipReader(new BlobReader(response));
-		const entries = await zipReader.getEntries();
-
-		const buffers = {};
-		for (const entry of entries) {
-			const blob = await entry.getData(new BlobWriter());
-			const buffer = await blob.arrayBuffer();
-			buffers[entry.filename] = new Uint8Array(buffer);
-		}
-		await zipReader.close();
-
-		parquetBuffers = buffers;
 	};
 
 	const getCoffeeCups = async () => {
@@ -129,7 +111,6 @@
 
 	onMount(() => {
 		getCoffees();
-		getDuckDBFile();
 	});
 </script>
 
@@ -138,37 +119,7 @@
 		<LoadingSpinner />
 	{:else if coffees && coffees.length > 0}
 		<div class="mt-6 w-full">
-			<ul class="hidden sm:flex flex-row mb-0 justify-center gap-52 px-6">
-				<li>
-					<button
-						class="
-            py-2 px-16 cursor-pointer
-            relative
-            border-4 {selectedView === 'CoffeeCharts'
-							? 'bg-skills font-bold'
-							: ''}
-            hover:bg-skills/50
-            "
-						onclick={() => {
-							selectedView = "CoffeeCharts";
-						}}>CoffeeCharts</button
-					>
-				</li>
-				<li>
-					<button
-						class="
-            py-2 px-16 cursor-pointer
-            relative
-            border-4 {selectedView === 'CoffeeSQL' ? 'bg-skills font-bold' : ''}
-            hover:bg-skills/50
-            "
-						onclick={() => {
-							selectedView = "CoffeeSQL";
-						}}>CoffeeSQL</button
-					>
-				</li>
-			</ul>
-			<div class="sm:p-6 flex flex-col">
+			<div class="sm:p-6 flex flex-col justify-center items-center">
 				{#if selectedView === "CoffeeCharts" && roasts && roasts.length > 0}
 					{#if coffeeCups && coffeeCups.length > 0}
 						<div class="flex flex-col sm:flex-row gap-6">
@@ -215,7 +166,7 @@
 							{#if roasts && roasts.length > 0}
 								<img
 									src={selectedRoast.image}
-									class="max-w-96 max-h-80 object-cover border-4 border-black"
+									class="max-w-96 max-h-80 object-cover"
 									alt={selectedCoffee.name +
 										"-" +
 										selectedRoast.roast_date}
@@ -231,18 +182,6 @@
 							<ErrorCard message="No Coffee Cups Found" />
 						</div>
 					{/if}
-				{:else if selectedView === "CoffeeSQL"}
-					<div class="flex flex-col items-center justify-center">
-						<CoffeeSql
-							parquetBuffers={parquetBuffers
-								? Object.fromEntries(
-										Object.entries(parquetBuffers).map(
-											([k, v]) => [k, v.slice(0)],
-										),
-									)
-								: undefined}
-						/>
-					</div>
 				{/if}
 			</div>
 		</div>
