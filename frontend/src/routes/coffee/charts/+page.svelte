@@ -6,7 +6,6 @@
 	import Gauge from "$lib/components/home/coffee/gauge.svelte";
 	import CoffeeDetails from "$lib/components/home/coffee/coffee_details.svelte";
 	import ErrorCard from "$lib/components/home/coffee/error_card.svelte";
-	import CoffeeSql from "$lib/components/home/coffee/coffee_sql.svelte";
 	import CoffeeCharts from "$lib/components/home/coffee/coffee_charts.svelte";
 	import Select from "$lib/design-system/select.svelte";
 

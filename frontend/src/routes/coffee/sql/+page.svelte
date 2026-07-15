@@ -245,7 +245,7 @@
 		class="relative w-72 shrink-0 h-144 overflow-y-auto
 	  overflow-x-hidden
 	  max-w-md
-	  bg-white
+	  bg-tertiary
 	"
 	>
 		<div class="sticky top-4 p-4">
