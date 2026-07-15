@@ -75,6 +75,8 @@ func main() {
 	auth := r.Group("/")
 	auth.Use(AuthMiddleware())
 
+	auth.POST("/me", v1.Me)
+
 	auth.POST("/work-experiences", func(c *gin.Context) {
 		v1.AddWorkExperience(c, db)
 	})

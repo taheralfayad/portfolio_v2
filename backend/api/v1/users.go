@@ -4,9 +4,10 @@ import (
 	data "github.com/taheralfayad/portfolio_v2/data"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
 
-	"net/http"
-	"github.com/gin-gonic/gin"
 	"database/sql"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AddUser(c *gin.Context, db *sql.DB) {
@@ -46,7 +47,7 @@ func AddUser(c *gin.Context, db *sql.DB) {
 		})
 		return
 	}
-	
+
 	c.JSON(http.StatusCreated, user)
 }
 
@@ -188,3 +189,5 @@ func Login(c *gin.Context, db *sql.DB) {
 		"message": "login successful",
 	})
 }
+
+func Me(c *gin.Context) {}
