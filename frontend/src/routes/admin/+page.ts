@@ -1,6 +1,8 @@
 import { redirect } from '@sveltejs/kit';
+import { isLoggedIn } from '$lib/utils/utils.svelte'
 
-export function load() {
-  // throw redirect(307, '/login');
+export async function load() {
+  if (!(await isLoggedIn())) {
+    throw redirect(307, '/login');
+  }
 }
-

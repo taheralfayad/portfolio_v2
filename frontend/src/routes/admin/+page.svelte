@@ -9,6 +9,7 @@
 	import RoastInput from "$lib/components/admin/roast_input.svelte";
 	import Input from "$lib/design-system/input.svelte";
 	import FormButton from "$lib/design-system/form_button.svelte";
+	import { onMount } from "svelte";
 
 	import { api } from "$lib/utils/api.svelte.js";
 
@@ -41,6 +42,10 @@
 
 		currNavValue = all_tables[0].table_name;
 	};
+
+	onMount(() => {
+		getAllTables();
+	});
 </script>
 
 <div class="flex min-h-screen flex-col pt-20">
