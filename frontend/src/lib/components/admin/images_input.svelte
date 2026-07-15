@@ -112,5 +112,5 @@
     <FormButton {loading} />
     <Notif {error} {success} />
   </Form>
-  <DataPreview data={images} {editHook} />
+  
 </div>

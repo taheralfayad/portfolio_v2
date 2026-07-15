@@ -124,6 +124,6 @@
   </Form>
 
   <div class="ml-8">
-    <DataPreview data={coffeeCups} />
+    
   </div>
 </div>

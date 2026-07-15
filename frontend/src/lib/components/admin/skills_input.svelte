@@ -95,5 +95,5 @@
     <FormButton {loading} />
     <Notif {error} {success} />
   </Form>
-  <DataPreview data={skills} {editHook} />
+  
 </div>

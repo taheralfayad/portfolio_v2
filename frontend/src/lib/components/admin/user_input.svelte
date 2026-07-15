@@ -93,5 +93,5 @@
     <FormButton {loading} />
     <Notif {error} {success} />
   </Form>
-  <DataPreview data={users} {editHook} />
+  
 </div>

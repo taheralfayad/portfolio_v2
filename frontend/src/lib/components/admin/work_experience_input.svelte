@@ -131,5 +131,5 @@
 
     <Notif {error} {success} />
   </Form>
-  <DataPreview data={workExperiences} {editHook} />
+  
 </div>
