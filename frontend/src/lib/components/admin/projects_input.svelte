@@ -117,7 +117,7 @@
 </script>
 
 <div class="flex flex-row">
-	<Form {submitForm} title="Add Project">
+	<Form {submitForm} data={projects} title="Add Project">
 		<Input label="Name" bind:value={name} required={true} />
 		<BigInput
 			label="Description"

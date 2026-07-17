@@ -74,8 +74,6 @@
 	onMount(() => {
 		getCoffees();
 	});
-
-	$inspect(roasts);
 </script>
 
 <div class="flex flex-row">
