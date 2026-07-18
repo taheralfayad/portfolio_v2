@@ -2,12 +2,14 @@
 	import { onMount } from "svelte";
 	import Hero from "$lib/components/home/hero.svelte";
 	import Carousel from "$lib/design-system/carousel.svelte";
-	import ExperienceFlow from "$lib/components/home/home/experience_flow.svelte";
+	import WorkExperiences from "$lib/components/home/home/work_experiences.svelte";
 	import Projects from "$lib/components/home/home/projects.svelte";
 	import SkillsTable from "$lib/components/home/home/skills_table.svelte";
 	import Content from "$lib/content/home.json";
 
 	import { api } from "$lib/utils/api.svelte.js";
+
+	import { normalizeDate } from "$lib/utils/utils.svelte.js";
 
 	let workExperiences = $state([]);
 	let workProjects = $state([]);
