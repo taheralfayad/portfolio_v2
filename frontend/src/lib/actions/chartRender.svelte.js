@@ -17,31 +17,9 @@ export const chartRender = (node, options) => {
             left: 10,
             right: 10
           }
-        },
-        plugins: {
-          legend: {
-            labels: {
-              color: "black",
-              font: { size: 14 }
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: {
-              color: "black",
-              font: { size: 14 }
-            }
-          },
-          y: {
-            ticks: {
-              color: "black",
-              font: { size: 14 }
-            }
-          }
         }
-      }
-    });
+	  }
+     });
   });
 
   return {

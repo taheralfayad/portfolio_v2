@@ -1,25 +1,47 @@
 <script>
-  let { submitForm, title, children, editMode, editHook } = $props();
+	let { submitForm, title, children, editMode, editHook, data } = $props();
+	$inspect(data);
 </script>
 
-<form
-	onsubmit={submitForm}
-	class="min-w-xl max-w-xl space-y-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm"
->
-  
-  {#if editMode}
-    <div>
-      <a class="text-fuchsia-950"
-        onclick={() => editHook(null)}
-      >
-        you are now in edit mode. i love you. click this to exit edit mode
-      </a>
-    </div>
-  {/if}
-	<h2 class="text-xl font-semibold text-gray-900">
-    {title}
-	</h2>
+{#snippet dataPreview(data)}
+	<section
+		class="min-w-xl max-w-xl max-h-150 overflow-y-auto space-y-6 bg-secondary p-8"
+	>
+		{#each data as datum}
+			{#each Object.entries(datum) as [key, value]}
+				<p><strong>{key}:</strong> {value}</p>
+			{/each}
+			<button
+				type="submit"
+				class="inline-flex items-center justify-center px-4 py-2 font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 hover:cursor-pointer"
+				onclick={() => editHook(datum)}
+			>
+				Edit this entry
+			</button>
+			<hr />
+		{/each}
+	</section>
+{/snippet}
 
-  {@render children()}
+<div class="flex-wrap sm:flex h-full w-full gap-2">
+	<form
+		onsubmit={submitForm}
+		class="min-w-xl max-w-xl space-y-6 bg-secondary p-8"
+	>
+		{#if editMode}
+			<div>
+				<button class="text-fuchsia-950" onclick={() => editHook(null)}>
+					you are now in edit mode. i love you. click this to exit
+					edit mode
+				</button>
+			</div>
+		{/if}
+		<h2 class="text-xl font-semibold">
+			{title}
+		</h2>
 
-</form>
+		{@render children()}
+	</form>
+
+	{@render dataPreview(data)}
+</div>

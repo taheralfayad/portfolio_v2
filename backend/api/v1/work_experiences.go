@@ -61,14 +61,14 @@ func GetWorkExperiences(c *gin.Context, db *sql.DB) {
 		rows, err = db.Query(`
 				SELECT id, title, workplace, description, start_date, end_date, created_at
 				FROM work_experiences
-				ORDER BY start_date ASC NULLS LAST
+				ORDER BY start_date DESC NULLS LAST
 				LIMIT $1
 		`, limitInt)
 	} else {
 		rows, err = db.Query(`
 				SELECT id, title, workplace, description, start_date, end_date, created_at
 				FROM work_experiences
-				ORDER BY start_date ASC NULLS LAST
+				ORDER BY start_date DESC NULLS LAST
 		`)
 	}
 

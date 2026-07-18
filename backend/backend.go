@@ -47,11 +47,11 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
+	user := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	host := os.Getenv("POSTGRES_HOST")
+	port := os.Getenv("POSTGRE_PORT")
+	dbName := os.Getenv("POSTGRES_DB")
 
 	connStr := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
@@ -74,6 +74,8 @@ func main() {
 
 	auth := r.Group("/")
 	auth.Use(AuthMiddleware())
+
+	auth.POST("/me", v1.Me)
 
 	auth.POST("/work-experiences", func(c *gin.Context) {
 		v1.AddWorkExperience(c, db)
@@ -168,8 +170,18 @@ func main() {
 	})
 
 	if os.Getenv("GIN_ENV") == "production" {
+		r.Static("/_app", "/app/assets/_app")
 		r.Static("/assets", "/app/assets")
-		r.Static("/admin", "/app/assets")
+
+		r.NoRoute(func(c *gin.Context) {
+			path := "/app/assets" + c.Request.URL.Path
+			if _, err := os.Stat(path); err == nil {
+				c.File(path)
+				return
+			}
+			c.File("/app/assets/index.html")
+		})
+
 		gin.DefaultWriter = os.Stderr
 		gin.DefaultErrorWriter = os.Stderr
 		r.Use(gin.Logger())

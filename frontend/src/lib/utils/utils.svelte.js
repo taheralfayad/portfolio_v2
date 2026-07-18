@@ -1,3 +1,17 @@
+import { api } from "$lib/utils/api.svelte.js"
+
+export const isLoggedIn = async () => {
+	try {
+		const resp = await api.post("/me");
+	}
+	catch (e) {
+		console.error(e)
+		return false
+	}
+
+	return true
+}
+
 export const normalizeDate = (date) => {
   return date ? date.split("T")[0] : null
 }

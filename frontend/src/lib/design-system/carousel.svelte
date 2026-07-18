@@ -1,94 +1,56 @@
 <script>
-  let index = $state(0);
+	import { ChevronRight, ChevronLeft } from "@lucide/svelte";
 
-  let { images = [] } = $props();
+	let index = $state(0);
 
-  function next() {
-    index = (index + 1) % images.length;
-  }
+	let { images = [], intervalMs = 4000 } = $props();
 
-  function prev() {
-    index = (index - 1 + images.length) % images.length;
-  }
+	function next() {
+		index = (index + 1) % images.length;
+	}
+
+	function prev() {
+		index = (index - 1 + images.length) % images.length;
+	}
+
+	$effect(() => {
+		if (images.length <= 1) return;
+
+		const timer = setInterval(next, intervalMs);
+
+		return () => clearInterval(timer);
+	});
 </script>
 
 {#if images.length > 0}
-  <section class="flex-1 max-w-2xl px-4 pt-4 pb-12">
-    <div class="relative group">
-      <div class="relative overflow-hidden aspect-[5/3] bg-neutral-100">
-        <div
-          class="flex h-full transition-transform duration-1000 ease-in-out"
-          style="transform: translateX(-{index * 100}%);"
-        >
-          {#each images as image, i}
-            <img
-              src={image.imageLink}
-              alt={image.title}
-              class="w-full h-full flex-shrink-0 object-cover border"
-              loading={i === 0 ? "eager" : "lazy"}
-            />
-          {/each}
-        </div>
+	<section class="flex-1 max-w-2xl px-4 pt-4 pb-12">
+		<div class="relative group">
+			<div class="relative overflow-hidden aspect-[5/3]">
+				<div
+					class="flex h-full transition-transform duration-1000 ease-in-out"
+					style="transform: translateX(-{index * 100}%);"
+				>
+					{#each images as image, i}
+						<img
+							src={image.imageLink}
+							alt={image.title}
+							class="w-full h-full shrink-0 object-cover"
+							loading={i === 0 ? "eager" : "lazy"}
+						/>
+					{/each}
+				</div>
+			</div>
 
-        <button
-          onclick={prev}
-          aria-label="Previous slide"
-          class="absolute left-3 top-1/2 -translate-y-1/2
-               w-8 h-8
-               bg-white
-               hover:cursor-pointer border"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="mx-auto"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </button>
-
-        <button
-          onclick={next}
-          aria-label="Next slide"
-          class="absolute right-3 top-1/2 -translate-y-1/2
-               w-8 h-8
-               bg-white
-               hover:cursor-pointer border"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="mx-auto"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="mt-3 border">
-        <div class="bg-white/80 px-4 py-3">
-          <h1 class="text-lg font-semibold">
-            {images[index].title}
-          </h1>
-          <p class="text-sm">
-            {images[index].caption}
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
+			<div class="mt-3">
+				<div class="bg-secondary px-4 py-3">
+					<h1 class="text-lg font-semibold">
+						{images[index].title}
+					</h1>
+					<p class="text-sm">
+						{images[index].caption}
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
 {/if}
