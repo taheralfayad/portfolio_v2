@@ -170,8 +170,18 @@ func main() {
 	})
 
 	if os.Getenv("GIN_ENV") == "production" {
+		r.Static("/_app", "/app/assets/_app")
 		r.Static("/assets", "/app/assets")
-		r.Static("/admin", "/app/assets")
+
+		r.NoRoute(func(c *gin.Context) {
+			path := "/app/assets" + c.Request.URL.Path
+			if _, err := os.Stat(path); err == nil {
+				c.File(path)
+				return
+			}
+			c.File("/app/assets/index.html")
+		})
+
 		gin.DefaultWriter = os.Stderr
 		gin.DefaultErrorWriter = os.Stderr
 		r.Use(gin.Logger())

@@ -16,7 +16,7 @@
 				class="max-w-full max-h-full h-auto w-auto object-contain"
 			/>
 		</div>
-		<h3 class="text-xl mt-4 leading-tight">
+		<h3 class="text-center text-xl mt-4 leading-tight">
 			{project.name}
 		</h3>
 		<p class="text-center mt-2 text-sm leading-relaxed">
@@ -34,7 +34,7 @@
 	</div>
 {/snippet}
 
-<section class="flex flex-wrap justify-center gap-12 py-8 px-24 min-h-64">
+<section class="flex flex-wrap justify-center gap-12 py-8 px-6 min-h-64">
 	{#each projects as project}
 		{@render projectCard(project)}
 	{/each}
