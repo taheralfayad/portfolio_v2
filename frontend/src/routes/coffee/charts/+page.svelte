@@ -64,6 +64,7 @@
 		});
 
 		selectedCoffee = coffees[0];
+
 		selectedRoast = roasts.length > 0 ? roasts[0] : {};
 	};
 

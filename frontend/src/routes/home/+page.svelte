@@ -46,6 +46,8 @@
 			title: datum.title,
 			subtitle: datum.workplace,
 			description: datum.description,
+			startDate: normalizeDate(datum.start_date),
+			endDate: normalizeDate(datum.end_date),
 		}));
 	};
 
@@ -89,10 +91,12 @@
 		<Carousel {images} />
 	</Hero>
 </section>
-<h2 class="flex justify-center text-xl text-center">
-	{Content.sections.workExperiences}
-</h2>
-<ExperienceFlow items={workExperiences} />
+<section class="flex flex-col items-center justify-center">
+	<h2 class="flex justify-center text-xl text-center">
+		{Content.sections.workExperiences}
+	</h2>
+	<WorkExperiences items={workExperiences} />
+</section>
 <h2 class="flex justify-center text-xl text-center">
 	{Content.sections.workProjects}
 </h2>
