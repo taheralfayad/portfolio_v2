@@ -8,7 +8,7 @@
 		class="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6"
 	>
 		<div
-			class="flex flex-row items-center justify-center sm:justify-end gap-2 w-auto sm:w-32 sm:shrink-0 text-md"
+			class="flex flex-row items-center justify-center sm:justify-end gap-2 w-auto sm:w-32 sm:shrink-0 whitespace-nowrap text-md"
 		>
 			{#if item.startDate}
 				<span>{item.startDate}</span>
