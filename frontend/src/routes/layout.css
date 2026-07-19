@@ -1,7 +1,7 @@
 @import "@fontsource-variable/ibm-plex-sans";
-
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: 'IBM Plex Sans Variable', sans-serif;
@@ -9,4 +9,18 @@
   --color-secondary: #494E5B;
   --color-tertiary: #3F473D;
   --color-font: #D8D8D8;
-}:
+}
+
+.dark {
+  --color-background: #1F1F1E;
+  --color-secondary: #494E5B;
+  --color-tertiary: #3F473D;
+  --color-font: #D8D8D8;
+}
+
+.syria {
+  --color-background: #FFFFFF;
+  --color-secondary: #CE1126;
+  --color-tertiary: #007A3D;
+  --color-font: #000000;
+}
