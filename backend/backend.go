@@ -149,6 +149,14 @@ func main() {
 		v1.DuckDBify(c, db)
 	})
 
+	r.GET("/get-books", func(c *gin.Context) {
+		v1.GetBooks(c, db)
+	})
+
+	r.POST("/post-books", func(c *gin.Context) {
+		v1.PostBooks(c, db)
+	})
+
 	auth.PUT("/work-experiences", func(c *gin.Context) {
 		v1.EditWorkExperience(c, db)
 	})
