@@ -5,10 +5,10 @@
 <div
 	class="flex flex-wrap sm:flex-row p-2 sm:pl-8 sm:justify-between md:gap-20 md:mt-6 items-center text-center"
 >
-	<div class="pb-5 max-sm:mt-4">
+	<div class="pb-5 max-sm:mt-4 max-w-150">
 		<h1 class="text-xl">{header}</h1>
 		<p>
-			{subtitle}
+			{@html subtitle}
 		</p>
 	</div>
 
