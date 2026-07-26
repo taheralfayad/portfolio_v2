@@ -2,12 +2,14 @@ package v1
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"strconv"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
+	"github.com/taheralfayad/portfolio_v2/messages"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
 
 	"github.com/gin-gonic/gin"
@@ -42,8 +44,8 @@ func AddImage(c *gin.Context, db *sql.DB) {
 	}
 
 	query := `
-		INSERT INTO images (title, caption, image_link)
-		VALUES ($1, $2, $3)
+		INSERT INTO images (title, caption, image_link, site)
+		VALUES ($1, $2, $3, $4)
 	`
 
 	_, err = db.Exec(
@@ -51,6 +53,7 @@ func AddImage(c *gin.Context, db *sql.DB) {
 		payload.Title,
 		payload.Caption,
 		imageLink,
+		payload.Site,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -68,11 +71,17 @@ func AddImage(c *gin.Context, db *sql.DB) {
 
 func GetImages(c *gin.Context, db *sql.DB) {
 	limit := c.DefaultQuery("limit", "0")
+	site := c.DefaultQuery("site", "home")
 
 	var (
 		rows *sql.Rows
 		err  error
 	)
+
+	if site != "home" && site != "books" {
+		messages.BadRequest(c,
+			errors.New("site value must either be: home, books"))
+	}
 
 	if limit != "0" {
 		limitInt, err := strconv.Atoi(limit)
@@ -83,15 +92,17 @@ func GetImages(c *gin.Context, db *sql.DB) {
 		rows, err = db.Query(`
 			SELECT id, title, caption, image_link
 			FROM images
+			WHERE site = $1
 			ORDER BY RANDOM()
-			LIMIT $1
-		`, limitInt)
+			LIMIT $2
+		`, site, limitInt)
 	} else {
 		rows, err = db.Query(`
 			SELECT id, title, caption, image_link
 			FROM images
+			WHERE site = $1
 			ORDER BY RANDOM()
-		`)
+		`, site)
 	}
 
 	if err != nil {
@@ -162,13 +173,15 @@ func EditImage(c *gin.Context, db *sql.DB) {
 		UPDATE images
 			SET title = $1,
 				caption = $2
-		WHERE id = $3
+				site = $3
+		WHERE id = $4
 	`
 
 	_, err = db.Exec(
 		query,
 		i.Title,
 		i.Caption,
+		i.Site,
 		i.ID,
 	)
 	if err != nil {
