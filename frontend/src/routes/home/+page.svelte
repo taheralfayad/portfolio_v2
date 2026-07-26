@@ -87,7 +87,10 @@
 </script>
 
 <section class="flex items-center justify-center">
-	<Hero header={Content.hero.header} subtitle={Content.hero.subtitle}>
+	<Hero
+		header={Content["home.hero.header"]}
+		subtitle={Content["home.hero.subtitle"]}
+	>
 		<Carousel {images} />
 	</Hero>
 </section>
