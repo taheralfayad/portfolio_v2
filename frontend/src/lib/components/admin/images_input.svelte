@@ -4,6 +4,7 @@
 	import Input from "$lib/design-system/input.svelte";
 	import BigInput from "$lib/design-system/big_input.svelte";
 	import ImageInput from "$lib/design-system/image_input.svelte";
+	import Select from "$lib/design-system/select.svelte";
 	import Form from "$lib/design-system/form.svelte";
 	import FormButton from "$lib/design-system/form_button.svelte";
 	import Notif from "$lib/design-system/notif.svelte";
@@ -12,10 +13,13 @@
 	import { api } from "$lib/utils/api.svelte.js";
 	import { handleImageChange } from "$lib/utils/utils.svelte";
 
+	const IMAGE_SITES = ["home", "books"];
+
 	let id = $state(0);
 	let title = $state("");
 	let caption = $state("");
 	let image = $state("");
+	let site = $state("");
 	let images = $state([]);
 	let editMode = $state(false);
 
@@ -54,6 +58,7 @@
 			title,
 			caption,
 			image,
+			site,
 		};
 
 		if (editMode) {
@@ -108,6 +113,16 @@
 			label="Image"
 			onchange={async (e) =>
 				(image = await handleImageChange(e.target.files[0]))}
+		/>
+		<Select
+			label="Select the site where this image will live"
+			options={IMAGE_SITES.map((site) => {
+				return {
+					value: site,
+					label: site,
+				};
+			})}
+			bind:value={site}
 		/>
 		<FormButton {loading} />
 		<Notif {error} {success} />

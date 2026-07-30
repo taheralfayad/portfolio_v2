@@ -1,8 +1,8 @@
 {
-	"hero": {
-		"header": "Hello, my name is Ahmad Altaher Alfayad.",
-		"subtitle": "I am a Data Engineer at the University of Central Florida, amongst other things."
-	},
+	"home.hero.header": "Hello, my name is Ahmad Altaher Alfayad.",
+	"home.hero.subtitle": "I am a Data Engineer at the University of Central Florida, amongst other things.",
+	"books.hero.header": "My Library",
+	"books.hero.subtitle": "These are all the books downloaded on my EReader, alongside some additional metadata. The way I accomplished this was by writing a KOReader plugin that sends the book metadata to the backend of this website. <a class='underline' target='_blank' href='https://github.com/taheralfayad/cool-koreader-plugin'>Check out this project here.</a>",
 	"sections": {
 		"workExperiences": "Here is a timeline of my employment history:",
 		"workProjects": "Here are some of the projects I've worked on at work:",

@@ -3,6 +3,7 @@ type RouteNode = RouteFn | { [key: string]: RouteNode };
 
 export const routes = {
 	Home: () => '/home',
+	Books: () => '/books',
 	Coffee: Object.assign(
 		() => '/coffee',
 		{

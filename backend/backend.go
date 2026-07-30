@@ -1,10 +1,12 @@
 package main
 
 import (
+	"crypto/subtle"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 
 	v1 "github.com/taheralfayad/portfolio_v2/api/v1"
 	utils "github.com/taheralfayad/portfolio_v2/utils"
@@ -33,6 +35,33 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		c.Set("userID", claims.UserID)
+		c.Next()
+	}
+}
+
+func BearerTokenAuthMiddleware() gin.HandlerFunc {
+	serverConfiguredToken := os.Getenv("BOOKGETTR_API_KEY")
+
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+			return
+		}
+
+		parts := strings.SplitN(authHeader, " ", 2)
+		if len(parts) != 2 || parts[0] != "Bearer" || parts[1] == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization header format"})
+			return
+		}
+		token := parts[1]
+
+		if serverConfiguredToken == "" ||
+			subtle.ConstantTimeCompare([]byte(token), []byte(serverConfiguredToken)) != 1 {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid access token"})
+			return
+		}
+
 		c.Next()
 	}
 }
@@ -75,6 +104,9 @@ func main() {
 	auth := r.Group("/")
 	auth.Use(AuthMiddleware())
 
+	bearerBasedAuth := r.Group("/")
+	bearerBasedAuth.Use(BearerTokenAuthMiddleware())
+
 	auth.POST("/me", v1.Me)
 
 	auth.POST("/work-experiences", func(c *gin.Context) {
@@ -107,6 +139,10 @@ func main() {
 
 	auth.POST("/roasts", func(c *gin.Context) {
 		v1.AddCoffeeRoast(c, db)
+	})
+
+	bearerBasedAuth.POST("/books/upload", func(c *gin.Context) {
+		v1.PostBooks(c, db)
 	})
 
 	r.POST("/login", func(c *gin.Context) {
@@ -147,6 +183,10 @@ func main() {
 
 	r.GET("/duckdbify", func(c *gin.Context) {
 		v1.DuckDBify(c, db)
+	})
+
+	r.GET("/books", func(c *gin.Context) {
+		v1.GetBooks(c, db)
 	})
 
 	auth.PUT("/work-experiences", func(c *gin.Context) {
