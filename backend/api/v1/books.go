@@ -81,7 +81,7 @@ func PostBooks(c *gin.Context, db *sql.DB) {
 				percentage_finished = EXCLUDED.percentage_finished,
 				status = EXCLUDED.status
 		`
-		if bookMeta.PercentFinished < 0.03 || bookMeta.Status == "" {
+		if (bookMeta.PercentFinished < 0.03 && bookMeta.Status != "complete") || bookMeta.Status == "" {
 			bookMeta.Status = "not_yet_read"
 		}
 		_, err := db.Exec(

@@ -1,5 +1,8 @@
 <script>
 	import { onMount } from "svelte";
+
+	import { X } from "@lucide/svelte";
+
 	import { api } from "$lib/utils/api.svelte";
 
 	import Hero from "$lib/components/home/hero.svelte";
@@ -9,13 +12,43 @@
 
 	let books = $state([]);
 	let images = $state([]);
+	let searchText = $state("");
+	let statusFilters = $state([]);
+
+	let booksFiltered = $derived.by(() => {
+		const query = searchText.trim().toLowerCase();
+		const statusPriority = {
+			currently_reading: 0,
+			reading: 1,
+			not_yet_read: 2,
+			complete: 3,
+		};
+
+		return books
+			.filter((book) => {
+				const titleMatch = book.title?.toLowerCase().includes(query);
+				const authorsMatch = book.authors
+					?.toLowerCase()
+					.includes(query);
+				const matchesSearch = !query || titleMatch || authorsMatch;
+				const matchesStatus =
+					statusFilters.length === 0 ||
+					statusFilters.includes(book.status?.toLowerCase());
+				return matchesSearch && matchesStatus;
+			})
+			.sort((a, b) => {
+				const aPriority = statusPriority[a.status] ?? 99;
+				const bPriority = statusPriority[b.status] ?? 99;
+				return aPriority - bPriority;
+			});
+	});
 
 	const getBooks = async () => {
-		const response = await api.get("/get-books");
+		const response = await api.get("/books");
 		books = response.map((item) => {
 			return {
 				...item,
-				status:
+				displayStatus:
 					item.status === "not_yet_read"
 						? "Not Yet Read"
 						: item.status === "reading"
@@ -44,15 +77,22 @@
 		getBooks();
 		getImages();
 	});
+
+	$inspect(statusFilters);
 </script>
 
 {#snippet bookCard(item)}
 	<div class="flex flex-col items-center p-8">
-		<div
-			class="bg-tertiary self-center mb-2 text-sm px-4 py-2 h-10 flex items-center justify-center text-center"
+		<button
+			class="bg-tertiary self-center mb-2 text-sm px-4 py-2 h-10 flex items-center justify-center text-center cursor-pointer"
+			onclick={() => {
+				if (!statusFilters.includes(item.status)) {
+					statusFilters.push(item.status);
+				}
+			}}
 		>
-			Status: {item.status}
-		</div>
+			Status: {item.displayStatus}
+		</button>
 		<div class="group">
 			<div class="relative flex w-56 h-72">
 				<div
@@ -77,6 +117,35 @@
 	</div>
 {/snippet}
 
+{#snippet statusFilterPill(status)}
+	<div class="flex items-center gap-2 px-4 py-2 rounded-lg bg-tertiary">
+		<p class="text-sm">{status}</p>
+		<button
+			class="shrink-0 cursor-pointer"
+			onclick={() =>
+				(statusFilters = statusFilters.filter((s) => s !== status))}
+		>
+			<X size={14} />
+		</button>
+	</div>
+{/snippet}
+
+{#snippet statusFilterPillbox()}
+	<div class="flex flex-row items-center flex-wrap gap-2">
+		<p>Filters:</p>
+		{#each statusFilters as filter}
+			{@render statusFilterPill(filter)}
+		{/each}
+	</div>
+{/snippet}
+
+{#snippet searchBar()}
+	<label>
+		Search (book name or author name):
+		<input class="bg-tertiary" id="search" bind:value={searchText} />
+	</label>
+{/snippet}
+
 <section class="flex items-center justify-center">
 	<Hero
 		header={Content["books.hero.header"]}
@@ -85,11 +154,15 @@
 		<Carousel {images} />
 	</Hero>
 </section>
+<section class="flex flex-wrap items-center justify-center mt-8 gap-4">
+	{@render searchBar()}
+	{@render statusFilterPillbox()}
+</section>
 <section
-	class="grid mt-8 justify-items-center p-12"
+	class="grid justify-items-center p-12"
 	style="grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));"
 >
-	{#each books as book}
+	{#each booksFiltered as book}
 		{@render bookCard(book)}
 	{/each}
 </section>
