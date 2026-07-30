@@ -132,7 +132,7 @@
 
 {#snippet statusFilterPillbox()}
 	<div class="flex flex-row items-center flex-wrap gap-2">
-		<p>Filters:</p>
+		<p>Status Filters:</p>
 		{#each statusFilters as filter}
 			{@render statusFilterPill(filter)}
 		{/each}
@@ -140,9 +140,9 @@
 {/snippet}
 
 {#snippet searchBar()}
-	<label>
-		Search (book name or author name):
-		<input class="bg-tertiary" id="search" bind:value={searchText} />
+	<label class="flex flex-col items-center gap-1 w-full max-w-xs mx-auto">
+		<span>Search (book name or author name):</span>
+		<input class="bg-tertiary w-full" id="search" bind:value={searchText} />
 	</label>
 {/snippet}
 
