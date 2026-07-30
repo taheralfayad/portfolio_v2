@@ -154,7 +154,9 @@
 		<Carousel {images} />
 	</Hero>
 </section>
-<section class="flex flex-wrap items-center justify-center mt-8 gap-4">
+<section
+	class="flex flex-col items-center justify-center gap-4 mt-8 max-w-screen mx-auto"
+>
 	{@render searchBar()}
 	{@render statusFilterPillbox()}
 </section>
