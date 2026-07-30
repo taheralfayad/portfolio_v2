@@ -44,7 +44,7 @@
 	});
 
 	const getBooks = async () => {
-		const response = await api.get("/books");
+		const response = await api.get("/books/retrieve");
 		books = response.map((item) => {
 			return {
 				...item,

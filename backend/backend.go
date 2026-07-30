@@ -185,7 +185,7 @@ func main() {
 		v1.DuckDBify(c, db)
 	})
 
-	r.GET("/books", func(c *gin.Context) {
+	r.GET("/books/retrieve", func(c *gin.Context) {
 		v1.GetBooks(c, db)
 	})
 
