@@ -52,11 +52,11 @@
 					item.status === "not_yet_read"
 						? "Not Yet Read"
 						: item.status === "reading"
-							? `${item.percent_finished * 100}% Read`
+							? `${Math.round(item.percent_finished * 100)}% Read`
 							: item.status === "complete"
 								? "Completed"
 								: item.status === "currently_reading"
-									? `Actively Reading -- ${item.percent_finished * 100}% Read`
+									? `Actively Reading -- ${Math.round(item.percent_finished * 100)}% Read`
 									: item.status,
 			};
 		});
