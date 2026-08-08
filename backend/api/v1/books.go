@@ -2,6 +2,7 @@ package v1
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -56,11 +57,19 @@ func PostBooks(c *gin.Context, db *sql.DB) {
 		return
 	}
 
+	b, err := json.MarshalIndent(payload, "", "    ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Println(string(b))
+
 	currentlyReadingFilename := strings.TrimSuffix(payload.CurrentlyReading.Text, ".epub")
 	lastReadTime := payload.CurrentlyReading.MandatoryTime
 
 	for filename, bookMeta := range payload.Library {
-		if filename == currentlyReadingFilename {
+		if filename == currentlyReadingFilename && bookMeta.Status != "complete" {
 			bookMeta.Status = "currently_reading"
 			bookMeta.LastReadTime = lastReadTime
 			payload.Library[filename] = bookMeta
@@ -107,7 +116,7 @@ func PostBooks(c *gin.Context, db *sql.DB) {
 			SELECT * FROM unnest($1::text[], $2::text[])
 		)
 	`
-	_, err := db.Exec(deleteQuery, pq.Array(titles), pq.Array(authors))
+	_, err = db.Exec(deleteQuery, pq.Array(titles), pq.Array(authors))
 	if err != nil {
 		fmt.Println("Error deleting stale books:", err)
 		return
