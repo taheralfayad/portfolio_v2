@@ -1,5 +1,5 @@
 <script>
-	import { X } from "@lucide/svelte";
+	import Pill from "$lib/components/home/pill.svelte";
 
 	let {
 		searchText = $bindable(""),
@@ -50,17 +50,10 @@
 		<div class="flex flex-row items-center flex-wrap gap-2">
 			<p>{pillboxLabel}:</p>
 			{#each selectedOptions as option}
-				<div
-					class="flex items-center gap-2 px-4 py-2 rounded-lg bg-tertiary"
-				>
-					<p class="text-sm">{getLabel(option)}</p>
-					<button
-						class="shrink-0 cursor-pointer"
-						onclick={() => removeOption(option)}
-					>
-						<X size={14} />
-					</button>
-				</div>
+				<Pill
+					label={getLabel(option)}
+					onRemove={() => removeOption(option)}
+				/>
 			{/each}
 		</div>
 	{/if}
