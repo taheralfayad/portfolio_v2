@@ -5,7 +5,7 @@
 
 	import Hero from "$lib/components/home/hero.svelte";
 	import Carousel from "$lib/design-system/carousel.svelte";
-	import FilterBar from "$lib/components/filter_bar.svelte";
+	import FilterBar from "$lib/components/home/filter_bar.svelte";
 
 	import Content from "$lib/content/home.json";
 
