@@ -1,8 +1,8 @@
 <script>
 	import { page } from "$app/state";
-	import { marked } from "marked";
 
 	import Pill from "$lib/components/home/pill.svelte";
+	import Markdown from "$lib/design-system/markdown.svelte";
 
 	const posts = [
 		{
@@ -58,8 +58,6 @@
 	const post = $derived(
 		posts.find((post) => post.metadata.id === page.params.slug),
 	);
-
-	const content = $derived(marked(post.content, { breaks: true }));
 </script>
 
 {#snippet stars(rating)}
@@ -124,14 +122,9 @@
 
 			<hr class="w-[50%]" />
 
-			<div
-				class="[&_h1]:text-3xl [&_h2]:text-2xl [&_h2]:mb-2 [&_p]:text-indent leading-loose tracking-normal mt-2"
-			>
-				{@html content}
-			</div>
+			<Markdown content={post.content} class="mt-2" />
 		</article>
 	{:else}
 		<p>Post not found.</p>
 	{/if}
 </section>
-
