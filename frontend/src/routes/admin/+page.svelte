@@ -1,4 +1,5 @@
 <script>
+	import { goto } from "$app/navigation";
 	import WorkExperienceInput from "$lib/components/admin/work_experience_input.svelte";
 	import ProjectsInput from "$lib/components/admin/projects_input.svelte";
 	import SkillsInput from "$lib/components/admin/skills_input.svelte";
@@ -41,6 +42,10 @@
 		currNavValue = all_tables[0].table_name;
 	};
 
+	const goToBlogEditor = () => {
+		goto("/admin/blog");
+	};
+
 	onMount(() => {
 		getAllTables();
 	});
@@ -72,6 +77,13 @@
 			<CoffeeCupInput />
 		{:else if currNavValue === "roast"}
 			<RoastInput />
+		{:else if currNavValue === "blog"}
+			<button
+				class="bg-tertiary p-4 cursor-pointer"
+				onclick={goToBlogEditor}
+			>
+				Go to blog editor
+			</button>
 		{:else}
 			<p>not yet implemented</p>
 		{/if}
