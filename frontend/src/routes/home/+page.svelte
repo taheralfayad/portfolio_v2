@@ -7,9 +7,9 @@
 	import SkillsTable from "$lib/components/home/home/skills_table.svelte";
 	import Content from "$lib/content/home.json";
 
-	import { api } from "$lib/utils/api.svelte.js";
+	import { api } from "$lib/utils/api.svelte";
 
-	import { normalizeDate } from "$lib/utils/utils.svelte.js";
+	import { normalizeDate } from "$lib/utils/utils.svelte";
 
 	let workExperiences = $state([]);
 	let workProjects = $state([]);
