@@ -26,3 +26,9 @@ create-migration:
 		exit 1; \
 	fi
 	docker compose run migrate create -ext sql -dir ./migrations -seq $(MIGRATION_NAME)
+
+migrate-down:
+	docker compose run migrate down 1
+
+enter-db:
+	docker compose exec db psql -U portfolio -d portfolio
