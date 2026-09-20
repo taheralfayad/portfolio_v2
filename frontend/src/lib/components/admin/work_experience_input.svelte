@@ -9,8 +9,8 @@
 	import Form from "$lib/design-system/form.svelte";
 	import DataPreview from "$lib/components/admin/data_preview.svelte";
 
-	import { api } from "$lib/utils/api.svelte.js";
-	import { normalizeDate } from "$lib/utils/utils.svelte.js";
+	import { api } from "$lib/utils/api.svelte";
+	import { normalizeDate } from "$lib/utils/utils.svelte";
 
 	let id = $state(0);
 	let title = $state("");
