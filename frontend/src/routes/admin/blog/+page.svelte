@@ -6,11 +6,13 @@
 	import Input from "$lib/design-system/input.svelte";
 	import Markdown from "$lib/design-system/markdown.svelte";
 
+	import { api } from "$lib/utils/api.svelte.js";
 	import { uploadImage } from "$lib/utils/utils.svelte";
 
 	const DEFAULT_METADATA = `{
 	  "title": "",
 	  "author": "",
+	  "clickbait": "",
 	  "rating": 5,
 	  "tags": ["", "", ""]
 	}`;
@@ -23,7 +25,7 @@
 	let imageAltText = $state("");
 
 	onMount(() => {
-		metadata = localStorage.getItem("blog:metadata") ?? DEFAULT_METADATA;
+		metadata = localStorage.getItem("blog:metadata") || DEFAULT_METADATA;
 		pageContent = localStorage.getItem("blog:content") ?? "";
 		loaded = true;
 	});
@@ -49,7 +51,6 @@
 			exitImageModal();
 
 			pageContent += "\n";
-
 			pageContent += `![${resp.resp.title}](${resp.resp.image})\n`;
 		} else {
 			console.error(
@@ -59,6 +60,22 @@
 		}
 
 		return;
+	};
+
+	const uploadBlog = async () => {
+		try {
+			const resp = await api.post("/blog/create", {
+				content: pageContent,
+				metadata: metadata,
+			});
+
+			pageContent = "";
+			metadata = "";
+			localStorage.setItem("blog:metadata", "");
+			localStorage.setItem("blog:content", "");
+		} catch (err) {
+			console.error(err);
+		}
 	};
 
 	$effect(() => {
@@ -141,9 +158,15 @@
 {/if}
 
 <div class="flex flex-col w-full h-full items-start justify-start gap-10 p-10">
-	<div class="flex flex-row items-center justify-start w-full gap-10">
-		<BigInput label="Metadata" bind:value={metadata} required={true} />
-		<pre>{metadataFormatted}</pre>
+	<div class="flex flex-row items-start justify-start w-full gap-10">
+		<BigInput
+			label="Metadata"
+			bind:value={metadata}
+			required={true}
+			class="flex-1 min-w-0"
+			rows={12}
+		/>
+		<pre class="flex-1 min-w-0 overflow-auto">{metadataFormatted}</pre>
 	</div>
 	<div class="flex flex-row items-start justify-center w-full gap-10">
 		<div class="flex-1 min-h-screen">
@@ -153,15 +176,24 @@
 					onclick={() => (imageModalOpen = true)}>Add Image</button
 				>
 			</ul>
-			<textarea
-				class="w-full min-h-screen bg-neutral-300 text-black p-4"
-				placeholder="content go here pal"
-				bind:value={pageContent}
-			></textarea>
+			<div>
+				<textarea
+					class="w-full min-h-screen bg-neutral-300 text-black p-4"
+					placeholder="content go here pal"
+					bind:value={pageContent}
+				></textarea>
+				<button
+					class="p-5 bg-tertiary mt-2 cursor-pointer"
+					onclick={uploadBlog}
+				>
+					the hello fuck you button
+				</button>
+			</div>
 		</div>
 		<Markdown
 			content={pageContent}
-			class="flex-1 min-h-screen overflow-auto border border-neutral-300 p-4"
+			class="flex-1 h-screen overflow-auto border border-neutral-300 p-4"
+			autoscroll={true}
 		/>
 	</div>
 </div>
