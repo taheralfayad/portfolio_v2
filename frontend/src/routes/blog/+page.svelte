@@ -1,9 +1,18 @@
-<script>
+<script lang="ts">
+	import { onMount } from "svelte";
+
 	import FilterBar from "$lib/components/home/filter_bar.svelte";
 	import Pill from "$lib/components/home/pill.svelte";
 
+	import { api } from "$lib/utils/api.svelte.js";
+	import { normalizeDate } from "$lib/utils/utils.svelte";
+
+	import type { Blog, BlogResponse } from "./types";
+
 	let searchText = $state("");
 	let selectedOptions = $state([]);
+
+	let blogs: Blog[] = $state([]);
 
 	const tagOptions = [
 		{ value: "javascript", label: "JavaScript" },
@@ -13,56 +22,25 @@
 		{ value: "career", label: "Career" },
 	];
 
-	const posts = [
-		{
-			metadata: {
-				id: "svelte-portfolio",
-				title: "Building a Svelte Portfolio from Scratch",
-				date: "05/05/01",
-				clickbait:
-					"Why Svelte is the perfect framework for personal sites.",
-				tags: [
-					{ value: "svelte", label: "Svelte" },
-					{ value: "css", label: "CSS" },
-				],
-			},
-		},
-		{
-			metadata: {
-				id: "js-prototypes",
-				title: "JavaScript Prototypes Explained",
-				clickbait: "A deep dive into the JS inheritance model.",
-				tags: [{ value: "javascript", label: "JavaScript" }],
-			},
-		},
-		{
-			metadata: {
-				id: "devops-journey",
-				title: "My Journey into DevOps",
-				clickbait: "From deployment nightmares to CI/CD zen.",
-				tags: [
-					{ value: "devops", label: "DevOps" },
-					{ value: "career", label: "Career" },
-				],
-			},
-		},
-		{
-			metadata: {
-				id: "la-haine-review",
-				title: "Review: La Haine",
-				creator: "Matthew Kassovitz",
-				rating: 3,
-				clickbait: "A must-read for every software engineer.",
-				tags: [
-					{ value: "career", label: "Career" },
-					{ value: "javascript", label: "JavaScript" },
-				],
-			},
-		},
-	];
+	onMount(async () => {
+		try {
+			const resp: BlogResponse[] = await api.get("/blogs");
+
+			blogs = resp.map((blog): Blog => {
+				return {
+					id: blog.id,
+					content: blog.content,
+					date: normalizeDate(blog.created_at),
+					metadata: JSON.parse(blog.metadata),
+				};
+			});
+		} catch (err) {
+			console.error(err);
+		}
+	});
 
 	function filteredPosts() {
-		return posts.filter((post) => {
+		return blogs.filter((post) => {
 			const matchesSearch =
 				searchText === "" ||
 				post.metadata.title
@@ -103,7 +81,7 @@
 		<div class="flex flex-col">
 			<div class="flex flex-row items-center gap-4">
 				<button class="hover:cursor-pointer">
-					<a href={`/blog/${item.metadata.id}`}>
+					<a href={`/blog/${item.id}`}>
 						<h2 class="text-xl hover:underline">
 							{item.metadata.title}
 						</h2>
@@ -118,8 +96,8 @@
 				{/if}
 			</div>
 
-			{#if item.metadata.date}
-				<p class="text-sm">{item.metadata.date}</p>
+			{#if item.date}
+				<p class="text-sm">{item.date}</p>
 			{/if}
 		</div>
 
@@ -128,8 +106,8 @@
 		{#if item.metadata.tags}
 			<div class="flex gap-2">
 				{#each item.metadata.tags as tag}
-					<div class="max-w-20">
-						<Pill label={tag.label} dismissible={false} />
+					<div>
+						<Pill label={tag} dismissible={false} />
 					</div>
 				{/each}
 			</div>
@@ -144,7 +122,7 @@
 			bind:searchText
 			bind:selectedOptions
 			options={tagOptions}
-			searchPlaceholder="Search posts..."
+			searchPlaceholder="Search blogs..."
 			pillboxLabel="Tags"
 		/>
 	</div>
