@@ -1,7 +1,12 @@
-<script>
+<script lang="ts">
 	import { X } from "@lucide/svelte";
 
-	let { label, onRemove, dismissible = true } = $props();
+	interface Props {
+		label: string;
+		onRemove?: () => {};
+		dismissible: boolean;
+	}
+	let { label, onRemove, dismissible = true }: Props = $props();
 </script>
 
 <div class="inline-flex items-center gap-2 px-4 py-2 bg-tertiary">
