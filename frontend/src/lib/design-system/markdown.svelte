@@ -4,9 +4,16 @@
 	interface Props {
 		content: string;
 		class?: string;
+		autoscroll?: boolean;
 	}
 
-	let { content, class: className = "" }: Props = $props();
+	let {
+		content,
+		class: className = "",
+		autoscroll = false,
+	}: Props = $props();
+
+	let container = $state<HTMLElement>();
 
 	let html = $derived.by(() => {
 		try {
@@ -15,9 +22,28 @@
 			return String(e);
 		}
 	});
+
+	$effect(() => {
+		if (!autoscroll) return;
+
+		content;
+
+		const el = container;
+		if (!el) return;
+
+		const isNearBottom =
+			el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+
+		if (isNearBottom) {
+			el.scrollTop = el.scrollHeight;
+		}
+	});
 </script>
 
-<div class={`prose max-w-none leading-loose ${className}`}>
+<div
+	bind:this={container}
+	class={`prose max-w-none leading-loose ${className}`}
+>
 	{@html html}
 </div>
 
