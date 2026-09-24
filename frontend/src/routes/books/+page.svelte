@@ -6,6 +6,7 @@
 	import Hero from "$lib/components/home/hero.svelte";
 	import Carousel from "$lib/design-system/carousel.svelte";
 	import FilterBar from "$lib/components/home/filter_bar.svelte";
+	import LoadingSpinner from "$lib/components/home/books/loading_spinner.svelte";
 
 	import Content from "$lib/content/home.json";
 
@@ -13,6 +14,7 @@
 	let images = $state([]);
 	let searchText = $state("");
 	let statusFilters = $state([]);
+	let isLoading = $state(true);
 
 	let booksFiltered = $derived.by(() => {
 		const query = searchText.trim().toLowerCase();
@@ -72,9 +74,14 @@
 		});
 	};
 
-	onMount(() => {
-		getBooks();
-		getImages();
+	onMount(async () => {
+		try {
+			await Promise.all([getBooks(), getImages()]);
+		} catch (err) {
+			console.error(err);
+		} finally {
+			isLoading = false;
+		}
 	});
 
 	const statusOptions = [
@@ -121,30 +128,34 @@
 	</div>
 {/snippet}
 
-<section class="flex items-center justify-center">
-	<Hero
-		header={Content["books.hero.header"]}
-		subtitle={Content["books.hero.subtitle"]}
+{#if isLoading}
+	<LoadingSpinner />
+{:else}
+	<section class="flex items-center justify-center">
+		<Hero
+			header={Content["books.hero.header"]}
+			subtitle={Content["books.hero.subtitle"]}
+		>
+			<Carousel {images} />
+		</Hero>
+	</section>
+	<section
+		class="flex flex-col items-center justify-center gap-4 mt-8 max-w-screen mx-auto"
 	>
-		<Carousel {images} />
-	</Hero>
-</section>
-<section
-	class="flex flex-col items-center justify-center gap-4 mt-8 max-w-screen mx-auto"
->
-	<FilterBar
-		bind:searchText
-		bind:selectedOptions={statusFilters}
-		options={statusOptions}
-		searchPlaceholder="Search (book name or author name)..."
-		pillboxLabel="Status Filters"
-	/>
-</section>
-<section
-	class="grid justify-items-center p-12"
-	style="grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));"
->
-	{#each booksFiltered as book}
-		{@render bookCard(book)}
-	{/each}
-</section>
+		<FilterBar
+			bind:searchText
+			bind:selectedOptions={statusFilters}
+			options={statusOptions}
+			searchPlaceholder="Search (book name or author name)..."
+			pillboxLabel="Status Filters"
+		/>
+	</section>
+	<section
+		class="grid justify-items-center p-12"
+		style="grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));"
+	>
+		{#each booksFiltered as book}
+			{@render bookCard(book)}
+		{/each}
+	</section>
+{/if}
