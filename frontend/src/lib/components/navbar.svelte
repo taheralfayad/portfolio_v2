@@ -97,7 +97,7 @@
 	</li>
 {/snippet}
 
-<nav class="hidden sm:flex justify-between bg-tertiary text-font border-b h-16">
+<nav class="hidden md:flex justify-between bg-tertiary text-font border-b h-16">
 	<ul class="flex h-full items-center">
 		{#each Object.entries(routes) as [name, fn]}
 			{@render navItem(name, fn, "link")}
@@ -111,7 +111,7 @@
 </nav>
 
 <nav
-	class="relative flex items-center justify-end bg-tertiary text-font border-b h-16 sm:hidden"
+	class="relative flex items-center justify-end bg-tertiary text-font border-b h-16 md:hidden"
 >
 	<button
 		class="pr-2 cursor-pointer"

@@ -1,0 +1,3 @@
+ALTER TABLE images ALTER COLUMN site SET DEFAULT 'home';
+
+DROP TABLE IF EXISTS blog;

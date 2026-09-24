@@ -1,5 +1,12 @@
-<script>
-	let { label, required, value = $bindable(), onFocus } = $props();
+<script lang="ts">
+	interface Props {
+		label: string;
+		required: boolean;
+		value: string;
+		onFocus?: (event: FocusEvent) => void;
+	}
+
+	let { label, required, value = $bindable(), onFocus }: Props = $props();
 </script>
 
 <div class="flex items-center gap-3 pt-2">

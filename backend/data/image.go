@@ -1,17 +1,18 @@
 package data
 
-type ImagePayload struct {
+type ImageBase struct {
 	ID      string `json:"id"`
 	Title   string `json:"title"`
 	Caption string `json:"caption"`
-	Image   string `json:"image"`
 	Site    string `json:"site"`
 }
 
+type ImagePayload struct {
+	ImageBase
+	Image string `json:"image"`
+}
+
 type ImageResponse struct {
-	ID        string `json:"id"`
-	Title     string `json:"title"`
-	Caption   string `json:"caption"`
+	ImageBase
 	ImageLink string `json:"image"`
-	Site      string `json:"site"`
 }

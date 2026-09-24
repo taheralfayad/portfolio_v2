@@ -141,6 +141,10 @@ func main() {
 		v1.AddCoffeeRoast(c, db)
 	})
 
+	auth.POST("/blog/create", func(c *gin.Context) {
+		v1.AddBlog(c, db)
+	})
+
 	bearerBasedAuth.POST("/books/upload", func(c *gin.Context) {
 		v1.PostBooks(c, db)
 	})
@@ -187,6 +191,14 @@ func main() {
 
 	r.GET("/books/retrieve", func(c *gin.Context) {
 		v1.GetBooks(c, db)
+	})
+
+	r.GET("/blogs", func(c *gin.Context) {
+		v1.GetBlogs(c, db)
+	})
+
+	r.GET("/blogs/:id", func(c *gin.Context) {
+		v1.GetBlog(c, db)
 	})
 
 	auth.PUT("/work-experiences", func(c *gin.Context) {

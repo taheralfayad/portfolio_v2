@@ -10,4 +10,3 @@ export const load = async () => {
 		redirect(303, '/login');
 	}
 }
-

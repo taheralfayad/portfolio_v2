@@ -30,7 +30,13 @@ func AddImage(c *gin.Context, db *sql.DB) {
 
 	id := uuid.New()
 	imageID := fmt.Sprintf("%s_image", id.String())
-	imageLink := "/hero_images/" + imageID
+	var imageLink string
+
+	if payload.Site == "blog" {
+		imageLink = "/blog_images/" + imageID
+	} else {
+		imageLink = "/hero_images/" + imageID
+	}
 
 	err = utils.SaveBase64ImageToDisk(
 		payload.Image,
@@ -64,7 +70,7 @@ func AddImage(c *gin.Context, db *sql.DB) {
 
 	response.Title = payload.Title
 	response.Caption = payload.Caption
-	response.ImageLink = imageLink
+	response.ImageLink = os.Getenv("ASSETS_URL") + imageLink
 
 	c.JSON(http.StatusCreated, response)
 }

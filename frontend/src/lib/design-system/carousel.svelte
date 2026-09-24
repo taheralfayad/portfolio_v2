@@ -2,6 +2,7 @@
 	import { ChevronRight, ChevronLeft } from "@lucide/svelte";
 
 	let index = $state(0);
+	let resetKey = $state(0);
 
 	let { images = [], intervalMs = 4000 } = $props();
 
@@ -13,8 +14,20 @@
 		index = (index - 1 + images.length) % images.length;
 	}
 
+	function changeSlide(direction) {
+		if (direction > 0) {
+			next();
+		} else {
+			prev();
+		}
+
+		resetKey++;
+	}
+
 	$effect(() => {
 		if (images.length <= 1) return;
+
+		resetKey;
 
 		const timer = setInterval(next, intervalMs);
 
@@ -39,6 +52,25 @@
 						/>
 					{/each}
 				</div>
+
+				{#if images.length > 1}
+					<button
+						type="button"
+						onclick={() => changeSlide(-1)}
+						aria-label="Previous image"
+						class="p-3 hover:cursor-pointer bg-button border border-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute left-4 top-1/2 -translate-y-1/2"
+					>
+						<ChevronLeft color="black" />
+					</button>
+					<button
+						type="button"
+						onclick={() => changeSlide(1)}
+						aria-label="Next image"
+						class="p-3 hover:cursor-pointer bg-button border border-black opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute right-4 top-1/2 -translate-y-1/2"
+					>
+						<ChevronRight color="black" />
+					</button>
+				{/if}
 			</div>
 
 			<div class="mt-3">
