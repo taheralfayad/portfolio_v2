@@ -10,6 +10,7 @@ node_modules
 tmp/
 static/
 !static/.gitkeep
+dist/
 
 # OS
 .DS_Store
