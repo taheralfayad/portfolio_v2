@@ -4,6 +4,7 @@
 	import FilterBar from "$lib/components/home/filter_bar.svelte";
 	import Pill from "$lib/components/home/pill.svelte";
 	import Stars from "$lib/components/home/blog/stars.svelte";
+	import LoadingSpinner from "$lib/components/home/blog/loading_spinner.svelte";
 
 	import { api } from "$lib/utils/api.svelte.js";
 	import { normalizeDate } from "$lib/utils/utils.svelte";
@@ -12,6 +13,8 @@
 
 	let searchText = $state("");
 	let selectedOptions = $state([]);
+
+	let isLoading = $state(true);
 
 	let blogs: Blog[] = $state([]);
 	let tags: Tag[] = $derived(
@@ -37,6 +40,8 @@
 			});
 		} catch (err) {
 			console.error(err);
+		} finally {
+			isLoading = false;
 		}
 	});
 
@@ -99,18 +104,22 @@
 {/snippet}
 
 <section class="flex flex-col gap-4 p-5 h-screen w-full">
-	<div>
-		<FilterBar
-			bind:searchText
-			bind:selectedOptions
-			options={tags}
-			searchPlaceholder="Search blogs..."
-			pillboxLabel="Tags"
-		/>
-	</div>
-	<div class="flex-col gap-4">
-		{#each filteredBlogs() as blog}
-			{@render blogCard(blog)}
-		{/each}
-	</div>
+	{#if isLoading}
+		<LoadingSpinner />
+	{:else}
+		<div>
+			<FilterBar
+				bind:searchText
+				bind:selectedOptions
+				options={tags}
+				searchPlaceholder="Search blogs..."
+				pillboxLabel="Tags"
+			/>
+		</div>
+		<div class="flex-col gap-4">
+			{#each filteredBlogs() as blog}
+				{@render blogCard(blog)}
+			{/each}
+		</div>
+	{/if}
 </section>
