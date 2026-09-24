@@ -12,6 +12,11 @@ export interface Blog {
   };
 }
 
+export interface Tag {
+  value: string;
+  label: string;
+}
+
 export interface BlogResponse {
   id: number;
   created_at: string;

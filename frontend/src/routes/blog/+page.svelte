@@ -3,24 +3,25 @@
 
 	import FilterBar from "$lib/components/home/filter_bar.svelte";
 	import Pill from "$lib/components/home/pill.svelte";
+	import Stars from "$lib/components/home/blog/stars.svelte";
 
 	import { api } from "$lib/utils/api.svelte.js";
 	import { normalizeDate } from "$lib/utils/utils.svelte";
 
-	import type { Blog, BlogResponse } from "./types";
+	import type { Blog, Tag, BlogResponse } from "./types";
 
 	let searchText = $state("");
 	let selectedOptions = $state([]);
 
 	let blogs: Blog[] = $state([]);
-
-	const tagOptions = [
-		{ value: "javascript", label: "JavaScript" },
-		{ value: "svelte", label: "Svelte" },
-		{ value: "css", label: "CSS" },
-		{ value: "devops", label: "DevOps" },
-		{ value: "career", label: "Career" },
-	];
+	let tags: Tag[] = $derived(
+		blogs.flatMap((blog) =>
+			blog.metadata.tags.map((tag) => ({
+				value: tag,
+				label: tag,
+			})),
+		),
+	);
 
 	onMount(async () => {
 		try {
@@ -39,44 +40,25 @@
 		}
 	});
 
-	function filteredPosts() {
-		return blogs.filter((post) => {
+	function filteredBlogs() {
+		return blogs.filter((blog) => {
 			const matchesSearch =
 				searchText === "" ||
-				post.metadata.title
+				blog.metadata.title
 					.toLowerCase()
 					.includes(searchText.toLowerCase()) ||
-				post.metadata.clickbait
+				blog.metadata.clickbait
 					.toLowerCase()
 					.includes(searchText.toLowerCase());
 			const matchesFilters =
 				selectedOptions.length === 0 ||
-				post.metadata.tags.some((tag) =>
-					selectedOptions.includes(tag.value),
-				);
+				blog.metadata.tags.some((tag) => selectedOptions.includes(tag));
 			return matchesSearch && matchesFilters;
 		});
 	}
 </script>
 
-{#snippet blogCard(item)}
-	{#snippet stars(rating)}
-		{#snippet star(i, rating)}
-			<div class={i < rating ? "text-amber-400" : "text-gray-300"}>
-				<svg viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
-					<path
-						d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-					/>
-				</svg>
-			</div>
-		{/snippet}
-		<div class="flex">
-			{#each Array(5) as _, i}
-				{@render star(i, rating)}
-			{/each}
-		</div>
-	{/snippet}
-
+{#snippet blogCard(item: Blog)}
 	<div class="flex flex-col gap-4 pb-5">
 		<div class="flex flex-col">
 			<div class="flex flex-row items-center gap-4">
@@ -92,7 +74,7 @@
 					<p class="text-sm italic">{item.metadata.creator}</p>
 				{/if}
 				{#if item.metadata.rating}
-					{@render stars(item.metadata.rating)}
+					<Stars rating={item.metadata.rating} />
 				{/if}
 			</div>
 
@@ -121,14 +103,14 @@
 		<FilterBar
 			bind:searchText
 			bind:selectedOptions
-			options={tagOptions}
+			options={tags}
 			searchPlaceholder="Search blogs..."
 			pillboxLabel="Tags"
 		/>
 	</div>
 	<div class="flex-col gap-4">
-		{#each filteredPosts() as post}
-			{@render blogCard(post)}
+		{#each filteredBlogs() as blog}
+			{@render blogCard(blog)}
 		{/each}
 	</div>
 </section>
