@@ -25,10 +25,11 @@
 		<div class="flex w-full justify-center gap-4 mt-auto pt-6">
 			<a
 				href={project.githubLink}
-				class="p-3 hover:cursor-pointer bg-tertiary"
+				aria-label={`Link to project: ${project.name}`}
+				class="p-3 hover:cursor-pointer bg-button border border-black"
 				target="_blank"
 			>
-				<Link />
+				<Link color="black" />
 			</a>
 		</div>
 	</div>
