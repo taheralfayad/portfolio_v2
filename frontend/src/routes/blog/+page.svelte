@@ -66,20 +66,25 @@
 {#snippet blogCard(item: Blog)}
 	<div class="flex flex-col gap-4 pb-5">
 		<div class="flex flex-col">
-			<div class="flex flex-row items-center gap-4">
-				<button class="hover:cursor-pointer">
-					<a href={`/blog/${item.id}`}>
-						<h2 class="text-xl hover:underline">
-							{item.metadata.title}
-						</h2>
-					</a>
-				</button>
-				<!-- the following will only be useful in case the article is a review on a piece of media created by someone else !-->
-				{#if item.metadata.creator}
-					<p class="text-sm italic">{item.metadata.creator}</p>
-				{/if}
-				{#if item.metadata.rating}
-					<Stars rating={item.metadata.rating} />
+			<div
+				class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
+			>
+				<a href={`/blog/${item.id}`}>
+					<h2 class="text-xl hover:underline">
+						{item.metadata.title}
+					</h2>
+				</a>
+				{#if item.metadata.creator || item.metadata.rating}
+					<div class="flex items-center gap-3 sm:gap-4">
+						{#if item.metadata.creator}
+							<p class="text-sm italic">
+								{item.metadata.creator}
+							</p>
+						{/if}
+						{#if item.metadata.rating}
+							<Stars rating={item.metadata.rating} />
+						{/if}
+					</div>
 				{/if}
 			</div>
 

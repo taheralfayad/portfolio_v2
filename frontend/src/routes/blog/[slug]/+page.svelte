@@ -49,17 +49,23 @@
 			<article class="flex flex-col gap-4 max-w-3xl">
 				<div class="flex flex-col gap-2">
 					<div class="flex flex-col">
-						<div class="flex flex-row items-center gap-4">
+						<div
+							class="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4"
+						>
 							<h1 class="text-3xl font-bold">
 								{blog.metadata.title}
 							</h1>
-							{#if blog.metadata.creator}
-								<p class="text-sm italic">
-									{blog.metadata.creator}
-								</p>
-							{/if}
-							{#if blog.metadata.rating}
-								<Stars rating={blog.metadata.rating} />
+							{#if blog.metadata.creator || blog.metadata.rating}
+								<div class="flex items-center gap-3 sm:gap-4">
+									{#if blog.metadata.creator}
+										<p class="text-sm italic">
+											{blog.metadata.creator}
+										</p>
+									{/if}
+									{#if blog.metadata.rating}
+										<Stars rating={blog.metadata.rating} />
+									{/if}
+								</div>
 							{/if}
 						</div>
 
