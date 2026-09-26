@@ -53,15 +53,17 @@ func GetBlogs(c *gin.Context, db *sql.DB) {
 			created_at,
 			metadata
 		FROM blog
+		ORDER BY created_at DESC;
 	`
 
 	rows, err := db.Query(query)
-	defer rows.Close()
 
 	if err != nil {
 		slog.Error("error while retrieving blogs", err)
 		messages.InternalError(c, err)
+		return
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var blog data.Blog
