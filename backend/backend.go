@@ -141,7 +141,7 @@ func main() {
 		v1.AddCoffeeRoast(c, db)
 	})
 
-	auth.POST("/blog/create", func(c *gin.Context) {
+	auth.POST("/blogs", func(c *gin.Context) {
 		v1.AddBlog(c, db)
 	})
 
@@ -199,6 +199,10 @@ func main() {
 
 	r.GET("/blogs/:id", func(c *gin.Context) {
 		v1.GetBlog(c, db)
+	})
+
+	auth.PUT("/blogs/:id", func(c *gin.Context) {
+		v1.EditBlog(c, db)
 	})
 
 	auth.PUT("/work-experiences", func(c *gin.Context) {

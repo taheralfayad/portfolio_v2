@@ -1,4 +1,9 @@
 <script lang="ts">
+	interface FilterableTag {
+		value: string;
+		label: string;
+	}
+
 	import { onMount } from "svelte";
 
 	import FilterBar from "$lib/components/home/filter_bar.svelte";
@@ -9,15 +14,15 @@
 	import { api } from "$lib/utils/api.svelte.js";
 	import { normalizeDate } from "$lib/utils/utils.svelte";
 
-	import type { Blog, Tag, BlogResponse } from "./types";
+	import type { Blog, BlogResponse } from "$lib/types/blog";
 
 	let searchText = $state("");
-	let selectedOptions = $state([]);
+	let selectedOptions: string[] = $state([]);
 
 	let isLoading = $state(true);
 
 	let blogs: Blog[] = $state([]);
-	let tags: Tag[] = $derived(
+	let tags: FilterableTag[] = $derived(
 		blogs.flatMap((blog) =>
 			blog.metadata.tags.map((tag) => ({
 				value: tag,
