@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -99,11 +100,20 @@ func GetBlogs(c *gin.Context, db *sql.DB) {
 	for rows.Next() {
 		var blog data.Blog
 
-		rows.Scan(
-			&blog.ID,
-			&blog.CreatedAt,
-			&blog.Metadata,
-		)
+		if slices.Contains(includeArr, "content") {
+			rows.Scan(
+				&blog.ID,
+				&blog.CreatedAt,
+				&blog.Metadata,
+				&blog.Content,
+			)
+		} else {
+			rows.Scan(
+				&blog.ID,
+				&blog.CreatedAt,
+				&blog.Metadata,
+			)
+		}
 
 		response = append(response, blog)
 
