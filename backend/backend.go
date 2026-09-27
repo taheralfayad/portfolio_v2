@@ -201,6 +201,10 @@ func main() {
 		v1.GetBlog(c, db)
 	})
 
+	auth.PUT("/blogs/:id", func(c *gin.Context) {
+		v1.EditBlog(c, db)
+	})
+
 	auth.PUT("/work-experiences", func(c *gin.Context) {
 		v1.EditWorkExperience(c, db)
 	})
