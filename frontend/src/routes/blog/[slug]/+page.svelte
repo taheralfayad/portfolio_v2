@@ -10,7 +10,7 @@
 	import { api } from "$lib/utils/api.svelte.js";
 	import { normalizeDate } from "$lib/utils/utils.svelte";
 
-	import type { Blog, BlogResponse } from "../types.ts";
+	import type { Blog, BlogResponse } from "$lib/types/blog";
 
 	let blog: Blog | null = $state(null);
 	let isLoading = $state(true);
