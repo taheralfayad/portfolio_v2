@@ -1,18 +1,20 @@
 <script lang="ts">
+	export interface SelectOption {
+		value: string;
+		label: string;
+	}
+
 	interface Props {
 		label: string;
-		required: boolean;
+		required?: boolean;
 		value: string;
-		options: {
-			value: string;
-			label: string;
-		}[];
-		onchange(e: Event): void;
+		options: SelectOption[];
+		onchange?(e: Event): void;
 	}
 
 	let {
 		label,
-		required,
+		required = false,
 		value = $bindable(),
 		options = [],
 		onchange,
