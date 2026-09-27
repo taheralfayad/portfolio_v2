@@ -141,7 +141,7 @@ func main() {
 		v1.AddCoffeeRoast(c, db)
 	})
 
-	auth.POST("/blog/create", func(c *gin.Context) {
+	auth.POST("/blogs", func(c *gin.Context) {
 		v1.AddBlog(c, db)
 	})
 
