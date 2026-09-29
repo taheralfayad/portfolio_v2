@@ -5,13 +5,18 @@
 	import ImageInput from "$lib/design-system/image_input.svelte";
 	import Input from "$lib/design-system/input.svelte";
 	import Markdown from "$lib/design-system/markdown.svelte";
+	import Select, {
+		type SelectOption,
+	} from "$lib/design-system/select.svelte";
+
+	import type { BlogMetadata, BlogResponse } from "$lib/types/blog";
 
 	import { api } from "$lib/utils/api.svelte.js";
 	import { uploadImage } from "$lib/utils/utils.svelte";
 
 	const DEFAULT_METADATA = `{
 	  "title": "",
-	  "author": "",
+	  "creator": "",
 	  "clickbait": "",
 	  "rating": 5,
 	  "tags": ["", "", ""]
@@ -23,11 +28,28 @@
 	let imageModalOpen = $state(false);
 	let imageData = $state("");
 	let imageAltText = $state("");
+	let selectedBlog = $state("");
+	let preExistingBlogs: BlogResponse[] = $state([]);
+
+	let selectOptions: SelectOption[] = $derived.by(() => {
+		let options = preExistingBlogs.map((blog) => {
+			const metadata: BlogMetadata = JSON.parse(blog.metadata);
+			return {
+				label: metadata.title,
+				value: String(blog.id),
+			};
+		});
+
+		options.push({ label: "", value: "" });
+
+		return options;
+	});
 
 	onMount(() => {
 		metadata = localStorage.getItem("blog:metadata") || DEFAULT_METADATA;
 		pageContent = localStorage.getItem("blog:content") ?? "";
 		loaded = true;
+		getBlogs();
 	});
 
 	let metadataFormatted = $derived.by(() => {
@@ -37,6 +59,18 @@
 			return `Invalid JSON: ${e.message}`;
 		}
 	});
+
+	const getBlogs = async () => {
+		try {
+			const resp: BlogResponse[] = await api.get(
+				`/blogs?include=["content"]`,
+			);
+
+			preExistingBlogs = resp;
+		} catch (e) {
+			console.error(e);
+		}
+	};
 
 	const exitImageModal = () => {
 		imageModalOpen = false;
@@ -64,10 +98,19 @@
 
 	const uploadBlog = async () => {
 		try {
-			const resp = await api.post("/blog/create", {
+			let url = "";
+			let payload = {
 				content: pageContent,
 				metadata: metadata,
-			});
+			};
+
+			if (selectedBlog) {
+				url = `/blogs/${selectedBlog}`;
+				await api.put(url, payload);
+			} else {
+				url = `/blogs`;
+				await api.post(url, payload);
+			}
 
 			pageContent = "";
 			metadata = "";
@@ -77,6 +120,24 @@
 			console.error(err);
 		}
 	};
+
+	$effect(() => {
+		if (selectedBlog === "") {
+			return;
+		}
+
+		const blog = preExistingBlogs.find(
+			(blog) => String(blog.id) === selectedBlog,
+		);
+
+		if (!blog) {
+			console.error("wtf");
+			return;
+		}
+
+		metadata = blog?.metadata || "";
+		pageContent = blog?.content || "";
+	});
 
 	$effect(() => {
 		if (!loaded) return;
@@ -158,6 +219,11 @@
 {/if}
 
 <div class="flex flex-col w-full h-full items-start justify-start gap-10 p-10">
+	<Select
+		label="pre-existing blog"
+		bind:value={selectedBlog}
+		options={selectOptions}
+	/>
 	<div class="flex flex-row items-start justify-start w-full gap-10">
 		<BigInput
 			label="Metadata"
