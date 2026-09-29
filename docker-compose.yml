@@ -42,6 +42,8 @@ services:
 
   migrate:
     image: migrate/migrate
+    profiles:
+      - manual-only
     volumes:
       - ./backend/migrations:/migrations
     entrypoint:
