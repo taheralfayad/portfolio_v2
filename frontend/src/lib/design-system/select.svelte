@@ -8,13 +8,12 @@
 	} = $props();
 </script>
 
-<div class="flex items-center gap-3 pt-2">
-	<label class="font-medium whitespace-nowrap">
-		{label}
-		{#if required}
-			<span class="text-red-500">*</span>
-		{/if}
-	</label>
+<label class="flex items-center gap-3 pt-2 font-medium whitespace-nowrap">
+	{label}
+	{#if required}
+		<span class="text-red-500">*</span>
+	{/if}
+
 	<select
 		bind:value
 		{required}
@@ -25,4 +24,4 @@
 			<option value={option.value}>{option.label}</option>
 		{/each}
 	</select>
-</div>
+</label>
