@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { ChevronRight, ChevronLeft } from "@lucide/svelte";
 
+	import type { Image } from "$lib/types/images.svelte";
+
+	type Props = {
+		images: Image[];
+		intervalMs?: number;
+	};
+
 	let index = $state(0);
 	let resetKey = $state(0);
 
-	let { images = [], intervalMs = 4000 } = $props();
+	let { images = [], intervalMs = 4000 }: Props = $props();
 
 	function next() {
 		index = (index + 1) % images.length;
