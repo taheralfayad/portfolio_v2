@@ -12,7 +12,7 @@
 	import type { BlogMetadata, BlogResponse } from "$lib/types/blog";
 
 	import { api } from "$lib/utils/api.svelte.js";
-	import { uploadImage } from "$lib/utils/utils.svelte";
+	import { uploadImage } from "$lib/types/images.svelte";
 
 	const DEFAULT_METADATA = `{
 	  "title": "",
