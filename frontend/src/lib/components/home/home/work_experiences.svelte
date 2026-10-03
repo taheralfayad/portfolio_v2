@@ -13,9 +13,9 @@
 {#snippet experience(item: WorkExperience)}
 	<div class="flex flex-col gap-3">
 		<div>
-			<h3 class="text-lg leading-tight">{item.title}</h3>
+			<h3 class="leading-tight">{item.title}</h3>
 			{#if item.workplace}
-				<h4 class="text-md">{item.workplace}</h4>
+				<h4>{item.workplace}</h4>
 			{/if}
 			<div>
 				{#if item.startDate}
@@ -30,7 +30,7 @@
 			</div>
 		</div>
 		{#if item.description}
-			<div class="text-sm leading-relaxed">
+			<div class="text-sm leading-relaxed max-w-4xl">
 				{item.description}
 			</div>
 		{/if}
