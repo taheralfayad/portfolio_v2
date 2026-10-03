@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { ChevronRight, ChevronLeft } from "@lucide/svelte";
 
 	let index = $state(0);
@@ -45,7 +45,7 @@
 				>
 					{#each images as image, i}
 						<img
-							src={image.imageLink}
+							src={image.image}
 							alt={image.title}
 							class="w-full h-full shrink-0 object-cover"
 							loading={i === 0 ? "eager" : "lazy"}
