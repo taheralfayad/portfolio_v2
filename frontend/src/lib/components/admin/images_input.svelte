@@ -13,7 +13,7 @@
 	import { api } from "$lib/utils/api.svelte.js";
 	import { handleImageChange } from "$lib/utils/utils.svelte";
 
-	const IMAGE_SITES = ["home", "books"];
+	const IMAGE_SITES = ["home", "books", "coffee_charts", "coffee_sql"];
 
 	let id = $state(0);
 	let title = $state("");
