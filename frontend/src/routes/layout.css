@@ -12,6 +12,21 @@
   h6 {
     font-weight: var(--font-weight-bold);
   }
+
+  h2 {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+  }
+
+  h4 {
+    font-size: var(--text-md);
+    line-height: var(--text-md--line-height);
+  }
 }
 
 @theme {
