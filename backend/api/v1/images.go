@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"slices"
 	"strconv"
+	"strings"
 
 	data "github.com/taheralfayad/portfolio_v2/data"
 	"github.com/taheralfayad/portfolio_v2/messages"
@@ -32,9 +34,14 @@ func AddImage(c *gin.Context, db *sql.DB) {
 	imageID := fmt.Sprintf("%s_image", id.String())
 	var imageLink string
 
-	if payload.Site == "blog" {
+	switch payload.Site {
+	case "blog":
 		imageLink = "/blog_images/" + imageID
-	} else {
+	case "home":
+		imageLink = "/hero_images/" + imageID
+	case "coffee_charts", "coffee_sql":
+		imageLink = "/coffee_images/" + imageID
+	default:
 		imageLink = "/hero_images/" + imageID
 	}
 
@@ -76,6 +83,7 @@ func AddImage(c *gin.Context, db *sql.DB) {
 }
 
 func GetImages(c *gin.Context, db *sql.DB) {
+	acceptableSites := []string{"home", "books", "coffee_charts", "coffee_sql"}
 	limit := c.DefaultQuery("limit", "0")
 	site := c.DefaultQuery("site", "home")
 
@@ -84,9 +92,13 @@ func GetImages(c *gin.Context, db *sql.DB) {
 		err  error
 	)
 
-	if site != "home" && site != "books" {
-		messages.BadRequest(c,
-			errors.New("site value must either be: home, books"))
+	if !slices.Contains(acceptableSites, site) {
+		acceptableSitesString := strings.Join(acceptableSites, " ")
+		messages.BadRequest(
+			c,
+			errors.New(fmt.Sprintf("site value must be one of the following: %s", acceptableSitesString)),
+		)
+		return
 	}
 
 	if limit != "0" {
