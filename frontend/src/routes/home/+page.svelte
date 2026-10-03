@@ -9,10 +9,12 @@
 
 	import { api } from "$lib/utils/api.svelte";
 	import { getImages, type Image } from "$lib/types/images.svelte";
+	import {
+		getWorkExperiences,
+		type WorkExperience,
+	} from "$lib/types/work_experience.svelte";
 
-	import { normalizeDate } from "$lib/utils/utils.svelte";
-
-	let workExperiences = $state([]);
+	let workExperiences: WorkExperience[] = $state([]);
 	let workProjects = $state([]);
 	let personalProjects = $state([]);
 	let skills = $state([]);
@@ -39,16 +41,15 @@
 		images = resp.resp;
 	};
 
-	const getWorkExperiences = async () => {
-		const data = await api.get("/work-experiences?limit=3");
+	const retrieveWorkExperiences = async () => {
+		const resp = await getWorkExperiences(3);
 
-		workExperiences = data.map((datum) => ({
-			title: datum.title,
-			subtitle: datum.workplace,
-			description: datum.description,
-			startDate: normalizeDate(datum.start_date),
-			endDate: normalizeDate(datum.end_date),
-		}));
+		if (!resp.success) {
+			console.error(resp.error);
+			return;
+		}
+
+		workExperiences = resp.resp;
 	};
 
 	const getWorkProjects = async () => {
@@ -79,36 +80,45 @@
 
 	onMount(() => {
 		getSkills();
-		getWorkExperiences();
+		retrieveWorkExperiences();
 		getWorkProjects();
 		getPersonalProjects();
 		retrieveImages();
 	});
 </script>
 
-<section class="flex items-center justify-center">
+{#snippet sectionHeader(text: string)}
+	<h2 class="flex text-xl mb-6">
+		{text}
+	</h2>
+{/snippet}
+
+<section class="p-6 flex flex-col gap-12">
 	<Hero
 		header={Content["home.hero.header"]}
 		subtitle={Content["home.hero.subtitle"]}
 	>
 		<Carousel {images} />
 	</Hero>
-</section>
-<section class="flex flex-col items-center justify-center">
-	<h2 class="flex justify-center text-xl text-center">
-		{Content.sections.workExperiences}
+
+	<div>
+		{@render sectionHeader(Content.sections.workExperiences)}
+		<WorkExperiences items={workExperiences} />
+	</div>
+
+	<div>
+		{@render sectionHeader(Content.sections.workProjects)}
+		<Projects projects={workProjects} />
+	</div>
+
+	<div>
+		<h2 class="flex justify-center text-xl mt-4 text-center">
+			{Content.sections.personalProjects}
+		</h2>
+	</div>
+	<Projects projects={personalProjects} />
+	<h2 class="flex justify-center text-xl mt-4 text-center">
+		{Content.sections.skills}
 	</h2>
-	<WorkExperiences items={workExperiences} />
+	<SkillsTable {skills} />
 </section>
-<h2 class="flex justify-center text-xl text-center">
-	{Content.sections.workProjects}
-</h2>
-<Projects projects={workProjects} />
-<h2 class="flex justify-center text-xl mt-4 text-center">
-	{Content.sections.personalProjects}
-</h2>
-<Projects projects={personalProjects} />
-<h2 class="flex justify-center text-xl mt-4 text-center">
-	{Content.sections.skills}
-</h2>
-<SkillsTable {skills} />
