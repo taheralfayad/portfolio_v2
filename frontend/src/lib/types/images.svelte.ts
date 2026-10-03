@@ -1,6 +1,12 @@
 import { api } from "$lib/utils/api.svelte.js";
 
-type ImageSite = "home" | "books" | "blog" | "coffee_hero" | null;
+type ImageSite =
+  | "home"
+  | "books"
+  | "blog"
+  | "coffee_charts"
+  | "coffee_sql"
+  | null;
 type UploadResult =
   | { success: true; resp: Image }
   | { success: false; error: string };
