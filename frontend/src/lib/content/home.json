@@ -9,8 +9,8 @@
   "coffee.sql.hero.subtitle": "I built this using <a class='underline' target='_blank' href='https://duckdb.org/docs/current/clients/wasm/overview'>DuckDB WASM</a>. The server returns a Parquet file per table. These Parquet files are then materialized into views in the DuckDB database. This then allows you to turn my coffee drinking habits into SQL queries.",
   "sections": {
     "workExperiences": "Employment History:",
-    "workProjects": "Here are some of the projects I've worked on at work:",
-    "personalProjects": "Here are some of the projects I've worked on in my own free time",
+    "workProjects": "Work Projects:",
+    "personalProjects": "Personal Projects:",
     "skills": "Here are some technologies that I've used (and loved enough to talk about using):"
   }
 }

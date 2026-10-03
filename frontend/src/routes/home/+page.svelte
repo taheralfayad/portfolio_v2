@@ -13,10 +13,11 @@
 		getWorkExperiences,
 		type WorkExperience,
 	} from "$lib/types/work_experience.svelte";
+	import { getProjects, type Project } from "$lib/types/project.svelte";
 
 	let workExperiences: WorkExperience[] = $state([]);
-	let workProjects = $state([]);
-	let personalProjects = $state([]);
+	let workProjects: Project[] = $state([]);
+	let personalProjects: Project[] = $state([]);
 	let skills = $state([]);
 	let images: Image[] = $state([]);
 
@@ -52,43 +53,39 @@
 		workExperiences = resp.resp;
 	};
 
-	const getWorkProjects = async () => {
-		const data = await api.get("/projects?limit=5&type=work");
+	const retrieveWorkProjects = async () => {
+		const resp = await getProjects("work", 5);
 
-		workProjects = data.map((datum) => ({
-			name: datum.name,
-			description: datum.description,
-			githubLink: datum.github_link,
-			blogLink: datum.blog_link,
-			image: datum.image,
-			type: datum.type,
-		}));
+		if (!resp.success) {
+			console.error(resp.error);
+			return;
+		}
+
+		workProjects = resp.resp;
 	};
 
-	const getPersonalProjects = async () => {
-		const data = await api.get("/projects?limit=5&type=personal");
+	const retrievePersonalProjects = async () => {
+		const resp = await getProjects("personal", 5);
 
-		personalProjects = data.map((datum) => ({
-			name: datum.name,
-			description: datum.description,
-			githubLink: datum.github_link,
-			blogLink: datum.blog_link,
-			image: datum.image,
-			type: datum.type,
-		}));
+		if (!resp.success) {
+			console.error(resp.error);
+			return;
+		}
+
+		personalProjects = resp.resp;
 	};
 
 	onMount(() => {
 		getSkills();
 		retrieveWorkExperiences();
-		getWorkProjects();
-		getPersonalProjects();
+		retrieveWorkProjects();
+		retrievePersonalProjects();
 		retrieveImages();
 	});
 </script>
 
 {#snippet sectionHeader(text: string)}
-	<h2 class="flex text-xl mb-6">
+	<h2 class="flex mb-6">
 		{text}
 	</h2>
 {/snippet}
@@ -112,13 +109,12 @@
 	</div>
 
 	<div>
-		<h2 class="flex justify-center text-xl mt-4 text-center">
-			{Content.sections.personalProjects}
-		</h2>
+		{@render sectionHeader(Content.sections.personalProjects)}
+		<Projects projects={personalProjects} />
 	</div>
-	<Projects projects={personalProjects} />
-	<h2 class="flex justify-center text-xl mt-4 text-center">
-		{Content.sections.skills}
-	</h2>
-	<SkillsTable {skills} />
+
+	<div>
+		{@render sectionHeader(Content.sections.skills)}
+		<SkillsTable {skills} />
+	</div>
 </section>
