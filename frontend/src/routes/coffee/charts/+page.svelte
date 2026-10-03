@@ -1,21 +1,27 @@
-<script>
+<script lang="ts">
 	import { onMount } from "svelte";
 
+	import Hero from "$lib/components/home/hero.svelte";
+	import Carousel from "$lib/design-system/carousel.svelte";
 	import LoadingSpinner from "$lib/components/home/coffee/loading_spinner.svelte";
 	import DropdownTextfield from "$lib/components/home/coffee/dropdown_textfield.svelte";
 	import Gauge from "$lib/components/home/coffee/gauge.svelte";
 	import CoffeeDetails from "$lib/components/home/coffee/coffee_details.svelte";
 	import ErrorCard from "$lib/components/home/coffee/error_card.svelte";
 	import CoffeeCharts from "$lib/components/home/coffee/coffee_charts.svelte";
+
+	import Content from "$lib/content/home.json";
+
 	import Select from "$lib/design-system/select.svelte";
+
+	import { getImages, type Image } from "$lib/types/images.svelte";
 
 	import { api } from "$lib/utils/api.svelte.js";
 	import { formatDate } from "$lib/utils/utils.svelte";
 
 	import coffeesNotFound from "$lib/assets/coffees_not_found.png";
 
-	import { ZipReader, BlobReader, BlobWriter } from "@zip.js/zip.js";
-
+	let heroImages: Image[] = $state([]);
 	let coffees = $state([]);
 	let coffeeCups = $state([]);
 	let selectedCoffee = $state({});
@@ -47,6 +53,17 @@
 	});
 
 	let suggestionsHidden = $derived(!isFocused);
+
+	const retrieveHeroImages = async () => {
+		const resp = await getImages("coffee_charts");
+
+		if (!resp.success) {
+			console.error("something went wrong while retrieving images");
+			return;
+		}
+
+		heroImages = resp.resp;
+	};
 
 	const getCoffees = async () => {
 		const coffeesData = await api.get("/coffees?include_roasts=true");
@@ -110,6 +127,7 @@
 	};
 
 	onMount(() => {
+		retrieveHeroImages();
 		getCoffees();
 	});
 </script>
@@ -120,9 +138,15 @@
 	{:else if coffees && coffees.length > 0}
 		<div class="mt-6 w-full">
 			<div class="sm:p-6 flex flex-col justify-center items-center">
+				<Hero
+					header={Content["coffee.charts.hero.header"]}
+					subtitle={Content["coffee.charts.hero.subtitle"]}
+				>
+					<Carousel images={heroImages} />
+				</Hero>
 				{#if selectedView === "CoffeeCharts" && roasts && roasts.length > 0}
 					{#if coffeeCups && coffeeCups.length > 0}
-						<div class="flex flex-col sm:flex-row gap-6">
+						<div class="flex flex-col sm:flex-row gap-6 mt-4">
 							<DropdownTextfield
 								{suggestionsHidden}
 								{suggestions}
