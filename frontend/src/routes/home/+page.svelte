@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from "svelte";
 	import Hero from "$lib/components/home/hero.svelte";
 	import Carousel from "$lib/design-system/carousel.svelte";
@@ -8,6 +8,7 @@
 	import Content from "$lib/content/home.json";
 
 	import { api } from "$lib/utils/api.svelte";
+	import { getImages, type Image } from "$lib/types/images.svelte";
 
 	import { normalizeDate } from "$lib/utils/utils.svelte";
 
@@ -15,7 +16,7 @@
 	let workProjects = $state([]);
 	let personalProjects = $state([]);
 	let skills = $state([]);
-	let images = $state([]);
+	let images: Image[] = $state([]);
 
 	const getSkills = async () => {
 		const data = await api.get("/skills");
@@ -27,16 +28,15 @@
 		}));
 	};
 
-	const getImages = async () => {
-		const data = await api.get("/images");
+	const retrieveImages = async () => {
+		const resp = await getImages("home");
 
-		images = data.map((datum) => {
-			return {
-				title: datum.title,
-				caption: datum.caption,
-				imageLink: datum.image,
-			};
-		});
+		if (resp.success === false) {
+			console.error("something went wrong");
+			return;
+		}
+
+		images = resp.resp;
 	};
 
 	const getWorkExperiences = async () => {
@@ -82,7 +82,7 @@
 		getWorkExperiences();
 		getWorkProjects();
 		getPersonalProjects();
-		getImages();
+		retrieveImages();
 	});
 </script>
 
