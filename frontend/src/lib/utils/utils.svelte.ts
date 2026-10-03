@@ -11,7 +11,7 @@ export const isLoggedIn = async () => {
   return true;
 };
 
-export const normalizeDate = (date) => {
+export const normalizeDate = (date: string): string | null => {
   return date ? date.split("T")[0] : null;
 };
 
