@@ -9,8 +9,8 @@
 </script>
 
 {#snippet projectCard(project: Project)}
-	<div class="flex flex-wrap items-center w-full">
-		<div class="flex flex-col flex-1 min-w-0">
+	<div class="flex flex-wrap justify-between w-full">
+		<div class="flex flex-col min-w-0">
 			<h3 class="leading-tight">
 				{project.name}
 			</h3>
@@ -24,7 +24,7 @@
 			</p>
 		</div>
 
-		<div class="w-64 h-48 shrink-0 flex items-center justify-center">
+		<div class="w-64 h-48 flex">
 			<img
 				src={project.image}
 				alt={project.name}
