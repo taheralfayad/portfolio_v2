@@ -43,7 +43,7 @@
 </script>
 
 {#if images.length > 0}
-	<section class="flex-1 max-w-2xl px-4 pt-4 pb-12">
+	<section class="flex-1 max-w-2xl px-4 pt-4 pb-12 text-center">
 		<div class="relative group">
 			<div class="relative overflow-hidden aspect-[5/3]">
 				<div
