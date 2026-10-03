@@ -1,5 +1,13 @@
-<script>
-	let { header, subtitle, carouselImages, children } = $props();
+<script lang="ts">
+	import type { Snippet } from "svelte";
+
+	interface Props {
+		header: string;
+		subtitle: string;
+		children: Snippet;
+	}
+
+	let { header, subtitle, children }: Props = $props();
 </script>
 
 <div
