@@ -5,9 +5,9 @@
 	import WorkExperiences from "$lib/components/home/home/work_experiences.svelte";
 	import Projects from "$lib/components/home/home/projects.svelte";
 	import SkillsTable from "$lib/components/home/home/skills_table.svelte";
+	import LoadingSpinner from "$lib/components/home/home/loading_spinner.svelte";
 	import Content from "$lib/content/home.json";
 
-	import { api } from "$lib/utils/api.svelte";
 	import { getImages, type Image } from "$lib/types/images.svelte";
 	import {
 		getWorkExperiences,
@@ -16,6 +16,7 @@
 	import { getProjects, type Project } from "$lib/types/project.svelte";
 	import { getSkills, type Skill } from "$lib/types/skill.svelte";
 
+	let loading = $state(true);
 	let workExperiences: WorkExperience[] = $state([]);
 	let workProjects: Project[] = $state([]);
 	let personalProjects: Project[] = $state([]);
@@ -77,12 +78,20 @@
 		personalProjects = resp.resp;
 	};
 
-	onMount(() => {
-		retrieveSkills();
-		retrieveWorkExperiences();
-		retrieveWorkProjects();
-		retrievePersonalProjects();
-		retrieveImages();
+	onMount(async () => {
+		try {
+			await Promise.all([
+				retrieveSkills(),
+				retrieveWorkExperiences(),
+				retrieveWorkProjects(),
+				retrievePersonalProjects(),
+				retrieveImages(),
+			]);
+
+			loading = false;
+		} catch (err) {
+			console.error(err);
+		}
 	});
 </script>
 
@@ -92,31 +101,35 @@
 	</h2>
 {/snippet}
 
-<section class="p-6 flex flex-col gap-12">
-	<Hero
-		header={Content["home.hero.header"]}
-		subtitle={Content["home.hero.subtitle"]}
-	>
-		<Carousel {images} />
-	</Hero>
+{#if loading}
+	<LoadingSpinner />
+{:else}
+	<section class="p-6 flex flex-col gap-12">
+		<Hero
+			header={Content["home.hero.header"]}
+			subtitle={Content["home.hero.subtitle"]}
+		>
+			<Carousel {images} />
+		</Hero>
 
-	<div>
-		{@render sectionHeader(Content.sections.workExperiences)}
-		<WorkExperiences items={workExperiences} />
-	</div>
+		<div>
+			{@render sectionHeader(Content.sections.workExperiences)}
+			<WorkExperiences items={workExperiences} />
+		</div>
 
-	<div>
-		{@render sectionHeader(Content.sections.workProjects)}
-		<Projects projects={workProjects} />
-	</div>
+		<div>
+			{@render sectionHeader(Content.sections.workProjects)}
+			<Projects projects={workProjects} />
+		</div>
 
-	<div>
-		{@render sectionHeader(Content.sections.personalProjects)}
-		<Projects projects={personalProjects} />
-	</div>
+		<div>
+			{@render sectionHeader(Content.sections.personalProjects)}
+			<Projects projects={personalProjects} />
+		</div>
 
-	<div>
-		{@render sectionHeader(Content.sections.skills)}
-		<SkillsTable {skills} />
-	</div>
-</section>
+		<div>
+			{@render sectionHeader(Content.sections.skills)}
+			<SkillsTable {skills} />
+		</div>
+	</section>
+{/if}
