@@ -6,8 +6,6 @@
 	}
 
 	let { items }: Props = $props();
-
-	$inspect(items);
 </script>
 
 {#snippet experience(item: WorkExperience)}

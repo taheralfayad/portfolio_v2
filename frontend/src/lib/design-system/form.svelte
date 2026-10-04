@@ -1,6 +1,5 @@
 <script>
 	let { submitForm, title, children, editMode, editHook, data } = $props();
-	$inspect(data);
 </script>
 
 {#snippet dataPreview(data)}

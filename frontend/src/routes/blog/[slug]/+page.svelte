@@ -33,8 +33,6 @@
 			isLoading = false;
 		}
 	});
-
-	$inspect(blog);
 </script>
 
 <section class="flex flex-col gap-6 p-5 min-h-screen w-full">
