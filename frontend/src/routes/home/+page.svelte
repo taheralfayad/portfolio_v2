@@ -14,21 +14,23 @@
 		type WorkExperience,
 	} from "$lib/types/work_experience.svelte";
 	import { getProjects, type Project } from "$lib/types/project.svelte";
+	import { getSkills, type Skill } from "$lib/types/skill.svelte";
 
 	let workExperiences: WorkExperience[] = $state([]);
 	let workProjects: Project[] = $state([]);
 	let personalProjects: Project[] = $state([]);
-	let skills = $state([]);
+	let skills: Skill[] = $state([]);
 	let images: Image[] = $state([]);
 
-	const getSkills = async () => {
-		const data = await api.get("/skills");
+	const retrieveSkills = async () => {
+		const resp = await getSkills();
 
-		skills = data.map((datum) => ({
-			name: datum.name,
-			category: datum.category,
-			blogLink: datum.blog_link,
-		}));
+		if (!resp.success) {
+			console.error("something went wrong");
+			return;
+		}
+
+		skills = resp.resp;
 	};
 
 	const retrieveImages = async () => {
@@ -76,7 +78,7 @@
 	};
 
 	onMount(() => {
-		getSkills();
+		retrieveSkills();
 		retrieveWorkExperiences();
 		retrieveWorkProjects();
 		retrievePersonalProjects();
