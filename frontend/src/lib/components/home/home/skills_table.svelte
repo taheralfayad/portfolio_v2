@@ -28,19 +28,15 @@
 	active: boolean,
 )}
 	<div
-		class={`bg-secondary shrink-0 aspect-square flex flex-col justify-start items-center p-4
-			transition-all duration-300 gap-10 text-center
-			${active ? "size-96" : "size-48 opacity-85 overflow-clip"}`}
+		class={`bg-secondary flex flex-col justify-start shrink-0 items-center p-4
+			transition-all duration-300 gap-10 text-center tracking-widest
+			${active ? "min-h-96 w-56" : "h-48 w-24 opacity-85 overflow-clip"}`}
 	>
-		<div>
-			<h3>{categoryWithSkills[0]}</h3>
-		</div>
+		<h3 class="shrink-0">{categoryWithSkills[0]}</h3>
 		<hr />
-		<div>
-			{#each categoryWithSkills[1] as skill}
-				<p>{skill.name}</p>
-			{/each}
-		</div>
+		{#each categoryWithSkills[1] as skill}
+			<p>{skill.name}</p>
+		{/each}
 	</div>
 {/snippet}
 
@@ -53,7 +49,7 @@
 			}
 		}}
 		aria-label="Previous skill"
-		class="p-3 hover:cursor-pointer bg-button border border-black duration-300"
+		class="p-3 hover:cursor-pointer bg-button border border-black"
 	>
 		<ChevronLeft color="black" />
 	</button>
@@ -65,14 +61,14 @@
 			}
 		}}
 		aria-label="Next skill"
-		class="p-3 hover:cursor-pointer bg-button border border-black group-hover:opacity-100 transition-opacity duration-300"
+		class="p-3 hover:cursor-pointer bg-button border border-black"
 	>
 		<ChevronRight color="black" />
 	</button>
 {/snippet}
 
 <div class="flex flex-col gap-4 justify-center items-center">
-	<div class="flex flex-row gap-4 justify-center items-center">
+	<div class="flex flex-row gap-4 justify-center items-center h-125 w-125">
 		{#each visibleCategories as { entry, index } (entry[0])}
 			{@render Card(entry, index === activeIndex)}
 		{/each}
