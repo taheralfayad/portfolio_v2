@@ -1,12 +1,16 @@
 {
-	"home.hero.header": "Hello, my name is Ahmad Altaher Alfayad.",
-	"home.hero.subtitle": "I am a Data Engineer at the University of Central Florida, amongst other things.",
-	"books.hero.header": "My Library",
-	"books.hero.subtitle": "These are all the books downloaded on my EReader, alongside some additional metadata. The way I accomplished this was by writing a KOReader plugin that sends the book metadata to the backend of this website. <a class='underline' target='_blank' href='https://github.com/taheralfayad/cool-koreader-plugin'>Check out this project here.</a>",
-	"sections": {
-		"workExperiences": "Here is a timeline of my employment history:",
-		"workProjects": "Here are some of the projects I've worked on at work:",
-		"personalProjects": "Here are some of the projects I've worked on in my own free time",
-		"skills": "Here are some technologies that I've used (and loved enough to talk about using):"
-	}
+  "home.hero.header": "Hello, my name is Ahmad Altaher Alfayad.",
+  "home.hero.subtitle": "I am a Data Engineer at the University of Central Florida, amongst other things.",
+  "books.hero.header": "My Library",
+  "books.hero.subtitle": "These are all the books downloaded on my EReader, alongside some additional metadata. The way I accomplished this was by writing a KOReader plugin that sends the book metadata to the backend of this website. <a class='underline' target='_blank' href='https://github.com/taheralfayad/cool-koreader-plugin'>Check out this project here.</a>",
+  "coffee.charts.hero.header": "Roasting Coffee",
+  "coffee.charts.hero.subtitle": "For a while in 2026, I got into roasting coffee. I got so into roasting coffee that I actually wanted to scientifically measure the optimal way to roast and brew coffee. Thus came about this experiment. This practice of logging and rating my cups of coffee became quite tedious after a while, and so I ceased it. All that remains of this experiment is this archive, and a crippling caffeine dependency.",
+  "coffee.sql.hero.header": "CoffeeSQL, Why This is Cooler Than you Think",
+  "coffee.sql.hero.subtitle": "I built this using <a class='underline' target='_blank' href='https://duckdb.org/docs/current/clients/wasm/overview'>DuckDB WASM</a>. The server returns a Parquet file per table. These Parquet files are then materialized into views in the DuckDB database. This then allows you to turn my coffee drinking habits into SQL queries.",
+  "sections": {
+    "workExperiences": "Employment History:",
+    "workProjects": "Work Projects:",
+    "personalProjects": "Personal Projects:",
+    "skills": "Technologies I Think I'm Good At:"
+  }
 }

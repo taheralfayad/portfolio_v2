@@ -1,15 +1,21 @@
-<script>
+<script lang="ts">
 	import * as duckdb from "@duckdb/duckdb-wasm";
 	import duckdb_wasm from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url";
 	import mvp_worker from "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url";
 	import duckdb_wasm_eh from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url";
 	import eh_worker from "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url";
 	import CoffeeTable from "$lib/components/home/coffee/coffee_table.svelte";
-	import { onMount, onDestroy, tick } from "svelte";
-	import LoadingSpinner from "$lib/components/home/coffee/loading_spinner.svelte";
+	import Content from "$lib/content/home.json";
+	import { onMount } from "svelte";
 	import { Table } from "@lucide/svelte";
 
+	import Hero from "$lib/components/home/hero.svelte";
+	import Carousel from "$lib/design-system/carousel.svelte";
+
 	import { api } from "$lib/utils/api.svelte.js";
+
+	import { getImages, type Image } from "$lib/types/images.svelte";
+
 	import { ZipReader, BlobReader, BlobWriter } from "@zip.js/zip.js";
 
 	const SQL_KEYWORDS = [
@@ -33,6 +39,7 @@
 		"DESC",
 	];
 
+	let heroImages: Image[] = $state([]);
 	let db = $state();
 	let conn = $state();
 	let ready = $state(false);
@@ -62,7 +69,19 @@
 		parquetBuffers = buffers;
 	};
 
+	const retrieveImages = async () => {
+		const resp = await getImages("coffee_sql");
+
+		if (!resp.success) {
+			console.error("something went wrong man");
+			return;
+		}
+
+		heroImages = resp.resp;
+	};
+
 	onMount(async () => {
+		retrieveImages();
 		await getDuckDBFile();
 
 		const MANUAL_BUNDLES = {
@@ -107,11 +126,6 @@
 
 		console.log(coffeeSchema);
 		ready = true;
-	});
-
-	onDestroy(async () => {
-		await conn?.close();
-		await db?.terminate();
 	});
 
 	const submitQuery = async () => {
@@ -264,6 +278,12 @@
 	{#if !ready}
 		<p>loading...</p>
 	{:else}
+		<Hero
+			header={Content["coffee.sql.hero.header"]}
+			subtitle={Content["coffee.sql.hero.subtitle"]}
+		>
+			<Carousel images={heroImages} />
+		</Hero>
 		<div class="flex flex-row gap-12 h-full">
 			{@render schemaContainer([
 				{ table: "coffee", schema: coffeeSchema },

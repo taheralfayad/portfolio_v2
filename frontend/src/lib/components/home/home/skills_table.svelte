@@ -1,5 +1,11 @@
-<script>
-	let { skills } = $props();
+<script lang="ts">
+	import { type Skill } from "$lib/types/skill.svelte";
+
+	interface Props {
+		skills: Skill[];
+	}
+
+	let { skills }: Props = $props();
 
 	let categories = $derived.by(() => {
 		return [...new Set(skills.map((skill) => skill.category))];
@@ -16,18 +22,16 @@
 	});
 </script>
 
-<section class="py-8 w-full px-4 overflow-x-auto">
-	<table class="w-full max-w-7xl lg:max-w-xl bg-secondary mx-auto">
-		<thead class="text-center">
+<section class="h-80 w-full overflow-x-auto">
+	<table class="max-w-xl lg:max-w-xl">
+		<thead>
 			<tr>
-				<th
-					class="flex px-4 py-2 text-center gap-2 justify-center items-center border-b"
-				>
+				<th class="flex gap-2 items-center">
 					<label for="categories">Filter by Category:</label>
 					<select
 						name="categories"
 						id="categories"
-						class="text-center p-2"
+						class="p-2 bg-secondary"
 						bind:value={selectedCategory}
 					>
 						{#each categories as category}
@@ -37,12 +41,10 @@
 				</th>
 			</tr>
 		</thead>
-		<tbody class="text-center">
+		<tbody>
 			{#each filteredSkills as skill}
-				<tr>
-					<td class="px-4 py-2 text-center" colspan="2"
-						>{skill.name}</td
-					>
+				<tr class="bg-secondary">
+					<td class="px-4 py-2">{skill.name}</td>
 				</tr>
 			{/each}
 		</tbody>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onMount } from "svelte";
 
 	import { api } from "$lib/utils/api.svelte";
@@ -8,10 +8,12 @@
 	import FilterBar from "$lib/components/home/filter_bar.svelte";
 	import LoadingSpinner from "$lib/components/home/books/loading_spinner.svelte";
 
+	import { getImages, type Image } from "$lib/types/images.svelte";
+
 	import Content from "$lib/content/home.json";
 
 	let books = $state([]);
-	let images = $state([]);
+	let images: Image[] = $state([]);
 	let searchText = $state("");
 	let statusFilters = $state([]);
 	let isLoading = $state(true);
@@ -63,20 +65,20 @@
 		});
 	};
 
-	const getImages = async () => {
-		const response = await api.get("/images?site=books");
+	const retrieveImages = async () => {
+		const resp = await getImages("books");
 
-		images = response.map((image) => {
-			return {
-				...image,
-				imageLink: image.image,
-			};
-		});
+		if (resp.success === false) {
+			console.error("something went wrong");
+			return;
+		}
+
+		images = resp.resp;
 	};
 
 	onMount(async () => {
 		try {
-			await Promise.all([getBooks(), getImages()]);
+			await Promise.all([getBooks(), retrieveImages()]);
 		} catch (err) {
 			console.error(err);
 		} finally {

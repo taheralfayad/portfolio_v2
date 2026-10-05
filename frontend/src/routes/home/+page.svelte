@@ -1,114 +1,135 @@
-<script>
+<script lang="ts">
 	import { onMount } from "svelte";
 	import Hero from "$lib/components/home/hero.svelte";
 	import Carousel from "$lib/design-system/carousel.svelte";
 	import WorkExperiences from "$lib/components/home/home/work_experiences.svelte";
 	import Projects from "$lib/components/home/home/projects.svelte";
 	import SkillsTable from "$lib/components/home/home/skills_table.svelte";
+	import LoadingSpinner from "$lib/components/home/home/loading_spinner.svelte";
 	import Content from "$lib/content/home.json";
 
-	import { api } from "$lib/utils/api.svelte";
+	import { getImages, type Image } from "$lib/types/images.svelte";
+	import {
+		getWorkExperiences,
+		type WorkExperience,
+	} from "$lib/types/work_experience.svelte";
+	import { getProjects, type Project } from "$lib/types/project.svelte";
+	import { getSkills, type Skill } from "$lib/types/skill.svelte";
 
-	import { normalizeDate } from "$lib/utils/utils.svelte";
+	let loading = $state(true);
+	let workExperiences: WorkExperience[] = $state([]);
+	let workProjects: Project[] = $state([]);
+	let personalProjects: Project[] = $state([]);
+	let skills: Skill[] = $state([]);
+	let images: Image[] = $state([]);
 
-	let workExperiences = $state([]);
-	let workProjects = $state([]);
-	let personalProjects = $state([]);
-	let skills = $state([]);
-	let images = $state([]);
+	const retrieveSkills = async () => {
+		const resp = await getSkills();
 
-	const getSkills = async () => {
-		const data = await api.get("/skills");
+		if (!resp.success) {
+			console.error("something went wrong");
+			return;
+		}
 
-		skills = data.map((datum) => ({
-			name: datum.name,
-			category: datum.category,
-			blogLink: datum.blog_link,
-		}));
+		skills = resp.resp;
 	};
 
-	const getImages = async () => {
-		const data = await api.get("/images");
+	const retrieveImages = async () => {
+		const resp = await getImages("home");
 
-		images = data.map((datum) => {
-			return {
-				title: datum.title,
-				caption: datum.caption,
-				imageLink: datum.image,
-			};
-		});
+		if (resp.success === false) {
+			console.error("something went wrong");
+			return;
+		}
+
+		images = resp.resp;
 	};
 
-	const getWorkExperiences = async () => {
-		const data = await api.get("/work-experiences?limit=3");
+	const retrieveWorkExperiences = async () => {
+		const resp = await getWorkExperiences(3);
 
-		workExperiences = data.map((datum) => ({
-			title: datum.title,
-			subtitle: datum.workplace,
-			description: datum.description,
-			startDate: normalizeDate(datum.start_date),
-			endDate: normalizeDate(datum.end_date),
-		}));
+		if (!resp.success) {
+			console.error(resp.error);
+			return;
+		}
+
+		workExperiences = resp.resp;
 	};
 
-	const getWorkProjects = async () => {
-		const data = await api.get("/projects?limit=5&type=work");
+	const retrieveWorkProjects = async () => {
+		const resp = await getProjects("work", 5);
 
-		workProjects = data.map((datum) => ({
-			name: datum.name,
-			description: datum.description,
-			githubLink: datum.github_link,
-			blogLink: datum.blog_link,
-			image: datum.image,
-			type: datum.type,
-		}));
+		if (!resp.success) {
+			console.error(resp.error);
+			return;
+		}
+
+		workProjects = resp.resp;
 	};
 
-	const getPersonalProjects = async () => {
-		const data = await api.get("/projects?limit=5&type=personal");
+	const retrievePersonalProjects = async () => {
+		const resp = await getProjects("personal", 5);
 
-		personalProjects = data.map((datum) => ({
-			name: datum.name,
-			description: datum.description,
-			githubLink: datum.github_link,
-			blogLink: datum.blog_link,
-			image: datum.image,
-			type: datum.type,
-		}));
+		if (!resp.success) {
+			console.error(resp.error);
+			return;
+		}
+
+		personalProjects = resp.resp;
 	};
 
-	onMount(() => {
-		getSkills();
-		getWorkExperiences();
-		getWorkProjects();
-		getPersonalProjects();
-		getImages();
+	onMount(async () => {
+		try {
+			await Promise.all([
+				retrieveSkills(),
+				retrieveWorkExperiences(),
+				retrieveWorkProjects(),
+				retrievePersonalProjects(),
+				retrieveImages(),
+			]);
+
+			loading = false;
+		} catch (err) {
+			console.error(err);
+		}
 	});
 </script>
 
-<section class="flex items-center justify-center">
-	<Hero
-		header={Content["home.hero.header"]}
-		subtitle={Content["home.hero.subtitle"]}
-	>
-		<Carousel {images} />
-	</Hero>
-</section>
-<section class="flex flex-col items-center justify-center">
-	<h2 class="flex justify-center text-xl text-center">
-		{Content.sections.workExperiences}
+{#snippet sectionHeader(text: string)}
+	<h2 class="flex mb-6">
+		{text}
 	</h2>
-	<WorkExperiences items={workExperiences} />
-</section>
-<h2 class="flex justify-center text-xl text-center">
-	{Content.sections.workProjects}
-</h2>
-<Projects projects={workProjects} />
-<h2 class="flex justify-center text-xl mt-4 text-center">
-	{Content.sections.personalProjects}
-</h2>
-<Projects projects={personalProjects} />
-<h2 class="flex justify-center text-xl mt-4 text-center">
-	{Content.sections.skills}
-</h2>
-<SkillsTable {skills} />
+{/snippet}
+
+{#if loading}
+	<LoadingSpinner />
+{:else}
+	<section class="p-6 flex flex-col gap-12">
+		<Hero
+			header={Content["home.hero.header"]}
+			subtitle={Content["home.hero.subtitle"]}
+		>
+			<Carousel {images} />
+		</Hero>
+
+		<div>
+			{@render sectionHeader(Content.sections.workExperiences)}
+			<WorkExperiences items={workExperiences} />
+		</div>
+
+		<div>
+			{@render sectionHeader(Content.sections.workProjects)}
+			<Projects projects={workProjects} />
+		</div>
+
+		<div>
+			{@render sectionHeader(Content.sections.personalProjects)}
+			<Projects projects={personalProjects} />
+		</div>
+
+		<div>
+			{@render sectionHeader(Content.sections.skills)}
+			<SkillsTable {skills} />
+		</div>
+	</section>
+{/if}
