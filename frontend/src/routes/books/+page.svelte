@@ -133,31 +133,33 @@
 {#if isLoading}
 	<LoadingSpinner />
 {:else}
-	<section class="flex items-center justify-center">
-		<Hero
-			header={Content["books.hero.header"]}
-			subtitle={Content["books.hero.subtitle"]}
+	<section class="flex flex-col p-6">
+		<section class="flex items-center justify-center">
+			<Hero
+				header={Content["books.hero.header"]}
+				subtitle={Content["books.hero.subtitle"]}
+			>
+				<Carousel {images} />
+			</Hero>
+		</section>
+		<section
+			class="flex flex-col items-center justify-center gap-4 my-12 max-w-screen mx-auto"
 		>
-			<Carousel {images} />
-		</Hero>
-	</section>
-	<section
-		class="flex flex-col items-center justify-center gap-4 mt-8 max-w-screen mx-auto"
-	>
-		<FilterBar
-			bind:searchText
-			bind:selectedOptions={statusFilters}
-			options={statusOptions}
-			searchPlaceholder="Search (book name or author name)..."
-			pillboxLabel="Status Filters"
-		/>
-	</section>
-	<section
-		class="grid justify-items-center p-12"
-		style="grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));"
-	>
-		{#each booksFiltered as book}
-			{@render bookCard(book)}
-		{/each}
+			<FilterBar
+				bind:searchText
+				bind:selectedOptions={statusFilters}
+				options={statusOptions}
+				searchPlaceholder="Search (book name or author name)..."
+				pillboxLabel="Status Filters"
+			/>
+		</section>
+		<section
+			class="grid justify-items-center"
+			style="grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));"
+		>
+			{#each booksFiltered as book}
+				{@render bookCard(book)}
+			{/each}
+		</section>
 	</section>
 {/if}

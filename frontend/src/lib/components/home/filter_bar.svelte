@@ -29,7 +29,7 @@
 	}
 </script>
 
-<div class="flex flex-row flex-wrap items-center gap-3">
+<div class="flex flex-row items-center gap-3">
 	<input
 		class="bg-tertiary px-3 py-2"
 		type="text"

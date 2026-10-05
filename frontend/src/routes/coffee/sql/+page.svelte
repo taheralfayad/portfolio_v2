@@ -274,7 +274,7 @@
 	</div>
 {/snippet}
 
-<div class="flex flex-col w-full mt-14 gap-12 h-screen">
+<div class="flex flex-col w-full mt-14 gap-12 h-screen p-2">
 	{#if !ready}
 		<p>loading...</p>
 	{:else}
