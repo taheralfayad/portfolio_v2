@@ -190,7 +190,7 @@ func EditImage(c *gin.Context, db *sql.DB) {
 	query := `
 		UPDATE images
 			SET title = $1,
-				caption = $2
+				caption = $2,
 				site = $3
 		WHERE id = $4
 	`
