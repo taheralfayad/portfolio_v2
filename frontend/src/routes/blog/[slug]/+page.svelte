@@ -23,7 +23,7 @@
 
 			blog = {
 				content: resp.content,
-				date: normalizeDate(resp.created_at),
+				date: normalizeDate(resp.created_at) || "",
 				metadata: JSON.parse(resp.metadata),
 			};
 		} catch (err) {
@@ -35,7 +35,7 @@
 	});
 </script>
 
-<section class="flex flex-col gap-6 p-5 min-h-screen w-full">
+<section class="flex flex-col gap-6 min-h-screen w-full">
 	{#if isLoading}
 		<LoadingSpinner />
 	{:else}
