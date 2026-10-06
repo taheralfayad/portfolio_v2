@@ -5,7 +5,7 @@
 	let { children } = $props();
 </script>
 
-<main class="bg-background text-font">
-	<Navbar />
+<Navbar />
+<main class="bg-background text-font p-5">
 	{@render children()}
 </main>

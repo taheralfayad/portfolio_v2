@@ -104,7 +104,7 @@
 {#if loading}
 	<LoadingSpinner />
 {:else}
-	<section class="p-6 flex flex-col gap-12">
+	<section class="flex flex-col gap-12">
 		<Hero
 			header={Content["home.hero.header"]}
 			subtitle={Content["home.hero.subtitle"]}

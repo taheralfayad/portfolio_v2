@@ -113,7 +113,7 @@
 	</div>
 {/snippet}
 
-<section class="flex flex-col gap-4 p-5 h-screen w-full">
+<section class="flex flex-col gap-4 h-screen w-full">
 	{#if isLoading}
 		<LoadingSpinner />
 	{:else}

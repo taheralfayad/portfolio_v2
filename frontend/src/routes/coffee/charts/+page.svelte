@@ -132,18 +132,20 @@
 	});
 </script>
 
-<section class="flex flex-col items-center justify-center w-full">
+<section class="flex flex-col w-full">
 	{#if isLoading}
 		<LoadingSpinner />
 	{:else if coffees && coffees.length > 0}
-		<div class="mt-6 w-full">
-			<div class="sm:p-6 flex flex-col justify-center items-center">
-				<Hero
-					header={Content["coffee.charts.hero.header"]}
-					subtitle={Content["coffee.charts.hero.subtitle"]}
-				>
-					<Carousel images={heroImages} />
-				</Hero>
+		<div>
+			<div class="flex flex-col justify-center items-center">
+				<div class="mb-6">
+					<Hero
+						header={Content["coffee.charts.hero.header"]}
+						subtitle={Content["coffee.charts.hero.subtitle"]}
+					>
+						<Carousel images={heroImages} />
+					</Hero>
+				</div>
 				{#if selectedView === "CoffeeCharts" && roasts && roasts.length > 0}
 					{#if coffeeCups && coffeeCups.length > 0}
 						<div class="flex flex-col sm:flex-row gap-6 mt-4">
