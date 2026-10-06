@@ -25,8 +25,7 @@
 	let coffees = $state([]);
 	let coffeeCups = $state([]);
 	let selectedCoffee = $state({});
-	let selectedRoast = $state({});
-	let graphData = $state({});
+	let selectedRoast = $state("");
 	let searchValue = $state("");
 	let isFocused = $state(false);
 	let selectedView = $state("CoffeeCharts");
@@ -82,7 +81,7 @@
 
 		selectedCoffee = coffees[0];
 
-		selectedRoast = roasts.length > 0 ? roasts[0] : {};
+		selectedRoast = roasts.length > 0 ? roasts[0] : "";
 	};
 
 	const getCoffeeCups = async () => {
