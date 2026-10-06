@@ -133,7 +133,7 @@
 {#if isLoading}
 	<LoadingSpinner />
 {:else}
-	<section class="flex flex-col p-6">
+	<section class="flex flex-col">
 		<section class="flex items-center justify-center">
 			<Hero
 				header={Content["books.hero.header"]}
@@ -142,15 +142,14 @@
 				<Carousel {images} />
 			</Hero>
 		</section>
-		<section
-			class="flex flex-col items-center justify-center gap-4 my-12 max-w-screen mx-auto"
-		>
+		<section class="flex flex-col items-center justify-center my-12">
 			<FilterBar
 				bind:searchText
 				bind:selectedOptions={statusFilters}
 				options={statusOptions}
 				searchPlaceholder="Search (book name or author name)..."
 				pillboxLabel="Status Filters"
+				className="justify-center flex-wrap"
 			/>
 		</section>
 		<section

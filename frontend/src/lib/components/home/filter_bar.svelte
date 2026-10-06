@@ -2,6 +2,7 @@
 	import Pill from "$lib/components/home/pill.svelte";
 
 	let {
+		className = "",
 		searchText = $bindable(""),
 		selectedOptions = $bindable([]),
 		options = [],
@@ -29,7 +30,7 @@
 	}
 </script>
 
-<div class="flex flex-row items-center gap-3">
+<div class={`flex flex-row items-center gap-3 ${className}`}>
 	<input
 		class="bg-tertiary px-3 py-2"
 		type="text"
