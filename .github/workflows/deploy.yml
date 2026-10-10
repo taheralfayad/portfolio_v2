@@ -3,10 +3,37 @@ on:
   push:
     branches: [ main ]
 jobs:
-  deploy:
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH and Deploy
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install and Build
+        run: |
+          cd frontend 
+          npm run build
+
+      - name: SSH and Deploy Frontend
+        uses: appleboy/scp-action@v1.2.5
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "frontend/dist"
+          target: "/var/www/portfolio"
+          strip_components: 1
+
+  deploy-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH and Deploy Backend
         uses: appleboy/ssh-action@v1.2.5
         with:
           host: ${{ secrets.HOST }}
